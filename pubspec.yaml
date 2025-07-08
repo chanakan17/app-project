@@ -1,0 +1,49 @@
+name: app
+description: "A new Flutter project."
+
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.7.2
+
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.8
+  flutter_tts: ^3.2.0
+  speech_to_text: ^7.0.0
+  audioplayers: ^6.4.0
+  flutter_svg: ^2.1.0
+  translator: ^1.0.3+1
+  font_awesome_flutter: ^10.8.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/sounds/click.mp3
+    - assets/sounds/click8bit.mp3
+    - assets/sounds/checktrue.wav
+    - assets/sounds/checkfalse.mp3
+    - assets/icons/booka96.png
+    - assets/icons/bookdic100.png
+    - assets/icons/game96.png
+    - assets/icons/profile80.png
+    - assets/icons/star96.png
+    - assets/icons/banana96.png
+    - assets/icons/banana.png
+    - assets/icons/monkey64.png
+    - assets/icons/guess.png
+    - assets/icons/match.png
+    - assets/icons/add.png
+    - assets/icons/worm.png
+    - assets/image/monkey.png
+
