@@ -1,8 +1,11 @@
 import 'package:app/screen/homescreen.dart';
 import 'package:app/screen/login/loginscreen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
   runApp(const MyApp());
 }
 
@@ -27,6 +30,7 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
       ),
       themeMode: ThemeMode.system, // ใช้ตามระบบเครื่อง (auto switch)
+      debugShowCheckedModeBanner: false,
       home: const HomeScreen(),
     );
   }
