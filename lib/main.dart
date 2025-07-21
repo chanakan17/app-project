@@ -31,7 +31,7 @@ class MyApp extends StatelessWidget {
       ),
       themeMode: ThemeMode.system, // ใช้ตามระบบเครื่อง (auto switch)
       debugShowCheckedModeBanner: false,
-      home: const HomeScreen(),
+      home: const LoginScreen(),
     );
   }
 }

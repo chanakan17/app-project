@@ -98,7 +98,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
               ),
-              const SizedBox(height: 80),
+              const SizedBox(height: 30),
               const Row(
                 children: [
                   Expanded(child: Divider()),
@@ -129,35 +129,6 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               ),
               const SizedBox(height: 10),
-              SizedBox(
-                width: double.infinity,
-                child: OutlinedButton.icon(
-                  style: OutlinedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 12),
-                    foregroundColor: Colors.grey,
-                    side: const BorderSide(color: Colors.grey),
-                  ),
-                  onPressed:
-                      () => Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(builder: (_) => Signscreen()),
-                      ),
-                  icon: Padding(
-                    padding: const EdgeInsets.fromLTRB(0, 0, 8, 0),
-                    child: Image.network(
-                      'https://upload.wikimedia.org/wikipedia/commons/4/4a/Logo_2013_Google.png',
-                      height: 20,
-                    ),
-                  ),
-                  label: Padding(
-                    padding: const EdgeInsets.fromLTRB(8, 0, 0, 0),
-                    child: const Text(
-                      'ล็อกอินผ่าน google',
-                      style: TextStyle(fontWeight: FontWeight.normal),
-                    ),
-                  ),
-                ),
-              ),
             ],
           ),
         ),
