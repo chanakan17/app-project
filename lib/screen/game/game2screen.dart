@@ -1,12 +1,14 @@
 import 'dart:math';
+import 'package:app/management/game_data/game_data.dart';
 import 'package:app/management/sound/sound.dart';
 import 'package:app/screen/homescreen.dart';
 import 'package:flutter/material.dart';
 
 class Game2screen extends StatefulWidget {
   final Map<String, List<String>> dictionary;
+  final String title;
 
-  const Game2screen({super.key, required this.dictionary});
+  const Game2screen({super.key, required this.dictionary, required this.title});
   @override
   State<Game2screen> createState() => _Game2screenState();
 }
@@ -61,13 +63,19 @@ class _Game2screenState extends State<Game2screen> {
   late List<String> availableKeys;
   Set<String> usedValues = {};
   Map<String, bool>? answerCorrectness;
+  late String title;
 
   @override
   void initState() {
     super.initState();
+    GameData.reset();
     typeDic = widget.dictionary;
+    title = widget.title;
     availableKeys = typeDic.keys.toList();
     _getRandomEntries();
+
+    GameData.gameName = 'เกมจับคู่คำศัพท์';
+    GameData.title = title;
   }
 
   void _showFinishDialog() {
@@ -86,6 +94,7 @@ class _Game2screenState extends State<Game2screen> {
                 ),
               ),
               onPressed: () {
+                GameData.updateTopScore();
                 Navigator.of(context).pop();
                 Navigator.pushReplacement(
                   context,
@@ -478,6 +487,7 @@ class _Game2screenState extends State<Game2screen> {
 
                     if (matched == userAnswers.length) {
                       score++;
+                      GameData.score = score;
                       SoundManager.playChecktrueSound();
                     } else {
                       scoredis--;

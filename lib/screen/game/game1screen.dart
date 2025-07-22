@@ -1,12 +1,14 @@
 import 'dart:math';
+import 'package:app/management/game_data/game_data.dart';
 import 'package:app/management/sound/sound.dart';
 import 'package:app/screen/homescreen.dart';
 import 'package:flutter/material.dart';
 
 class Game1screen extends StatefulWidget {
   final Map<String, List<String>> dictionary;
+  final String title;
 
-  const Game1screen({super.key, required this.dictionary});
+  const Game1screen({super.key, required this.dictionary, required this.title});
   @override
   State<Game1screen> createState() => _Game1screenState();
 }
@@ -58,13 +60,19 @@ class _Game1screenState extends State<Game1screen> {
   int score = 0;
   int scoredis = 5;
   late List<String> availableKeys; // ลิสต์ของ key ที่สามารถสุ่มได้
+  late String title;
 
   @override
   void initState() {
     super.initState();
+    GameData.reset();
     typeDic = widget.dictionary;
+    title = widget.title;
     availableKeys = typeDic.keys.toList(); // เก็บ key ทั้งหมด
     _getRandomEntries(); // เรียกสุ่มค่าเริ่มต้น
+
+    GameData.gameName = 'เกมทายคำศัพท์';
+    GameData.title = title;
   }
 
   void _showFinishDialog() {
@@ -83,6 +91,7 @@ class _Game1screenState extends State<Game1screen> {
                 ),
               ),
               onPressed: () {
+                GameData.updateTopScore();
                 Navigator.of(context).pop();
                 Navigator.pushReplacement(
                   context,
@@ -333,6 +342,7 @@ class _Game1screenState extends State<Game1screen> {
                                       setState(() {
                                         if (shuffledValues[i] == correctValue) {
                                           score++;
+                                          GameData.score = score;
                                           SoundManager.playChecktrueSound();
                                         } else {
                                           scoredis--;

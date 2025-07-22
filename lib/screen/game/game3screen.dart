@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'package:app/management/game_data/game_data.dart';
 import 'package:app/management/sound/sound.dart';
 import 'package:app/screen/homescreen.dart';
 import 'package:flutter/material.dart';
@@ -6,8 +7,9 @@ import 'package:flutter/services.dart';
 
 class Game3screen extends StatefulWidget {
   final Map<String, List<String>> dictionary;
+  final String title;
 
-  const Game3screen({super.key, required this.dictionary});
+  const Game3screen({super.key, required this.dictionary, required this.title});
 
   @override
   State<Game3screen> createState() => _Game3screenState();
@@ -62,13 +64,19 @@ class _Game3screenState extends State<Game3screen> {
   int scoredis = 5;
   late List<String> availableKeys;
   List<FocusNode> focusNodes = [];
+  late String title;
 
   @override
   void initState() {
     super.initState();
+    GameData.reset();
     typeDic = widget.dictionary;
+    title = widget.title;
     availableKeys = typeDic.keys.toList();
     _getRandomEntries();
+
+    GameData.gameName = 'เกมเติมคำ';
+    GameData.title = title;
   }
 
   void _showFinishDialog() {
@@ -87,6 +95,7 @@ class _Game3screenState extends State<Game3screen> {
                 ),
               ),
               onPressed: () {
+                GameData.updateTopScore();
                 Navigator.of(context).pop();
                 Navigator.pushReplacement(
                   context,
@@ -164,6 +173,7 @@ class _Game3screenState extends State<Game3screen> {
     setState(() {
       if (userInput.toLowerCase() == randomKeys[0].toLowerCase()) {
         score++;
+        GameData.score = score;
       } else {
         scoredis--;
       }

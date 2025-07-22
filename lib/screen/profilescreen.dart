@@ -1,3 +1,4 @@
+import 'package:app/management/game_data/game_data.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:app/management/sound/sound.dart';
@@ -139,23 +140,23 @@ class _ProfilescreenState extends State<Profilescreen> {
     {
       "icon": Icons.emoji_events,
       "color": Colors.amber,
-      "name": "เกมจับคู่คำศัพท์",
-      "category": "คำศัพท์กีฬา",
-      "score": "4 คะแนน",
+      "name": GameData.showName1,
+      "category": GameData.showTitle1,
+      "score": "${GameData.showScore1} คะแนน",
     },
     {
       "icon": Icons.emoji_events,
       "color": Colors.grey,
-      "name": "เกมทายคำศัพท์",
-      "category": "คำศัพท์สัตว์",
-      "score": "2 คะแนน",
+      "name": GameData.showName2,
+      "category": GameData.showTitle2,
+      "score": "${GameData.showScore2} คะแนน",
     },
     {
       "icon": Icons.emoji_events,
       "color": Colors.brown,
-      "name": "เกมเติมคำ",
-      "category": "คำศัพท์ยานพาหนะ",
-      "score": "1 คะแนน",
+      "name": GameData.showName3,
+      "category": GameData.showTitle3,
+      "score": "${GameData.showScore3} คะแนน",
     },
   ];
 
@@ -330,7 +331,7 @@ class _ProfilescreenState extends State<Profilescreen> {
                 ...games.map((game) {
                   return Padding(
                     padding: const EdgeInsets.symmetric(
-                      horizontal: 24.0,
+                      horizontal: 12,
                       vertical: 8,
                     ),
                     child: Row(

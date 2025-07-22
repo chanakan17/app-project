@@ -114,7 +114,8 @@ class _MenuscreenState extends State<Menuscreen> {
                       height: 90,
                     ),
                     Colors.blue[100]!,
-                    (dict) => Game1screen(dictionary: dict),
+                    (dict, title) =>
+                        Game1screen(dictionary: dict, title: title),
                   ),
                   buildGameButton(
                     "เกมจับคู่คำศัพท์",
@@ -124,13 +125,15 @@ class _MenuscreenState extends State<Menuscreen> {
                       height: 90,
                     ),
                     Colors.orange[100]!,
-                    (dict) => Game2screen(dictionary: dict),
+                    (dict, title) =>
+                        Game2screen(dictionary: dict, title: title),
                   ),
                   buildGameButton(
                     "เกมเติมคำ",
                     Image.asset('assets/icons/add.png', width: 90, height: 90),
                     Colors.deepPurpleAccent[100]!,
-                    (dict) => Game3screen(dictionary: dict),
+                    (dict, title) =>
+                        Game3screen(dictionary: dict, title: title),
                   ),
 
                   // buildGameButton(
@@ -150,7 +153,7 @@ class _MenuscreenState extends State<Menuscreen> {
     String title,
     Widget iconWidget,
     Color iconBackgroundColor,
-    Widget Function(dynamic) screenBuilder,
+    Widget Function(Map<String, List<String>>, String) screenBuilder,
   ) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(8, 15, 8, 15),
@@ -205,7 +208,9 @@ class _MenuscreenState extends State<Menuscreen> {
     );
   }
 
-  void showCategoryDialog(Widget Function(dynamic) screenBuilder) {
+  void showCategoryDialog(
+    Widget Function(Map<String, List<String>>, String) screenBuilder,
+  ) {
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -269,7 +274,7 @@ class _MenuscreenState extends State<Menuscreen> {
     IconData icon,
     Color iconBackgroundColor,
     dynamic dictionary,
-    Widget Function(dynamic) screenBuilder,
+    Widget Function(Map<String, List<String>>, String) screenBuilder,
   ) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(0, 8, 0, 8),
@@ -279,7 +284,9 @@ class _MenuscreenState extends State<Menuscreen> {
           Navigator.of(context).pop();
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (context) => screenBuilder(dictionary)),
+            MaterialPageRoute(
+              builder: (context) => screenBuilder(dictionary, title),
+            ),
           );
         },
         style: ElevatedButton.styleFrom(
