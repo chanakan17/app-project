@@ -1,5 +1,7 @@
 import 'package:app/screen/login/loginscreen.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -42,15 +44,57 @@ class _RegisterScreenState extends State<RegisterScreen> {
     return age;
   }
 
-  void _submitForm() {
+  void _submitForm() async {
     if (_formKey.currentState!.validate()) {
       final age = calculateAge(_selectedDate!);
 
-      debugPrint("ลงทะเบียนเรียบร้อย");
-      debugPrint("อีเมล: ${_emailController.text}");
-      debugPrint("ชื่อผู้ใช้งาน: ${_usernameController.text}");
-      debugPrint("วันเกิด: $_selectedDate");
-      debugPrint("อายุ: $age ปี");
+      // เตรียมข้อมูล
+      final email = _emailController.text;
+      final username = _usernameController.text;
+      final birthday =
+          '${_selectedDate!.year}-${_selectedDate!.month.toString().padLeft(2, '0')}-${_selectedDate!.day.toString().padLeft(2, '0')}';
+      final password = _passwordController.text;
+      final confirmPassword = _confirmPasswordController.text;
+
+      // เรียก API
+      var url = Uri.parse(
+        'http://192.168.1.120/dataweb/flutter_insert_user.php',
+      );
+      var response = await http.post(
+        url,
+        body: {
+          'email': email,
+          'username': username,
+          'birthday': birthday,
+          'password': password,
+          'confirm_password': confirmPassword,
+        },
+      );
+
+      if (response.statusCode == 200) {
+        var data = jsonDecode(response.body);
+        if (data['success']) {
+          // สมัครสำเร็จ
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(data['message'])));
+          // กลับไปหน้า login
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => const LoginScreen()),
+          );
+        } else {
+          // สมัครไม่สำเร็จ
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(data['message'])));
+        }
+      } else {
+        // Server error
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("ไม่สามารถติดต่อเซิร์ฟเวอร์ได้")),
+        );
+      }
     }
   }
 
