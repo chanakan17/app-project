@@ -1,3 +1,4 @@
+import 'package:app/screen/homescreen.dart';
 import 'package:app/screen/login/loginscreen.dart';
 import 'package:flutter/material.dart';
 
@@ -143,7 +144,17 @@ class _SignscreenState extends State<Signscreen> {
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.blue,
                             ),
-                            onPressed: _submitForm,
+                            onPressed: () {
+                              _submitForm();
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) {
+                                    return HomeScreen();
+                                  },
+                                ),
+                              );
+                            },
                             child: const Text(
                               'ยืนยัน',
                               style: TextStyle(
