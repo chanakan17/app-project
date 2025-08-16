@@ -5,6 +5,7 @@ import 'package:app/screen/login/signscreen.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -23,7 +24,7 @@ class _LoginScreenState extends State<LoginScreen> {
     final email = _emailController.text;
     final password = _passwordController.text;
 
-    final url = Uri.parse('http://192.168.1.120/dataweb/login_app.php');
+    final url = Uri.parse('http://192.168.1.140/dataweb/login_app.php');
     try {
       final response = await http.post(
         url,
@@ -33,14 +34,21 @@ class _LoginScreenState extends State<LoginScreen> {
 
       if (response.statusCode == 200) {
         final result = json.decode(response.body);
-        if (result == 'Success') {
-          print('Login success');
+
+        if (result['status'] == 'Success') {
+          // สมมติ PHP ส่ง userId กลับมาด้วย เช่น {"status":"Success","userId":5}
+          int userId = result['id'];
+
+          // 👉 เก็บ userId ไว้ใน SharedPreferences
+          final prefs = await SharedPreferences.getInstance();
+          await prefs.setInt('id', userId);
+
+          print('Login success, id=$userId');
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(builder: (_) => HomeScreen()),
           );
         } else {
-          print('Login failed');
           _showMessage('อีเมลหรือรหัสผ่านไม่ถูกต้อง');
         }
       } else {

@@ -87,13 +87,13 @@ class _DicscreenState extends State<Dicscreen> {
               child: Center(
                 child: Column(
                   children: [
-                    buildDicButton(
-                      "translate",
-                      "แปลคำศัพท์และประโยค",
-                      Icons.library_books,
-                      Colors.purple[100]!,
-                      (context) => TranslateScreen(),
-                    ),
+                    // buildDicButton(
+                    //   "translate",
+                    //   "แปลคำศัพท์และประโยค",
+                    //   Icons.library_books,
+                    //   Colors.purple[100]!,
+                    //   (context) => TranslateScreen(),
+                    // ),
                     buildDicButton(
                       "คำศัพท์ยานพาหนะ",
                       "คำศัพท์เกี่ยวกับยานพาหนะและขนส่ง",

@@ -1,6 +1,7 @@
 import 'package:app/screen/homescreen.dart';
 import 'package:app/screen/login/loginscreen.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Signscreen extends StatefulWidget {
   const Signscreen({super.key});
@@ -34,7 +35,7 @@ class _SignscreenState extends State<Signscreen> {
     return age;
   }
 
-  void _submitForm() {
+  void _submitForm() async {
     if (_formKey.currentState!.validate()) {
       final age = calculateAge(_selectedDate!);
 
@@ -42,6 +43,21 @@ class _SignscreenState extends State<Signscreen> {
       debugPrint("ชื่อผู้ใช้งาน: ${_usernameController.text}");
       debugPrint("วันเกิด: $_selectedDate");
       debugPrint("อายุ: $age ปี");
+
+      // 👉 บันทึกลง SharedPreferences
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setBool('isGuest', true);
+      await prefs.setString('guestUsername', _usernameController.text);
+      await prefs.setString('guestBirthday', _selectedDate.toString());
+      await prefs.setInt('guestAge', age);
+
+      // 👉 เปลี่ยนหน้าไป HomeScreen
+      if (context.mounted) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => const HomeScreen()),
+        );
+      }
     }
   }
 
@@ -146,14 +162,6 @@ class _SignscreenState extends State<Signscreen> {
                             ),
                             onPressed: () {
                               _submitForm();
-                              Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) {
-                                    return HomeScreen();
-                                  },
-                                ),
-                              );
                             },
                             child: const Text(
                               'ยืนยัน',

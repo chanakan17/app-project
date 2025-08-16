@@ -1,11 +1,12 @@
 import 'package:app/management/game_data/game_data.dart';
+import 'package:app/screen/login/loginscreen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:app/management/sound/sound.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Profilescreen extends StatefulWidget {
   const Profilescreen({super.key});
-
   @override
   State<Profilescreen> createState() => _ProfilescreenState();
 }
@@ -49,6 +50,19 @@ class _ProfilescreenState extends State<Profilescreen> {
   bool isEditing = false;
   TextEditingController _controller = TextEditingController(text: "User name");
   IconData selectedIcon = Icons.person;
+
+  Future<void> logout(BuildContext context) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('id');
+    await prefs.remove('isGuest');
+    await prefs.remove('guestUsername');
+    await prefs.remove('guestBirthday');
+    await prefs.remove('guestAge');
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (_) => const LoginScreen()),
+    );
+  }
 
   void _showAvatarPicker() {
     IconData tempIcon = selectedIcon;
@@ -398,10 +412,10 @@ class _ProfilescreenState extends State<Profilescreen> {
                                     backgroundColor: Colors.red[400],
                                   ),
                                   onPressed: () {
-                                    Navigator.of(context).pop();
+                                    logout(context);
                                   },
                                   child: Text(
-                                    "ออกจากเกม",
+                                    "ออกจากระบบ",
                                     style: TextStyle(color: Colors.white),
                                   ),
                                 ),
