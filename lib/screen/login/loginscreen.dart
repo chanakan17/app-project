@@ -1,3 +1,4 @@
+import 'package:app/management/game_data/game_data.dart';
 import 'package:app/screen/homescreen.dart';
 import 'package:app/screen/login/forgotscreen.dart';
 import 'package:app/screen/login/registerscreen.dart';
@@ -24,7 +25,7 @@ class _LoginScreenState extends State<LoginScreen> {
     final email = _emailController.text;
     final password = _passwordController.text;
 
-    final url = Uri.parse('http://192.168.1.140/dataweb/login_app.php');
+    final url = Uri.parse('http://192.168.106.68/dataweb/login_app.php');
     try {
       final response = await http.post(
         url,
@@ -42,11 +43,12 @@ class _LoginScreenState extends State<LoginScreen> {
           // 👉 เก็บ userId ไว้ใน SharedPreferences
           final prefs = await SharedPreferences.getInstance();
           await prefs.setInt('id', userId);
-
+          GameData.userId = userId;
           print('Login success, id=$userId');
-          Navigator.pushReplacement(
+          Navigator.pushAndRemoveUntil(
             context,
-            MaterialPageRoute(builder: (_) => HomeScreen()),
+            MaterialPageRoute(builder: (_) => const HomeScreen()),
+            (Route<dynamic> route) => false,
           );
         } else {
           _showMessage('อีเมลหรือรหัสผ่านไม่ถูกต้อง');

@@ -14,7 +14,6 @@ class DiagonalClipper extends CustomClipper<Path> {
   @override
   Path getClip(Size size) {
     var path = Path();
-
     path.lineTo(0, size.height - 20);
 
     var firstControlPoint = Offset(size.width / 4, size.height);
@@ -37,26 +36,47 @@ class DiagonalClipper extends CustomClipper<Path> {
 
     path.lineTo(size.width, 0);
     path.close();
-
     return path;
   }
 
   @override
-  bool shouldReclip(covariant CustomClipper<Path> oldClipper) {
-    // ถ้า path ของคุณไม่เปลี่ยนแปลง ให้คืนค่า false
-    return false;
-  }
+  bool shouldReclip(covariant CustomClipper<Path> oldClipper) => false;
 }
 
 class _DicallscreenState extends State<Dicallscreen> {
   List<MapEntry<String, List<String>>> searchResults = [];
   final FlutterTts _flutterTts = FlutterTts();
+  final TextEditingController _searchController = TextEditingController();
 
   Future<void> _speakWord(String word) async {
     await _flutterTts.setLanguage("en-US");
     await _flutterTts.setPitch(1.0);
     await _flutterTts.setSpeechRate(0.5);
     await _flutterTts.speak(word);
+  }
+
+  void _filterSearchResults(String query) {
+    final allEntries = Dic.entries.entries.toList();
+    if (query.isEmpty) {
+      setState(() {
+        searchResults.clear();
+      });
+    } else {
+      setState(() {
+        searchResults =
+            allEntries
+                .where(
+                  (entry) =>
+                      entry.key.toLowerCase().startsWith(
+                        query.toLowerCase(),
+                      ) || // ค้นหาคำศัพท์ขึ้นต้น
+                      entry.value.any(
+                        (v) => v.toLowerCase().startsWith(query.toLowerCase()),
+                      ),
+                ) // ค้นหาคำแปลขึ้นต้น
+                .toList();
+      });
+    }
   }
 
   @override
@@ -80,11 +100,8 @@ class _DicallscreenState extends State<Dicallscreen> {
         ),
         title: Text("คำศัพท์ยานพาหนะ"),
         bottom: PreferredSize(
-          preferredSize: Size.fromHeight(1.0), // ความสูงของเส้น
-          child: Container(
-            color: Colors.grey, // สีของเส้น
-            height: 1.0,
-          ),
+          preferredSize: Size.fromHeight(1.0),
+          child: Container(color: Colors.grey, height: 1.0),
         ),
         backgroundColor: Colors.blueAccent,
       ),
@@ -108,11 +125,26 @@ class _DicallscreenState extends State<Dicallscreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                // 🔎 Search Box
+                TextField(
+                  controller: _searchController,
+                  decoration: InputDecoration(
+                    hintText: "ค้นหาคำศัพท์...",
+                    prefixIcon: Icon(Icons.search),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12.0),
+                    ),
+                  ),
+                  onChanged: _filterSearchResults,
+                ),
                 SizedBox(height: 20),
+
+                // 📖 แสดงรายการ
                 Expanded(
                   child: ListView(
                     children:
-                        (searchResults.isNotEmpty
+                        (searchResults.isNotEmpty ||
+                                    _searchController.text.isNotEmpty
                                 ? searchResults
                                 : (Dic.entries.entries.toList()
                                   ..sort((a, b) => a.key.compareTo(b.key))))
@@ -127,19 +159,19 @@ class _DicallscreenState extends State<Dicallscreen> {
                                         icon: Icon(Icons.volume_up, size: 30),
                                       ),
                                       title: Text(entry.key),
-                                      subtitle: Row(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          ...entry.value.map((subtitle) {
-                                            return Padding(
-                                              padding: const EdgeInsets.all(
-                                                8.0,
-                                              ),
-                                              child: Text(subtitle),
-                                            );
-                                          }).toList(),
-                                        ],
+                                      subtitle: Wrap(
+                                        children:
+                                            entry.value
+                                                .map(
+                                                  (subtitle) => Padding(
+                                                    padding:
+                                                        const EdgeInsets.all(
+                                                          8.0,
+                                                        ),
+                                                    child: Text(subtitle),
+                                                  ),
+                                                )
+                                                .toList(),
                                       ),
                                     ),
                                   ),

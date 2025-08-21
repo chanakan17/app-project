@@ -64,7 +64,7 @@ class _MenuscreenState extends State<Menuscreen> {
             height: 40,
           ),
         ),
-        title: Text("เกม"),
+        title: Text("Games"),
         centerTitle: true,
         // bottom: PreferredSize(
         //   preferredSize: Size.fromHeight(1.0), // ความสูงของเส้น

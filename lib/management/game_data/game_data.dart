@@ -1,13 +1,11 @@
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+
 class GameData {
+  static int userId = 0; // กำหนดเมื่อ login
   static String gameName = '';
   static String title = '';
   static int score = 0;
-
-  static void reset() {
-    gameName = '';
-    title = '';
-    score = 0;
-  }
 
   static String showName1 = '';
   static String showName2 = '';
@@ -19,11 +17,13 @@ class GameData {
   static int showScore2 = 0;
   static int showScore3 = 0;
 
-  static void updateTopScore() {
-    int score = GameData.score;
-    String name = GameData.gameName;
-    String title = GameData.title;
+  static void reset() {
+    gameName = '';
+    title = '';
+    score = 0;
+  }
 
+  static void updateTopScore() {
     if (score > showScore1) {
       showScore3 = showScore2;
       showTitle3 = showTitle2;
@@ -35,7 +35,7 @@ class GameData {
 
       showScore1 = score;
       showTitle1 = title;
-      showName1 = name;
+      showName1 = gameName;
     } else if (score > showScore2 && score <= showScore1) {
       showScore3 = showScore2;
       showTitle3 = showTitle2;
@@ -43,11 +43,66 @@ class GameData {
 
       showScore2 = score;
       showTitle2 = title;
-      showName2 = name;
+      showName2 = gameName;
     } else if (score > showScore3 && score <= showScore2) {
       showScore3 = score;
       showTitle3 = title;
-      showName3 = name;
+      showName3 = gameName;
+    }
+  }
+
+  // บันทึกคะแนนลงฐานข้อมูล
+  static Future<void> saveScoreToDB() async {
+    final url = Uri.parse('http://192.168.106.68/dataweb/save_score.php');
+    final response = await http.post(
+      url,
+      body: {
+        'user_id': userId.toString(),
+        'game_title': title,
+        'score': score.toString(),
+        'game_name': gameName, // เพิ่มตรงนี้
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      if (data['success'] == true) {
+        print('บันทึกคะแนนสำเร็จ');
+      } else {
+        print('บันทึกคะแนนไม่สำเร็จ');
+      }
+    } else {
+      print('HTTP Error: ${response.statusCode}');
+    }
+  }
+
+  // โหลด Top 3 คะแนนจากฐานข้อมูล
+  static Future<void> loadTopScores() async {
+    final url = Uri.parse(
+      'http://192.168.106.68/dataweb/get_top_scores.php?user_id=$userId',
+    );
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      if (data is List && data.isNotEmpty) {
+        showName1 = data.length > 0 ? data[0]['username'] : '';
+        showTitle1 = data.length > 0 ? data[0]['game_title'] : '';
+        showScore1 =
+            data.length > 0 ? int.parse(data[0]['score'].toString()) : 0;
+
+        showName2 = data.length > 1 ? data[1]['username'] : '';
+        showTitle2 = data.length > 1 ? data[1]['game_title'] : '';
+        showScore2 =
+            data.length > 1 ? int.parse(data[1]['score'].toString()) : 0;
+
+        showName3 = data.length > 2 ? data[2]['username'] : '';
+        showTitle3 = data.length > 2 ? data[2]['game_title'] : '';
+        showScore3 =
+            data.length > 2 ? int.parse(data[2]['score'].toString()) : 0;
+      }
+    } else {
+      print('HTTP Error: ${response.statusCode}');
     }
   }
 }

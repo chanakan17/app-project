@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:app/management/sound/sound.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 
 class Profilescreen extends StatefulWidget {
   const Profilescreen({super.key});
@@ -48,7 +50,7 @@ class WaveClipper extends CustomClipper<Path> {
 
 class _ProfilescreenState extends State<Profilescreen> {
   bool isEditing = false;
-  TextEditingController _controller = TextEditingController(text: "User name");
+  TextEditingController _controller = TextEditingController();
   IconData selectedIcon = Icons.person;
 
   Future<void> logout(BuildContext context) async {
@@ -58,10 +60,84 @@ class _ProfilescreenState extends State<Profilescreen> {
     await prefs.remove('guestUsername');
     await prefs.remove('guestBirthday');
     await prefs.remove('guestAge');
-    Navigator.pushReplacement(
+    Navigator.pushAndRemoveUntil(
       context,
       MaterialPageRoute(builder: (_) => const LoginScreen()),
+      (Route<dynamic> route) => false,
     );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    loadUsername();
+  }
+
+  // ดึงชื่อผู้ใช้จาก PHP API
+  Future<void> loadUsername() async {
+    final prefs = await SharedPreferences.getInstance();
+    int? userId = prefs.getInt('id'); // ดึง id จริง
+    bool isGuest = prefs.getBool('isGuest') ?? false;
+
+    if (isGuest) {
+      setState(() {
+        _controller.text = prefs.getString('guestUsername') ?? 'Guest';
+      });
+      return;
+    }
+
+    if (userId == null) return; // ยังไม่ได้ login
+
+    try {
+      final url = Uri.parse(
+        'http://192.168.106.68/dataweb/get_user.php?id=$userId',
+      );
+      final response = await http.get(url);
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        setState(() {
+          _controller.text = data['username'] ?? 'Guest';
+        });
+      }
+    } catch (e) {
+      print('Error fetching username: $e');
+    }
+  }
+
+  // บันทึกชื่อผู้ใช้ไปยัง PHP API
+  Future<void> saveUsername() async {
+    final prefs = await SharedPreferences.getInstance();
+    bool isGuest = prefs.getBool('isGuest') ?? false;
+
+    final newName = _controller.text.trim();
+    if (newName.isEmpty) return;
+
+    if (isGuest) {
+      await prefs.setString('guestUsername', newName);
+      setState(() => isEditing = false);
+      return;
+    }
+
+    // สำหรับ User ปกติ
+    int? userId = prefs.getInt('id');
+    if (userId == null) return;
+
+    try {
+      final url = Uri.parse('http://192.168.106.68/dataweb/update_user.php');
+      final response = await http.post(
+        url,
+        body: {'id': userId.toString(), 'username': newName},
+      );
+      final data = jsonDecode(response.body);
+      if (data['success'] == true) {
+        setState(() {
+          isEditing = false;
+        });
+      }
+    } catch (e) {
+      print('Error updating username: $e');
+    }
   }
 
   void _showAvatarPicker() {
@@ -179,7 +255,7 @@ class _ProfilescreenState extends State<Profilescreen> {
     final screenHeight = MediaQuery.of(context).size.height;
     return Scaffold(
       appBar: AppBar(
-        title: Text("โปรไฟล์"),
+        title: Text("Profile"),
         centerTitle: true,
         bottom: PreferredSize(
           preferredSize: Size.fromHeight(1.0),
@@ -307,36 +383,29 @@ class _ProfilescreenState extends State<Profilescreen> {
                             controller: _controller,
                             autofocus: true,
                             maxLength: 20,
-                            inputFormatters: [
-                              LengthLimitingTextInputFormatter(20),
-                            ],
                             decoration: InputDecoration(
                               counterText: '',
                               hintText: 'กรอกชื่อไม่เกิน 20 ตัว',
                             ),
-                            onSubmitted: (_) {
-                              setState(() {
-                                isEditing = false;
-                              });
-                            },
                           ),
                         )
-                        : Text(
-                          _controller.text,
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16,
+                        : Expanded(
+                          child: Text(
+                            _controller.text,
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
                     IconButton(
-                      icon: Icon(
-                        isEditing ? Icons.check : Icons.edit,
-                        size: 16,
-                      ),
+                      icon: Icon(isEditing ? Icons.check : Icons.edit),
                       onPressed: () {
-                        setState(() {
-                          isEditing = !isEditing;
-                        });
+                        if (isEditing) {
+                          saveUsername();
+                        } else {
+                          setState(() => isEditing = true);
+                        }
                       },
                     ),
                   ],
@@ -373,6 +442,201 @@ class _ProfilescreenState extends State<Profilescreen> {
                     ),
                   );
                 }).toList(),
+                SizedBox(height: 30),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    fixedSize: Size(350, 40),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  onPressed: () {
+                    SoundManager.playClickSound();
+                    // แสดง AlertDialog เมื่อกดปุ่มปิด
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: Text("คะแนน"),
+                          actions: <Widget>[
+                            ...games.map((game) {
+                              return Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                  vertical: 8,
+                                ),
+                                child: Row(
+                                  children: [
+                                    Icon(
+                                      game["icon"],
+                                      color: game["color"],
+                                      size: 24,
+                                    ),
+                                    SizedBox(width: 16),
+                                    Text(
+                                      game["name"],
+                                      style: TextStyle(fontSize: 16),
+                                    ),
+                                    SizedBox(width: 16),
+                                    Text(
+                                      game["category"],
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    Spacer(),
+                                    Text(
+                                      game["score"],
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            }).toList(),
+                          ],
+                        );
+                      },
+                    );
+                  },
+                  child: Text(
+                    "อันดับคะแนนเกมทายคำ",
+                    style: TextStyle(fontSize: 18),
+                  ),
+                ),
+                SizedBox(height: 30),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    fixedSize: Size(350, 40),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  onPressed: () {
+                    SoundManager.playClickSound();
+                    // แสดง AlertDialog เมื่อกดปุ่มปิด
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: Text("คะแนน"),
+                          actions: <Widget>[
+                            ...games.map((game) {
+                              return Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                  vertical: 8,
+                                ),
+                                child: Row(
+                                  children: [
+                                    Icon(
+                                      game["icon"],
+                                      color: game["color"],
+                                      size: 24,
+                                    ),
+                                    SizedBox(width: 16),
+                                    Text(
+                                      game["name"],
+                                      style: TextStyle(fontSize: 16),
+                                    ),
+                                    SizedBox(width: 16),
+                                    Text(
+                                      game["category"],
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    Spacer(),
+                                    Text(
+                                      game["score"],
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            }).toList(),
+                          ],
+                        );
+                      },
+                    );
+                  },
+                  child: Text(
+                    "อันดับคะแนนเกมจับคู่",
+                    style: TextStyle(fontSize: 18),
+                  ),
+                ),
+                SizedBox(height: 30),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    fixedSize: Size(350, 40),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  onPressed: () {
+                    SoundManager.playClickSound();
+                    // แสดง AlertDialog เมื่อกดปุ่มปิด
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: Text("คะแนน"),
+                          actions: <Widget>[
+                            ...games.map((game) {
+                              return Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                  vertical: 8,
+                                ),
+                                child: Row(
+                                  children: [
+                                    Icon(
+                                      game["icon"],
+                                      color: game["color"],
+                                      size: 24,
+                                    ),
+                                    SizedBox(width: 16),
+                                    Text(
+                                      game["name"],
+                                      style: TextStyle(fontSize: 16),
+                                    ),
+                                    SizedBox(width: 16),
+                                    Text(
+                                      game["category"],
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    Spacer(),
+                                    Text(
+                                      game["score"],
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            }).toList(),
+                          ],
+                        );
+                      },
+                    );
+                  },
+                  child: Text(
+                    "อันดับคะแนนเติมคำ",
+                    style: TextStyle(fontSize: 18),
+                  ),
+                ),
                 Spacer(),
                 Padding(
                   padding: const EdgeInsets.all(24.0),

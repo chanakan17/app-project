@@ -53,9 +53,10 @@ class _SignscreenState extends State<Signscreen> {
 
       // 👉 เปลี่ยนหน้าไป HomeScreen
       if (context.mounted) {
-        Navigator.pushReplacement(
+        Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(builder: (_) => const HomeScreen()),
+          (Route<dynamic> route) => false,
         );
       }
     }

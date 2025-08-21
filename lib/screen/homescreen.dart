@@ -1,11 +1,10 @@
-import 'package:app/screen/dicscreen.dart';
-import 'package:app/screen/menuscreen.dart';
-import 'package:app/screen/profilescreen.dart';
 import 'package:flutter/material.dart';
+import 'package:app/screen/menuscreen.dart';
+import 'package:app/screen/dicscreen.dart';
+import 'package:app/screen/profilescreen.dart';
 
 class HomeScreen extends StatefulWidget {
   final int initialTabIndex;
-
   const HomeScreen({super.key, this.initialTabIndex = 0});
 
   @override
@@ -31,48 +30,44 @@ class _HomeScreenState extends State<HomeScreen>
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-    return Scaffold(
-      backgroundColor: colorScheme.background,
-      body: TabBarView(
-        controller: _tabController,
-        children: const [Menuscreen(), Dicscreen(), Profilescreen()],
-      ),
-      bottomNavigationBar: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const Divider(height: 5, thickness: 2, color: Colors.grey),
-          Container(
-            height: 70,
-            child: Material(
-              // color: Colors.blue,
-              child: TabBar(
-                controller: _tabController,
-                // labelColor: Colors.white,
-                // unselectedLabelColor: Colors.white70,
-                indicatorSize: TabBarIndicatorSize.tab,
-                indicatorPadding: const EdgeInsets.symmetric(
-                  horizontal: 30,
-                  vertical: 6,
-                ),
-                indicator: BoxDecoration(
-                  border: Border.all(
-                    color: Colors.grey, // สีของกรอบ
-                    width: 2.0, // ความหนาของกรอบ
+    return WillPopScope(
+      // ป้องกัน Back Button
+      onWillPop: () async => false,
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        body: TabBarView(
+          controller: _tabController,
+          children: const [Menuscreen(), Dicscreen(), Profilescreen()],
+        ),
+        bottomNavigationBar: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Divider(height: 5, thickness: 2, color: Colors.grey),
+            Container(
+              height: 70,
+              child: Material(
+                child: TabBar(
+                  controller: _tabController,
+                  indicatorSize: TabBarIndicatorSize.tab,
+                  indicatorPadding: const EdgeInsets.symmetric(
+                    horizontal: 30,
+                    vertical: 6,
                   ),
-                  borderRadius: BorderRadius.circular(8), // ขอบโค้ง
-                  color: Colors.white24,
+                  indicator: BoxDecoration(
+                    border: Border.all(color: Colors.grey, width: 2.0),
+                    borderRadius: BorderRadius.circular(8),
+                    color: Colors.white24,
+                  ),
+                  tabs: [
+                    Tab(icon: Image.asset('assets/icons/game96.png')),
+                    Tab(icon: Image.asset('assets/icons/bookdic100.png')),
+                    Tab(icon: Image.asset('assets/icons/profile80.png')),
+                  ],
                 ),
-                tabs: [
-                  Tab(icon: Image.asset('assets/icons/game96.png')),
-                  Tab(icon: Image.asset('assets/icons/bookdic100.png')),
-                  Tab(icon: Image.asset('assets/icons/profile80.png')),
-                ],
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

@@ -14,7 +14,6 @@ class DiagonalClipper extends CustomClipper<Path> {
   @override
   Path getClip(Size size) {
     var path = Path();
-
     path.lineTo(0, size.height - 20);
 
     var firstControlPoint = Offset(size.width / 4, size.height);
@@ -37,26 +36,47 @@ class DiagonalClipper extends CustomClipper<Path> {
 
     path.lineTo(size.width, 0);
     path.close();
-
     return path;
   }
 
   @override
-  bool shouldReclip(covariant CustomClipper<Path> oldClipper) {
-    // ถ้า path ของคุณไม่เปลี่ยนแปลง ให้คืนค่า false
-    return false;
-  }
+  bool shouldReclip(covariant CustomClipper<Path> oldClipper) => false;
 }
 
 class _DichomescreenState extends State<Dichomescreen> {
   List<MapEntry<String, List<String>>> searchResults = [];
   final FlutterTts _flutterTts = FlutterTts();
+  final TextEditingController _searchController = TextEditingController();
 
   Future<void> _speakWord(String word) async {
     await _flutterTts.setLanguage("en-US");
     await _flutterTts.setPitch(1.0);
     await _flutterTts.setSpeechRate(0.5);
     await _flutterTts.speak(word);
+  }
+
+  void _filterSearchResults(String query) {
+    final allEntries = dicHome.entries.entries.toList();
+    if (query.isEmpty) {
+      setState(() {
+        searchResults.clear();
+      });
+    } else {
+      setState(() {
+        searchResults =
+            allEntries
+                .where(
+                  (entry) =>
+                      entry.key.toLowerCase().startsWith(
+                        query.toLowerCase(),
+                      ) || // ✅ อังกฤษ
+                      entry.value.any(
+                        (v) => v.toLowerCase().startsWith(query.toLowerCase()),
+                      ),
+                ) // ✅ ไทย
+                .toList();
+      });
+    }
   }
 
   @override
@@ -80,11 +100,8 @@ class _DichomescreenState extends State<Dichomescreen> {
         ),
         title: Text("คำศัพท์บ้าน"),
         bottom: PreferredSize(
-          preferredSize: Size.fromHeight(1.0), // ความสูงของเส้น
-          child: Container(
-            color: Colors.grey, // สีของเส้น
-            height: 1.0,
-          ),
+          preferredSize: Size.fromHeight(1.0),
+          child: Container(color: Colors.grey, height: 1.0),
         ),
         backgroundColor: Colors.blueAccent,
       ),
@@ -108,52 +125,86 @@ class _DichomescreenState extends State<Dichomescreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                SizedBox(height: 20),
-                Expanded(
-                  child: ListView(
-                    children:
-                        (searchResults.isNotEmpty
-                                ? searchResults
-                                : (dicHome.entries.entries.toList()
-                                  ..sort((a, b) => a.key.compareTo(b.key))))
-                            .map((entry) {
-                              return Column(
-                                children: [
-                                  Container(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: ListTile(
-                                      leading: IconButton(
-                                        onPressed: () => _speakWord(entry.key),
-                                        icon: Icon(Icons.volume_up, size: 30),
-                                      ),
-                                      title: Text(entry.key),
-                                      subtitle: Row(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          ...entry.value.map((subtitle) {
-                                            return Padding(
-                                              padding: const EdgeInsets.all(
-                                                8.0,
-                                              ),
-                                              child: Text(subtitle),
-                                            );
-                                          }).toList(),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                  Divider(
-                                    thickness: 1.5,
-                                    color: Colors.grey,
-                                    indent: 16,
-                                    endIndent: 16,
-                                  ),
-                                ],
-                              );
-                            })
-                            .toList(),
+                // 🔎 Search Box
+                TextField(
+                  controller: _searchController,
+                  decoration: InputDecoration(
+                    hintText: "ค้นหาคำศัพท์บ้าน...",
+                    prefixIcon: Icon(Icons.search),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12.0),
+                    ),
                   ),
+                  onChanged: _filterSearchResults,
+                ),
+                SizedBox(height: 20),
+
+                // 📖 แสดงผล
+                Expanded(
+                  child:
+                      searchResults.isEmpty && _searchController.text.isNotEmpty
+                          ? Center(
+                            child: Text(
+                              "ไม่พบคำศัพท์",
+                              style: TextStyle(
+                                fontSize: 18,
+                                color: Colors.redAccent,
+                              ),
+                            ),
+                          )
+                          : ListView(
+                            children:
+                                (searchResults.isNotEmpty ||
+                                            _searchController.text.isNotEmpty
+                                        ? searchResults
+                                        : (dicHome.entries.entries.toList()
+                                          ..sort(
+                                            (a, b) => a.key.compareTo(b.key),
+                                          )))
+                                    .map((entry) {
+                                      return Column(
+                                        children: [
+                                          Container(
+                                            padding: const EdgeInsets.all(8.0),
+                                            child: ListTile(
+                                              leading: IconButton(
+                                                onPressed:
+                                                    () => _speakWord(entry.key),
+                                                icon: Icon(
+                                                  Icons.volume_up,
+                                                  size: 30,
+                                                ),
+                                              ),
+                                              title: Text(entry.key),
+                                              subtitle: Wrap(
+                                                children:
+                                                    entry.value
+                                                        .map(
+                                                          (subtitle) => Padding(
+                                                            padding:
+                                                                const EdgeInsets.all(
+                                                                  8.0,
+                                                                ),
+                                                            child: Text(
+                                                              subtitle,
+                                                            ),
+                                                          ),
+                                                        )
+                                                        .toList(),
+                                              ),
+                                            ),
+                                          ),
+                                          Divider(
+                                            thickness: 1.5,
+                                            color: Colors.grey,
+                                            indent: 16,
+                                            endIndent: 16,
+                                          ),
+                                        ],
+                                      );
+                                    })
+                                    .toList(),
+                          ),
                 ),
               ],
             ),

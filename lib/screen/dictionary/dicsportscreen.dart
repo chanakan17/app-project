@@ -43,7 +43,6 @@ class DiagonalClipper extends CustomClipper<Path> {
 
   @override
   bool shouldReclip(covariant CustomClipper<Path> oldClipper) {
-    // ถ้า path ของคุณไม่เปลี่ยนแปลง ให้คืนค่า false
     return false;
   }
 }
@@ -57,6 +56,28 @@ class _DicsportscreenState extends State<Dicsportscreen> {
     await _flutterTts.setPitch(1.0);
     await _flutterTts.setSpeechRate(0.5);
     await _flutterTts.speak(word);
+  }
+
+  void _filterSearchResults(String query) {
+    final allEntries = dicSport.entries.entries.toList();
+    if (query.isEmpty) {
+      setState(() {
+        searchResults.clear();
+      });
+    } else {
+      setState(() {
+        searchResults =
+            allEntries
+                .where(
+                  (entry) =>
+                      entry.key.toLowerCase().startsWith(query.toLowerCase()) ||
+                      entry.value.any(
+                        (v) => v.toLowerCase().startsWith(query.toLowerCase()),
+                      ),
+                )
+                .toList();
+      });
+    }
   }
 
   @override
@@ -80,11 +101,8 @@ class _DicsportscreenState extends State<Dicsportscreen> {
         ),
         title: Text("คำศัพท์กีฬา"),
         bottom: PreferredSize(
-          preferredSize: Size.fromHeight(1.0), // ความสูงของเส้น
-          child: Container(
-            color: Colors.grey, // สีของเส้น
-            height: 1.0,
-          ),
+          preferredSize: Size.fromHeight(1.0),
+          child: Container(color: Colors.grey, height: 1.0),
         ),
         backgroundColor: Colors.blueAccent,
       ),
@@ -109,51 +127,107 @@ class _DicsportscreenState extends State<Dicsportscreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 SizedBox(height: 20),
-                Expanded(
-                  child: ListView(
-                    children:
-                        (searchResults.isNotEmpty
-                                ? searchResults
-                                : (dicSport.entries.entries.toList()
-                                  ..sort((a, b) => a.key.compareTo(b.key))))
-                            .map((entry) {
-                              return Column(
-                                children: [
-                                  Container(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: ListTile(
-                                      leading: IconButton(
-                                        onPressed: () => _speakWord(entry.key),
-                                        icon: Icon(Icons.volume_up, size: 30),
-                                      ),
-                                      title: Text(entry.key),
-                                      subtitle: Row(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          ...entry.value.map((subtitle) {
-                                            return Padding(
-                                              padding: const EdgeInsets.all(
-                                                8.0,
-                                              ),
-                                              child: Text(subtitle),
-                                            );
-                                          }).toList(),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                  Divider(
-                                    thickness: 1.5,
-                                    color: Colors.grey,
-                                    indent: 16,
-                                    endIndent: 16,
-                                  ),
-                                ],
-                              );
-                            })
-                            .toList(),
+                TextField(
+                  onChanged: _filterSearchResults,
+                  decoration: InputDecoration(
+                    labelText: "ค้นหาคำศัพท์",
+                    prefixIcon: Icon(Icons.search),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
                   ),
+                ),
+                SizedBox(height: 20),
+                Expanded(
+                  child:
+                      (searchResults.isEmpty &&
+                              dicSport.entries.entries.isNotEmpty)
+                          ? ListView(
+                            children:
+                                (dicSport.entries.entries.toList()
+                                      ..sort((a, b) => a.key.compareTo(b.key)))
+                                    .map((entry) {
+                                      return Column(
+                                        children: [
+                                          ListTile(
+                                            leading: IconButton(
+                                              onPressed:
+                                                  () => _speakWord(entry.key),
+                                              icon: Icon(
+                                                Icons.volume_up,
+                                                size: 30,
+                                              ),
+                                            ),
+                                            title: Text(entry.key),
+                                            subtitle: Wrap(
+                                              children:
+                                                  entry.value
+                                                      .map(
+                                                        (subtitle) => Padding(
+                                                          padding:
+                                                              const EdgeInsets.all(
+                                                                8.0,
+                                                              ),
+                                                          child: Text(subtitle),
+                                                        ),
+                                                      )
+                                                      .toList(),
+                                            ),
+                                          ),
+                                          Divider(
+                                            thickness: 1.5,
+                                            color: Colors.grey,
+                                          ),
+                                        ],
+                                      );
+                                    })
+                                    .toList(),
+                          )
+                          : (searchResults.isNotEmpty
+                              ? ListView(
+                                children:
+                                    searchResults.map((entry) {
+                                      return Column(
+                                        children: [
+                                          ListTile(
+                                            leading: IconButton(
+                                              onPressed:
+                                                  () => _speakWord(entry.key),
+                                              icon: Icon(
+                                                Icons.volume_up,
+                                                size: 30,
+                                              ),
+                                            ),
+                                            title: Text(entry.key),
+                                            subtitle: Wrap(
+                                              children:
+                                                  entry.value
+                                                      .map(
+                                                        (subtitle) => Padding(
+                                                          padding:
+                                                              const EdgeInsets.all(
+                                                                8.0,
+                                                              ),
+                                                          child: Text(subtitle),
+                                                        ),
+                                                      )
+                                                      .toList(),
+                                            ),
+                                          ),
+                                          Divider(
+                                            thickness: 1.5,
+                                            color: Colors.grey,
+                                          ),
+                                        ],
+                                      );
+                                    }).toList(),
+                              )
+                              : Center(
+                                child: Text(
+                                  "ไม่พบคำศัพท์",
+                                  style: TextStyle(fontSize: 18),
+                                ),
+                              )),
                 ),
               ],
             ),
