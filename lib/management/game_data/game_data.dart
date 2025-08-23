@@ -6,6 +6,8 @@ class GameData {
   static String gameName = '';
   static String title = '';
   static int score = 0;
+  static int playTimeMs = 0; // เวลาเล่นเป็น millisecond
+  static String playTimeStr = ''; // เวลาเล่นแบบ mm:ss:ms
 
   static String showName1 = '';
   static String showName2 = '';
@@ -21,6 +23,8 @@ class GameData {
     gameName = '';
     title = '';
     score = 0;
+    playTimeMs = 0;
+    playTimeStr = '';
   }
 
   static void updateTopScore() {
@@ -60,7 +64,8 @@ class GameData {
         'user_id': userId.toString(),
         'game_title': title,
         'score': score.toString(),
-        'game_name': gameName, // เพิ่มตรงนี้
+        'game_name': gameName,
+        'play_time_str': playTimeStr,
       },
     );
 
@@ -106,7 +111,8 @@ class GameData {
     }
   }
 
-  // โหลด Top 3 คะแนนจากฐานข้อมูล
+  static Map<String, List<Map<String, dynamic>>> topScoresByGame = {};
+
   static Future<void> loadTopScores1() async {
     final url = Uri.parse('http://192.168.1.172/dataweb/get_topa_scores.php');
     final response = await http.get(url);
@@ -115,31 +121,18 @@ class GameData {
       final data = jsonDecode(response.body);
 
       if (data is Map<String, dynamic>) {
-        data.forEach((gameTitle, topList) {
-          if (topList is List && topList.isNotEmpty) {
-            print("🏆 Top 3 ของเกม: $gameTitle");
-            for (var player in topList) {
-              print(
-                "อันดับ ${player['rank']} : ${player['username']} - ${player['score']}",
-              );
-            }
+        topScoresByGame.clear();
+
+        data.forEach((gameName, topList) {
+          if (topList is List) {
+            topScoresByGame[gameName] = List<Map<String, dynamic>>.from(
+              topList,
+            );
           }
         });
-
-        if (data.containsKey("เกมจับคู่")) {
-          var list = data["เกมจับคู่"];
-          showName1 = list.length > 0 ? list[0]['username'] : '';
-          showScore1 = list.length > 0 ? list[0]['score'] : 0;
-
-          showName2 = list.length > 1 ? list[1]['username'] : '';
-          showScore2 = list.length > 1 ? list[1]['score'] : 0;
-
-          showName3 = list.length > 2 ? list[2]['username'] : '';
-          showScore3 = list.length > 2 ? list[2]['score'] : 0;
-        }
       }
     } else {
-      print('HTTP Error: ${response.statusCode}');
+      print("HTTP Error: ${response.statusCode}");
     }
   }
 }

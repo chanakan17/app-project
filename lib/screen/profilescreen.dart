@@ -18,6 +18,56 @@ class _ProfilescreenState extends State<Profilescreen> {
   TextEditingController _controller = TextEditingController();
   IconData selectedIcon = Icons.person;
   List<Map<String, dynamic>> games = [];
+  List<Map<String, dynamic>> games1 = List.generate(
+    3,
+    (index) => {
+      "icon": Icons.emoji_events,
+      "color":
+          index == 0
+              ? Colors.amber
+              : index == 1
+              ? Colors.grey
+              : Colors.brown,
+      "username": "",
+      "category": "",
+      "score": "คะแนน",
+      "time": "",
+    },
+  );
+
+  List<Map<String, dynamic>> games2 = List.generate(
+    3,
+    (index) => {
+      "icon": Icons.emoji_events,
+      "color":
+          index == 0
+              ? Colors.amber
+              : index == 1
+              ? Colors.grey
+              : Colors.brown,
+      "username": "",
+      "category": "",
+      "score": "คะแนน",
+      "time": "",
+    },
+  );
+
+  List<Map<String, dynamic>> games3 = List.generate(
+    3,
+    (index) => {
+      "icon": Icons.emoji_events,
+      "color":
+          index == 0
+              ? Colors.amber
+              : index == 1
+              ? Colors.grey
+              : Colors.brown,
+      "username": "",
+      "category": "",
+      "score": "คะแนน",
+      "time": "",
+    },
+  );
 
   Future<void> logout(BuildContext context) async {
     final prefs = await SharedPreferences.getInstance();
@@ -44,6 +94,9 @@ class _ProfilescreenState extends State<Profilescreen> {
   Future<void> loadUsername() async {
     final prefs = await SharedPreferences.getInstance();
     int? userId = prefs.getInt('id'); // ดึง id จริง
+    if (userId != null) {
+      GameData.userId = userId;
+    }
     bool isGuest = prefs.getBool('isGuest') ?? false;
 
     if (isGuest) {
@@ -91,7 +144,7 @@ class _ProfilescreenState extends State<Profilescreen> {
     if (userId == null) return;
 
     try {
-      final url = Uri.parse('http://192.168.106.68/dataweb/update_user.php');
+      final url = Uri.parse('http://192.168.1.172/dataweb/update_user.php');
       final response = await http.post(
         url,
         body: {'id': userId.toString(), 'username': newName},
@@ -195,7 +248,42 @@ class _ProfilescreenState extends State<Profilescreen> {
 
   Future<void> loadScores() async {
     await GameData.loadTopScores();
+    await GameData.loadTopScores1();
+    // เกมทายคำศัพท์
+    final topGameScores1 = GameData.topScoresByGame["เกมทายคำศัพท์"] ?? [];
+    topGameScores1.sort((a, b) => (b["score"] ?? 0).compareTo(a["score"] ?? 0));
+    for (int i = 0; i < 3; i++) {
+      if (i < topGameScores1.length) {
+        games1[i]["username"] = topGameScores1[i]["username"] ?? "";
+        games1[i]["category"] = topGameScores1[i]["category"] ?? "";
+        games1[i]["score"] = "${topGameScores1[i]["score"] ?? 0} คะแนน";
+        games1[i]["time"] = topGameScores1[i]["time"] ?? "";
+      }
+    }
 
+    // เกมจับคู่คำศัพท์
+    final topGameScores2 = GameData.topScoresByGame["เกมจับคู่คำศัพท์"] ?? [];
+    topGameScores2.sort((a, b) => (b["score"] ?? 0).compareTo(a["score"] ?? 0));
+    for (int i = 0; i < 3; i++) {
+      if (i < topGameScores2.length) {
+        games2[i]["username"] = topGameScores2[i]["username"] ?? "";
+        games2[i]["category"] = topGameScores2[i]["category"] ?? "";
+        games2[i]["score"] = "${topGameScores2[i]["score"] ?? 0} คะแนน";
+        games2[i]["time"] = topGameScores2[i]["time"] ?? "";
+      }
+    }
+
+    // เกมเติมคำ
+    final topGameScores3 = GameData.topScoresByGame["เกมเติมคำ"] ?? [];
+    topGameScores3.sort((a, b) => (b["score"] ?? 0).compareTo(a["score"] ?? 0));
+    for (int i = 0; i < 3; i++) {
+      if (i < topGameScores3.length) {
+        games3[i]["username"] = topGameScores3[i]["username"] ?? "";
+        games3[i]["category"] = topGameScores3[i]["category"] ?? "";
+        games3[i]["score"] = "${topGameScores3[i]["score"] ?? 0} คะแนน";
+        games3[i]["time"] = topGameScores3[i]["time"] ?? "";
+      }
+    }
     setState(() {
       games = [
         {
@@ -415,52 +503,59 @@ class _ProfilescreenState extends State<Profilescreen> {
                   ),
                   onPressed: () {
                     SoundManager.playClickSound();
-                    // แสดง AlertDialog เมื่อกดปุ่มปิด
                     showDialog(
                       context: context,
                       builder: (BuildContext context) {
                         return AlertDialog(
-                          title: Text("คะแนน"),
-                          actions: <Widget>[
-                            ...games.map((game) {
-                              return Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 12,
-                                  vertical: 8,
-                                ),
-                                child: Row(
-                                  children: [
-                                    Icon(
-                                      game["icon"],
-                                      color: game["color"],
-                                      size: 24,
+                          title: Text("อันดับคะแนนเกมทายคำ"),
+                          content: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children:
+                                games1.map((game) {
+                                  return Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                      vertical: 6,
                                     ),
-                                    SizedBox(width: 16),
-                                    Text(
-                                      game["username"],
-                                      style: TextStyle(fontSize: 16),
+                                    child: Row(
+                                      children: [
+                                        Icon(
+                                          game["icon"],
+                                          color: game["color"],
+                                          size: 24,
+                                        ),
+                                        SizedBox(width: 12),
+                                        Expanded(
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                "👤 ${game["username"]}",
+                                                style: TextStyle(fontSize: 14),
+                                              ),
+                                              Text(
+                                                "📂 ${game["category"]}",
+                                                style: TextStyle(fontSize: 14),
+                                              ),
+                                              Text(
+                                                "⏱ ${game["time"]}",
+                                                style: TextStyle(fontSize: 14),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                        Text(
+                                          game["score"],
+                                          style: TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      ],
                                     ),
-                                    SizedBox(width: 16),
-                                    Text(
-                                      game["category"],
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                    Spacer(),
-                                    Text(
-                                      game["score"],
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              );
-                            }).toList(),
-                          ],
+                                  );
+                                }).toList(),
+                          ),
                         );
                       },
                     );
@@ -480,52 +575,59 @@ class _ProfilescreenState extends State<Profilescreen> {
                   ),
                   onPressed: () {
                     SoundManager.playClickSound();
-                    // แสดง AlertDialog เมื่อกดปุ่มปิด
                     showDialog(
                       context: context,
                       builder: (BuildContext context) {
                         return AlertDialog(
-                          title: Text("คะแนน"),
-                          actions: <Widget>[
-                            ...games.map((game) {
-                              return Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 12,
-                                  vertical: 8,
-                                ),
-                                child: Row(
-                                  children: [
-                                    Icon(
-                                      game["icon"],
-                                      color: game["color"],
-                                      size: 24,
+                          title: Text("อันดับคะแนนเกมจับคู่"),
+                          content: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children:
+                                games2.map((game) {
+                                  return Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                      vertical: 6,
                                     ),
-                                    SizedBox(width: 16),
-                                    Text(
-                                      game["username"],
-                                      style: TextStyle(fontSize: 16),
+                                    child: Row(
+                                      children: [
+                                        Icon(
+                                          game["icon"],
+                                          color: game["color"],
+                                          size: 24,
+                                        ),
+                                        SizedBox(width: 12),
+                                        Expanded(
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                "👤 ${game["username"]}",
+                                                style: TextStyle(fontSize: 14),
+                                              ),
+                                              Text(
+                                                "📂 ${game["category"]}",
+                                                style: TextStyle(fontSize: 14),
+                                              ),
+                                              Text(
+                                                "⏱ ${game["time"]}",
+                                                style: TextStyle(fontSize: 14),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                        Text(
+                                          game["score"],
+                                          style: TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      ],
                                     ),
-                                    SizedBox(width: 16),
-                                    Text(
-                                      game["category"],
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                    Spacer(),
-                                    Text(
-                                      game["score"],
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              );
-                            }).toList(),
-                          ],
+                                  );
+                                }).toList(),
+                          ),
                         );
                       },
                     );
@@ -545,52 +647,59 @@ class _ProfilescreenState extends State<Profilescreen> {
                   ),
                   onPressed: () {
                     SoundManager.playClickSound();
-                    // แสดง AlertDialog เมื่อกดปุ่มปิด
                     showDialog(
                       context: context,
                       builder: (BuildContext context) {
                         return AlertDialog(
-                          title: Text("คะแนน"),
-                          actions: <Widget>[
-                            ...games.map((game) {
-                              return Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 12,
-                                  vertical: 8,
-                                ),
-                                child: Row(
-                                  children: [
-                                    Icon(
-                                      game["icon"],
-                                      color: game["color"],
-                                      size: 24,
+                          title: Text("อันดับคะแนนเติมคำ"),
+                          content: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children:
+                                games3.map((game) {
+                                  return Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                      vertical: 6,
                                     ),
-                                    SizedBox(width: 16),
-                                    Text(
-                                      game["username"],
-                                      style: TextStyle(fontSize: 16),
+                                    child: Row(
+                                      children: [
+                                        Icon(
+                                          game["icon"],
+                                          color: game["color"],
+                                          size: 24,
+                                        ),
+                                        SizedBox(width: 12),
+                                        Expanded(
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                "👤 ${game["username"]}",
+                                                style: TextStyle(fontSize: 14),
+                                              ),
+                                              Text(
+                                                "📂 ${game["category"]}",
+                                                style: TextStyle(fontSize: 14),
+                                              ),
+                                              Text(
+                                                "⏱ ${game["time"]}",
+                                                style: TextStyle(fontSize: 14),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                        Text(
+                                          game["score"],
+                                          style: TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      ],
                                     ),
-                                    SizedBox(width: 16),
-                                    Text(
-                                      game["category"],
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                    Spacer(),
-                                    Text(
-                                      game["score"],
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              );
-                            }).toList(),
-                          ],
+                                  );
+                                }).toList(),
+                          ),
                         );
                       },
                     );

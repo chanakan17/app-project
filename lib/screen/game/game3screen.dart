@@ -4,6 +4,7 @@ import 'package:app/management/sound/sound.dart';
 import 'package:app/screen/homescreen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'dart:async';
 
 class Game3screen extends StatefulWidget {
   final Map<String, List<String>> dictionary;
@@ -27,6 +28,9 @@ class _Game3screenState extends State<Game3screen> {
   late List<String> availableKeys;
   List<FocusNode> focusNodes = [];
   late String title;
+  Stopwatch _stopwatch = Stopwatch();
+  Timer? _timer;
+  String _elapsedTime = "00:00:00";
 
   @override
   void initState() {
@@ -36,9 +40,50 @@ class _Game3screenState extends State<Game3screen> {
     title = widget.title;
     availableKeys = typeDic.keys.toList();
     _getRandomEntries();
-
+    _startGameTimer();
     GameData.gameName = 'เกมเติมคำ';
     GameData.title = title;
+  }
+
+  void _startGameTimer() {
+    _stopwatch.start();
+    _timer = Timer.periodic(Duration(milliseconds: 100), (timer) {
+      setState(() {
+        _elapsedTime = _formatTime(_stopwatch.elapsed);
+      });
+    });
+  }
+
+  void _endGame() {
+    _stopwatch.stop();
+    _timer?.cancel();
+
+    GameData.playTimeMs = _stopwatch.elapsedMilliseconds;
+    GameData.playTimeStr = _formatTime(_stopwatch.elapsed);
+
+    final finalTime = _stopwatch.elapsedMilliseconds; // เวลาแบบ ms
+    print("⏱ เวลาเล่นทั้งหมด: $finalTime ms");
+
+    // ✅ เก็บเวลาในตัวแปร / DB / SharedPreferences / API
+    // เช่น ส่งไปที่ GameData หรือ API
+    // GameData.playTime = finalTime;
+  }
+
+  String _formatTime(Duration duration) {
+    String twoDigits(int n) => n.toString().padLeft(2, '0');
+    final minutes = twoDigits(duration.inMinutes.remainder(60));
+    final seconds = twoDigits(duration.inSeconds.remainder(60));
+    final milliseconds = twoDigits(
+      duration.inMilliseconds.remainder(1000) ~/ 10,
+    );
+    return "$minutes:$seconds:$milliseconds";
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    _stopwatch.stop();
+    super.dispose();
   }
 
   void _showFinishDialog() {
@@ -59,7 +104,6 @@ class _Game3screenState extends State<Game3screen> {
               onPressed: () async {
                 GameData.updateTopScore();
                 Navigator.of(context).pop();
-                await GameData.saveScoreToDB();
                 Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(
@@ -68,6 +112,7 @@ class _Game3screenState extends State<Game3screen> {
                     },
                   ),
                 );
+                await GameData.saveScoreToDB();
               },
               child: Text("ย้อนกลับไปยังเมนู"),
             ),
@@ -142,6 +187,7 @@ class _Game3screenState extends State<Game3screen> {
       }
 
       if (scoredis < 1) {
+        _endGame();
         _showFinishDialog();
         return;
       }
@@ -422,27 +468,48 @@ class _Game3screenState extends State<Game3screen> {
               child: Column(
                 children: [
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text(
-                          'คะแนน: $score',
-                          style: TextStyle(fontSize: 20),
-                        ),
-                      ),
                       Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Row(
                           children: [
-                            Image.asset(
-                              'assets/icons/banana.png',
-                              width: 35,
-                              height: 35,
+                            Icon(Icons.access_time, size: 24),
+                            SizedBox(width: 4), // ระยะห่างระหว่างไอคอนกับเวลา
+                            Text(
+                              "$_elapsedTime",
+                              style: TextStyle(fontSize: 20),
                             ),
-                            Text('$scoredis', style: TextStyle(fontSize: 20)),
                           ],
                         ),
+                      ),
+                      Row(
+                        // mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text(
+                              'คะแนน: $score',
+                              style: TextStyle(fontSize: 20),
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Row(
+                              children: [
+                                Image.asset(
+                                  'assets/icons/banana.png',
+                                  width: 35,
+                                  height: 35,
+                                ),
+                                Text(
+                                  '$scoredis',
+                                  style: TextStyle(fontSize: 20),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),

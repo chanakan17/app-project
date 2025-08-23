@@ -3,6 +3,7 @@ import 'package:app/management/game_data/game_data.dart';
 import 'package:app/management/sound/sound.dart';
 import 'package:app/screen/homescreen.dart';
 import 'package:flutter/material.dart';
+import 'dart:async';
 
 class Game1screen extends StatefulWidget {
   final Map<String, List<String>> dictionary;
@@ -23,6 +24,9 @@ class _Game1screenState extends State<Game1screen> {
   int scoredis = 5;
   late List<String> availableKeys; // ลิสต์ของ key ที่สามารถสุ่มได้
   late String title;
+  Stopwatch _stopwatch = Stopwatch();
+  Timer? _timer;
+  String _elapsedTime = "00:00:00";
 
   @override
   void initState() {
@@ -32,9 +36,50 @@ class _Game1screenState extends State<Game1screen> {
     title = widget.title;
     availableKeys = typeDic.keys.toList(); // เก็บ key ทั้งหมด
     _getRandomEntries(); // เรียกสุ่มค่าเริ่มต้น
-
+    _startGameTimer();
     GameData.gameName = 'เกมทายคำศัพท์';
     GameData.title = title;
+  }
+
+  void _startGameTimer() {
+    _stopwatch.start();
+    _timer = Timer.periodic(Duration(milliseconds: 100), (timer) {
+      setState(() {
+        _elapsedTime = _formatTime(_stopwatch.elapsed);
+      });
+    });
+  }
+
+  void _endGame() {
+    _stopwatch.stop();
+    _timer?.cancel();
+
+    GameData.playTimeMs = _stopwatch.elapsedMilliseconds;
+    GameData.playTimeStr = _formatTime(_stopwatch.elapsed);
+
+    final finalTime = _stopwatch.elapsedMilliseconds; // เวลาแบบ ms
+    print("⏱ เวลาเล่นทั้งหมด: $finalTime ms");
+
+    // ✅ เก็บเวลาในตัวแปร / DB / SharedPreferences / API
+    // เช่น ส่งไปที่ GameData หรือ API
+    // GameData.playTime = finalTime;
+  }
+
+  String _formatTime(Duration duration) {
+    String twoDigits(int n) => n.toString().padLeft(2, '0');
+    final minutes = twoDigits(duration.inMinutes.remainder(60));
+    final seconds = twoDigits(duration.inSeconds.remainder(60));
+    final milliseconds = twoDigits(
+      duration.inMilliseconds.remainder(1000) ~/ 10,
+    );
+    return "$minutes:$seconds:$milliseconds";
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    _stopwatch.stop();
+    super.dispose();
   }
 
   void _showFinishDialog() {
@@ -55,7 +100,6 @@ class _Game1screenState extends State<Game1screen> {
               onPressed: () async {
                 GameData.updateTopScore();
                 Navigator.of(context).pop();
-                await GameData.saveScoreToDB();
                 Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(
@@ -64,6 +108,7 @@ class _Game1screenState extends State<Game1screen> {
                     },
                   ),
                 );
+                await GameData.saveScoreToDB();
               },
               child: Text("ย้อนกลับไปยังเมนู"),
             ),
@@ -74,9 +119,10 @@ class _Game1screenState extends State<Game1screen> {
   }
 
   // ฟังก์ชันสุ่ม key และ value แบบไม่ซ้ำ
+  late List<String> shuffledValues = [];
+
   void _getRandomEntries() {
     if (availableKeys.length < 4) {
-      // กรณีมี key ไม่พอสุ่ม (จบเกม)
       _showFinishDialog();
       return;
     }
@@ -87,7 +133,6 @@ class _Game1screenState extends State<Game1screen> {
 
     Set<String> usedKeys = {};
 
-    // สุ่ม 4 คำ โดยไม่ให้ซ้ำ
     for (int i = 0; i < 4; i++) {
       String randomKey;
       do {
@@ -99,10 +144,13 @@ class _Game1screenState extends State<Game1screen> {
       randomValues.add(getRandomValue(dic[randomKey]!));
     }
 
-    // ลบ key แรกออกจาก availableKeys เพื่อไม่ให้ซ้ำในรอบต่อไป
     availableKeys.remove(randomKeys[0]);
 
     correctValue = randomValues[0];
+
+    /// 👇 shuffle ค่าที่นี่ครั้งเดียว
+    shuffledValues = List.from(randomValues)..shuffle();
+
     setState(() {});
   }
 
@@ -120,9 +168,6 @@ class _Game1screenState extends State<Game1screen> {
 
   @override
   Widget build(BuildContext context) {
-    // สลับตำแหน่งของ randomValues ในการแสดงผล แต่ไม่ส่งผลต่อ correctValue
-    List<String> shuffledValues = List.from(randomValues);
-    shuffledValues.shuffle();
     return Scaffold(
       appBar: AppBar(
         title: Text("เกมทายคำศัพท์"),
@@ -199,27 +244,42 @@ class _Game1screenState extends State<Game1screen> {
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Text(
-                        'คะแนน: $score',
-                        style: TextStyle(fontSize: 20),
-                      ),
-                    ),
                     Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Row(
                         children: [
-                          Image.asset(
-                            'assets/icons/banana.png',
-                            width: 35,
-                            height: 35,
-                          ),
-                          Text('$scoredis', style: TextStyle(fontSize: 20)),
+                          Icon(Icons.access_time, size: 24),
+                          SizedBox(width: 4), // ระยะห่างระหว่างไอคอนกับเวลา
+                          Text("$_elapsedTime", style: TextStyle(fontSize: 20)),
                         ],
                       ),
+                    ),
+                    Row(
+                      // mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Text(
+                            'คะแนน: $score',
+                            style: TextStyle(fontSize: 20),
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Row(
+                            children: [
+                              Image.asset(
+                                'assets/icons/banana.png',
+                                width: 35,
+                                height: 35,
+                              ),
+                              Text('$scoredis', style: TextStyle(fontSize: 20)),
+                            ],
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
@@ -298,6 +358,7 @@ class _Game1screenState extends State<Game1screen> {
                                         }
 
                                         if (scoredis < 1) {
+                                          _endGame();
                                           _showFinishDialog();
                                           return;
                                         }
