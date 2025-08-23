@@ -52,9 +52,10 @@ class _Game1screenState extends State<Game1screen> {
                   borderRadius: BorderRadius.circular(16),
                 ),
               ),
-              onPressed: () {
+              onPressed: () async {
                 GameData.updateTopScore();
                 Navigator.of(context).pop();
+                await GameData.saveScoreToDB();
                 Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(

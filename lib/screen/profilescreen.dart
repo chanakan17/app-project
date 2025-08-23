@@ -17,6 +17,7 @@ class _ProfilescreenState extends State<Profilescreen> {
   bool isEditing = false;
   TextEditingController _controller = TextEditingController();
   IconData selectedIcon = Icons.person;
+  List<Map<String, dynamic>> games = [];
 
   Future<void> logout(BuildContext context) async {
     final prefs = await SharedPreferences.getInstance();
@@ -36,6 +37,7 @@ class _ProfilescreenState extends State<Profilescreen> {
   void initState() {
     super.initState();
     loadUsername();
+    loadScores();
   }
 
   // ดึงชื่อผู้ใช้จาก PHP API
@@ -191,29 +193,35 @@ class _ProfilescreenState extends State<Profilescreen> {
     );
   }
 
-  final List<Map<String, dynamic>> games = [
-    {
-      "icon": Icons.emoji_events,
-      "color": Colors.amber,
-      "name": GameData.showName1,
-      "category": GameData.showTitle1,
-      "score": "${GameData.showScore1} คะแนน",
-    },
-    {
-      "icon": Icons.emoji_events,
-      "color": Colors.grey,
-      "name": GameData.showName2,
-      "category": GameData.showTitle2,
-      "score": "${GameData.showScore2} คะแนน",
-    },
-    {
-      "icon": Icons.emoji_events,
-      "color": Colors.brown,
-      "name": GameData.showName3,
-      "category": GameData.showTitle3,
-      "score": "${GameData.showScore3} คะแนน",
-    },
-  ];
+  Future<void> loadScores() async {
+    await GameData.loadTopScores();
+
+    setState(() {
+      games = [
+        {
+          "icon": Icons.emoji_events,
+          "color": Colors.amber,
+          "name": GameData.showName1,
+          "category": GameData.showTitle1,
+          "score": "${GameData.showScore1} คะแนน",
+        },
+        {
+          "icon": Icons.emoji_events,
+          "color": Colors.grey,
+          "name": GameData.showName2,
+          "category": GameData.showTitle2,
+          "score": "${GameData.showScore2} คะแนน",
+        },
+        {
+          "icon": Icons.emoji_events,
+          "color": Colors.brown,
+          "name": GameData.showName3,
+          "category": GameData.showTitle3,
+          "score": "${GameData.showScore3} คะแนน",
+        },
+      ];
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -429,7 +437,7 @@ class _ProfilescreenState extends State<Profilescreen> {
                                     ),
                                     SizedBox(width: 16),
                                     Text(
-                                      game["name"],
+                                      game["username"],
                                       style: TextStyle(fontSize: 16),
                                     ),
                                     SizedBox(width: 16),
@@ -494,7 +502,7 @@ class _ProfilescreenState extends State<Profilescreen> {
                                     ),
                                     SizedBox(width: 16),
                                     Text(
-                                      game["name"],
+                                      game["username"],
                                       style: TextStyle(fontSize: 16),
                                     ),
                                     SizedBox(width: 16),
@@ -559,7 +567,7 @@ class _ProfilescreenState extends State<Profilescreen> {
                                     ),
                                     SizedBox(width: 16),
                                     Text(
-                                      game["name"],
+                                      game["username"],
                                       style: TextStyle(fontSize: 16),
                                     ),
                                     SizedBox(width: 16),
