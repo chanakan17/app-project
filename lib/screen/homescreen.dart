@@ -34,7 +34,7 @@ class _HomeScreenState extends State<HomeScreen>
       // ป้องกัน Back Button
       onWillPop: () async => false,
       child: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: Color(0xFFFFF895),
         body: TabBarView(
           controller: _tabController,
           children: const [Menuscreen(), Dicscreen(), Profilescreen()],
@@ -42,10 +42,12 @@ class _HomeScreenState extends State<HomeScreen>
         bottomNavigationBar: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Divider(height: 5, thickness: 2, color: Colors.grey),
+            const Divider(height: 5, thickness: 2, color: Colors.white),
             Container(
+              color: Color(0xFFFFF895),
               height: 70,
               child: Material(
+                color: Colors.transparent,
                 child: TabBar(
                   controller: _tabController,
                   indicatorSize: TabBarIndicatorSize.tab,

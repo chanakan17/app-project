@@ -17,44 +17,6 @@ class Game3screen extends StatefulWidget {
 
 late Map<String, List<String>> typeDic;
 
-class DiagonalClipper extends CustomClipper<Path> {
-  @override
-  Path getClip(Size size) {
-    var path = Path();
-
-    path.lineTo(0, size.height - 20);
-
-    var firstControlPoint = Offset(size.width / 4, size.height);
-    var firstEndPoint = Offset(size.width / 2, size.height - 40);
-    path.quadraticBezierTo(
-      firstControlPoint.dx,
-      firstControlPoint.dy,
-      firstEndPoint.dx,
-      firstEndPoint.dy,
-    );
-
-    var secondControlPoint = Offset(3 * size.width / 4, size.height - 80);
-    var secondEndPoint = Offset(size.width, size.height - 40);
-    path.quadraticBezierTo(
-      secondControlPoint.dx,
-      secondControlPoint.dy,
-      secondEndPoint.dx,
-      secondEndPoint.dy,
-    );
-
-    path.lineTo(size.width, 0);
-    path.close();
-
-    return path;
-  }
-
-  @override
-  bool shouldReclip(covariant CustomClipper<Path> oldClipper) {
-    // ถ้า path ของคุณไม่เปลี่ยนแปลง ให้คืนค่า false
-    return false;
-  }
-}
-
 class _Game3screenState extends State<Game3screen> {
   List<String> randomKeys = [];
   List<String> randomValues = [];
@@ -383,18 +345,15 @@ class _Game3screenState extends State<Game3screen> {
 
   @override
   Widget build(BuildContext context) {
-    final screenHeight = MediaQuery.of(context).size.height;
     return Scaffold(
       appBar: AppBar(
         title: Text("เกมเติมคำ"),
         centerTitle: true,
         bottom: PreferredSize(
-          preferredSize: Size.fromHeight(1.0), // ความสูงของเส้น
-          child: Container(
-            color: Colors.grey, // สีของเส้น
-            height: 1.0,
-          ),
+          preferredSize: Size.fromHeight(1.0),
+          child: Container(color: Colors.white, height: 1.0),
         ),
+        backgroundColor: Color(0xFFFFF895),
         actions: <Widget>[
           IconButton(
             icon: Icon(Icons.close),
@@ -451,23 +410,11 @@ class _Game3screenState extends State<Game3screen> {
             },
           ),
         ],
-        backgroundColor: Colors.blueAccent,
       ),
       body: Stack(
+        fit: StackFit.expand,
         children: [
-          ClipPath(
-            clipper: DiagonalClipper(),
-            child: Container(
-              height: screenHeight * 0.4,
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [Colors.blueAccent, Colors.lightBlueAccent],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-              ),
-            ),
-          ),
+          Image.asset('assets/image/bg.png', fit: BoxFit.cover),
           Padding(
             padding: const EdgeInsets.fromLTRB(8, 8, 8, 40),
             child: Center(

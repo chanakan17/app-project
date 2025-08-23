@@ -58,7 +58,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
       // เรียก API
       var url = Uri.parse(
-        'http://192.168.106.68/dataweb/flutter_insert_user.php',
+        'http://192.168.1.172/dataweb/flutter_insert_user.php',
       );
       var response = await http.post(
         url,
@@ -101,8 +101,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[200],
       appBar: AppBar(
+        backgroundColor: Colors.transparent, // ทำโปร่ง
+        elevation: 0, // เอา shadow ออก
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
           iconSize: 25,
@@ -117,187 +118,201 @@ class _RegisterScreenState extends State<RegisterScreen> {
             );
           },
         ),
-        backgroundColor: Colors.grey[200],
       ),
-      body: Center(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 24),
-          child: Container(
-            padding: const EdgeInsets.all(24),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Text(
-                    'ลงทะเบียน',
-                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 40),
-                  TextFormField(
-                    controller: _emailController,
-                    decoration: const InputDecoration(
-                      labelText: 'อีเมล',
-                      border: OutlineInputBorder(),
+      extendBodyBehindAppBar: true,
+      body: Container(
+        width: double.infinity,
+        height: double.infinity,
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage('assets/image/bg.png'),
+            fit: BoxFit.cover,
+          ),
+        ),
+        child: Center(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: 24),
+            child: Container(
+              padding: const EdgeInsets.all(24),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Text(
+                      'ลงทะเบียน',
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'กรุณากรอกอีเมล';
-                      }
-                      if (!value.contains('@')) {
-                        return 'รูปแบบอีเมลไม่ถูกต้อง';
-                      }
-                      return null;
-                    },
-                  ),
-                  const SizedBox(height: 18),
-                  TextFormField(
-                    controller: _usernameController,
-                    maxLength: 20,
-                    decoration: const InputDecoration(
-                      labelText: 'ชื่อผู้ใช้งาน',
-                      border: OutlineInputBorder(),
+                    const SizedBox(height: 40),
+                    TextFormField(
+                      controller: _emailController,
+                      decoration: const InputDecoration(
+                        labelText: 'อีเมล',
+                        border: OutlineInputBorder(),
+                      ),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'กรุณากรอกอีเมล';
+                        }
+                        if (!value.contains('@')) {
+                          return 'รูปแบบอีเมลไม่ถูกต้อง';
+                        }
+                        return null;
+                      },
                     ),
-                    validator:
-                        (value) =>
-                            value == null || value.isEmpty
-                                ? 'กรุณากรอกชื่อผู้ใช้งาน'
-                                : null,
-                  ),
-                  const SizedBox(height: 12),
-                  TextFormField(
-                    controller: _dateController,
-                    readOnly: true,
-                    decoration: const InputDecoration(
-                      labelText: 'วันเกิด',
-                      border: OutlineInputBorder(),
-                      suffixIcon: Icon(Icons.calendar_today),
+                    const SizedBox(height: 18),
+                    TextFormField(
+                      controller: _usernameController,
+                      maxLength: 20,
+                      decoration: const InputDecoration(
+                        labelText: 'ชื่อผู้ใช้งาน',
+                        border: OutlineInputBorder(),
+                      ),
+                      validator:
+                          (value) =>
+                              value == null || value.isEmpty
+                                  ? 'กรุณากรอกชื่อผู้ใช้งาน'
+                                  : null,
                     ),
-                    onTap: () async {
-                      DateTime? pickedDate = await showDatePicker(
-                        context: context,
-                        initialDate: DateTime(2000),
-                        firstDate: DateTime(1900),
-                        lastDate: DateTime.now(),
-                      );
+                    const SizedBox(height: 12),
+                    TextFormField(
+                      controller: _dateController,
+                      readOnly: true,
+                      decoration: const InputDecoration(
+                        labelText: 'วันเกิด',
+                        border: OutlineInputBorder(),
+                        suffixIcon: Icon(Icons.calendar_today),
+                      ),
+                      onTap: () async {
+                        DateTime? pickedDate = await showDatePicker(
+                          context: context,
+                          initialDate: DateTime(2000),
+                          firstDate: DateTime(1900),
+                          lastDate: DateTime.now(),
+                        );
 
-                      if (pickedDate != null) {
-                        setState(() {
-                          _selectedDate = pickedDate;
-                          _dateController.text =
-                              '${pickedDate.day}/${pickedDate.month}/${pickedDate.year}';
-                        });
-                      }
-                    },
-                    validator: (value) {
-                      if (_selectedDate == null) {
-                        return 'กรุณาเลือกวันเกิด';
-                      }
-                      return null;
-                    },
-                  ),
-                  const SizedBox(height: 18),
-                  TextFormField(
-                    controller: _passwordController,
-                    obscureText: _obscurePassword,
-                    decoration: InputDecoration(
-                      labelText: 'รหัสผ่าน',
-                      border: const OutlineInputBorder(),
-                      suffixIcon: IconButton(
-                        icon: Icon(
-                          _obscurePassword
-                              ? Icons.visibility_off
-                              : Icons.visibility,
-                        ),
-                        onPressed: () {
+                        if (pickedDate != null) {
                           setState(() {
-                            _obscurePassword = !_obscurePassword;
+                            _selectedDate = pickedDate;
+                            _dateController.text =
+                                '${pickedDate.day}/${pickedDate.month}/${pickedDate.year}';
                           });
-                        },
-                      ),
+                        }
+                      },
+                      validator: (value) {
+                        if (_selectedDate == null) {
+                          return 'กรุณาเลือกวันเกิด';
+                        }
+                        return null;
+                      },
                     ),
-                    validator:
-                        (value) =>
-                            value == null || value.length < 6
-                                ? 'กรุณากรอกรหัสผ่านอย่างน้อย 6 ตัว'
-                                : null,
-                  ),
-                  const SizedBox(height: 18),
-                  TextFormField(
-                    controller: _confirmPasswordController,
-                    obscureText: _obscureConfirmPassword,
-                    decoration: InputDecoration(
-                      labelText: 'ยืนยันรหัสผ่าน',
-                      border: const OutlineInputBorder(),
-                      suffixIcon: IconButton(
-                        icon: Icon(
-                          _obscureConfirmPassword
-                              ? Icons.visibility_off
-                              : Icons.visibility,
-                        ),
-                        onPressed: () {
-                          setState(() {
-                            _obscureConfirmPassword = !_obscureConfirmPassword;
-                          });
-                        },
-                      ),
-                    ),
-                    validator: (value) {
-                      if (value != _passwordController.text) {
-                        return 'รหัสผ่านไม่ตรงกัน';
-                      }
-                      return null;
-                    },
-                  ),
-                  const SizedBox(height: 40),
-                  Center(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.fromLTRB(0, 0, 15, 0),
-                          child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(),
-                            onPressed: () {
-                              Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) {
-                                    return LoginScreen();
-                                  },
-                                ),
-                              );
-                            },
-                            child: const Text(
-                              'ยกเลิก',
-                              style: TextStyle(fontSize: 16),
-                            ),
+                    const SizedBox(height: 18),
+                    TextFormField(
+                      controller: _passwordController,
+                      obscureText: _obscurePassword,
+                      decoration: InputDecoration(
+                        labelText: 'รหัสผ่าน',
+                        border: const OutlineInputBorder(),
+                        suffixIcon: IconButton(
+                          icon: Icon(
+                            _obscurePassword
+                                ? Icons.visibility_off
+                                : Icons.visibility,
                           ),
+                          onPressed: () {
+                            setState(() {
+                              _obscurePassword = !_obscurePassword;
+                            });
+                          },
                         ),
-                        Padding(
-                          padding: const EdgeInsets.fromLTRB(15, 0, 0, 0),
-                          child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.blue,
-                            ),
-                            onPressed: _submitForm,
-                            child: const Text(
-                              'ยืนยัน',
-                              style: TextStyle(
-                                fontSize: 16,
-                                color: Colors.white,
+                      ),
+                      validator:
+                          (value) =>
+                              value == null || value.length < 6
+                                  ? 'กรุณากรอกรหัสผ่านอย่างน้อย 6 ตัว'
+                                  : null,
+                    ),
+                    const SizedBox(height: 18),
+                    TextFormField(
+                      controller: _confirmPasswordController,
+                      obscureText: _obscureConfirmPassword,
+                      decoration: InputDecoration(
+                        labelText: 'ยืนยันรหัสผ่าน',
+                        border: const OutlineInputBorder(),
+                        suffixIcon: IconButton(
+                          icon: Icon(
+                            _obscureConfirmPassword
+                                ? Icons.visibility_off
+                                : Icons.visibility,
+                          ),
+                          onPressed: () {
+                            setState(() {
+                              _obscureConfirmPassword =
+                                  !_obscureConfirmPassword;
+                            });
+                          },
+                        ),
+                      ),
+                      validator: (value) {
+                        if (value != _passwordController.text) {
+                          return 'รหัสผ่านไม่ตรงกัน';
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 40),
+                    Center(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(0, 0, 15, 0),
+                            child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(),
+                              onPressed: () {
+                                Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) {
+                                      return LoginScreen();
+                                    },
+                                  ),
+                                );
+                              },
+                              child: const Text(
+                                'ยกเลิก',
+                                style: TextStyle(fontSize: 16),
                               ),
                             ),
                           ),
-                        ),
-                      ],
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(15, 0, 0, 0),
+                            child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.blue,
+                              ),
+                              onPressed: _submitForm,
+                              child: const Text(
+                                'ยืนยัน',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),
