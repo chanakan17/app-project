@@ -2,7 +2,7 @@ import 'package:app/management/game_data/game_data.dart';
 import 'package:app/screen/homescreen.dart';
 import 'package:app/screen/login/forgotscreen.dart';
 import 'package:app/screen/login/registerscreen.dart';
-import 'package:app/screen/login/signscreen.dart';
+// import 'package:app/screen/login/signscreen.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -20,6 +20,19 @@ class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+
+  void _submitForm() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('isGuest', true);
+
+    if (context.mounted) {
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (_) => const HomeScreen()),
+        (Route<dynamic> route) => false,
+      );
+    }
+  }
 
   Future<void> login() async {
     final email = _emailController.text;
@@ -202,12 +215,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         backgroundColor: Colors.black87,
                         padding: const EdgeInsets.symmetric(vertical: 12),
                       ),
-                      onPressed: () {
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(builder: (_) => Signscreen()),
-                        );
-                      },
+                      onPressed: _submitForm,
                       child: const Text(
                         'ล็อกอินด้วย Guest',
                         style: TextStyle(color: Colors.white),

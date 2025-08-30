@@ -1,9 +1,13 @@
+import 'dart:convert';
+
 import 'package:app/screen/login/loginscreen.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 class Forgotrscreen extends StatefulWidget {
-  const Forgotrscreen({super.key});
+  final String email;
 
+  const Forgotrscreen({super.key, required this.email});
   @override
   State<Forgotrscreen> createState() => _ForgotrscreenState();
 }
@@ -15,6 +19,45 @@ class _ForgotrscreenState extends State<Forgotrscreen> {
 
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
+  Future<void> _resetPassword() async {
+    if (_formKey.currentState!.validate()) {
+      try {
+        final response = await http.post(
+          Uri.parse('http://192.168.1.112/dataweb/reset_password.php'),
+          body: {
+            'email': widget.email,
+            'new_password': _passwordController.text.trim(),
+          },
+        );
+
+        if (response.statusCode == 200) {
+          final data = jsonDecode(response.body);
+          if (data['success'] == true) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('เปลี่ยนรหัสผ่านสำเร็จ')),
+            );
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => const LoginScreen()),
+            );
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text(data['message'] ?? 'เกิดข้อผิดพลาด')),
+            );
+          }
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้')),
+          );
+        }
+      } catch (e) {
+        // จับข้อผิดพลาดเชื่อมต่อหรืออื่นๆ
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('เกิดข้อผิดพลาด: $e')));
+      }
+    }
+  }
 
   @override
   void dispose() {
@@ -121,16 +164,7 @@ class _ForgotrscreenState extends State<Forgotrscreen> {
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.blue,
                             ),
-                            onPressed: () {
-                              Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) {
-                                    return LoginScreen();
-                                  },
-                                ),
-                              );
-                            },
+                            onPressed: _resetPassword,
                             child: const Text(
                               'ยืนยัน',
                               style: TextStyle(

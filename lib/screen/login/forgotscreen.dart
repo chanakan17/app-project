@@ -1,6 +1,8 @@
+import 'dart:convert';
 import 'package:app/screen/login/forgotrscreen.dart';
 import 'package:app/screen/login/loginscreen.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 class Forgotscreen extends StatefulWidget {
   const Forgotscreen({super.key});
@@ -18,6 +20,46 @@ class _ForgotscreenState extends State<Forgotscreen> {
 
   DateTime? _selectedDate;
 
+  Future<void> _submitForm() async {
+    if (_formKey.currentState!.validate()) {
+      try {
+        final response = await http.post(
+          Uri.parse('http://192.168.1.112/dataweb/reset_forgot.php'),
+          body: {
+            'username': _usernameController.text.trim(),
+            'email': _emailController.text.trim(),
+            'birthdate': _selectedDate!.toIso8601String().substring(0, 10),
+          },
+        );
+
+        print('Response body: ${response.body}');
+
+        final data = jsonDecode(response.body);
+
+        if (data['success'] == true) {
+          print('Success, navigating...');
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder:
+                  (context) =>
+                      Forgotrscreen(email: _emailController.text.trim()),
+            ),
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(data['message'] ?? 'เกิดข้อผิดพลาด')),
+          );
+        }
+      } catch (e) {
+        print('Error during request: $e');
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('เกิดข้อผิดพลาด: $e')));
+      }
+    }
+  }
+
   @override
   void dispose() {
     _emailController.dispose();
@@ -34,18 +76,6 @@ class _ForgotscreenState extends State<Forgotscreen> {
       age--;
     }
     return age;
-  }
-
-  void _submitForm() {
-    if (_formKey.currentState!.validate()) {
-      final age = calculateAge(_selectedDate!);
-
-      debugPrint("ลงทะเบียนเรียบร้อย");
-      debugPrint("อีเมล: ${_emailController.text}");
-      debugPrint("ชื่อผู้ใช้งาน: ${_usernameController.text}");
-      debugPrint("วันเกิด: $_selectedDate");
-      debugPrint("อายุ: $age ปี");
-    }
   }
 
   @override
@@ -195,17 +225,7 @@ class _ForgotscreenState extends State<Forgotscreen> {
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: Colors.blue,
                               ),
-                              onPressed: () {
-                                _submitForm();
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) {
-                                      return Forgotrscreen();
-                                    },
-                                  ),
-                                );
-                              },
+                              onPressed: _submitForm,
                               child: const Text(
                                 'ถัดไป',
                                 style: TextStyle(

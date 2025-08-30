@@ -46,7 +46,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   void _submitForm() async {
     if (_formKey.currentState!.validate()) {
-      final age = calculateAge(_selectedDate!);
+      // final age = calculateAge(_selectedDate!);
 
       // เตรียมข้อมูล
       final email = _emailController.text;
