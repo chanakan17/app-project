@@ -1,94 +1,48 @@
-class dicAnimal {
-  final Map<String, List<String>> dicAnimal_eng = {
-    "Dog": ["สุนัข"],
-    "Cat": ["แมว"],
-    "Rabbit": ["กระต่าย"],
-    "Hamster": ["แฮมสเตอร์"],
-    "Guinea pig": ["หนูตะเภา"],
-    "Parrot": ["นกแก้ว"],
-    "Goldfish": ["ปลาทอง"],
-    "Turtle": ["เต่า"],
-    "Cow": ["วัว"],
-    "Pig": ["หมู"],
-    "Sheep": ["แกะ"],
-    "Goat": ["แพะ"],
-    "Chicken": ["ไก่"],
-    "Duck": ["เป็ด"],
-    "Horse": ["ม้า"],
-    "Donkey": ["ลา"],
-    "Lion": ["สิงโต"],
-    "Tiger": ["เสือ"],
-    "Elephant": ["ช้าง"],
-    "Giraffe": ["ยีราฟ"],
-    "Zebra": ["ม้าลาย"],
-    "Bear": ["หมี"],
-    "Deer": ["กวาง"],
-    "Monkey": ["ลิง"],
-    "Snake": ["งู"],
-    "Lizard": ["กิ้งก่า"],
-    "Crocodile": ["จระเข้"],
-    "Tortoise": ["เต่าบก"],
-    "Fish": ["ปลา"],
-    "Dolphin": ["ปลาโลมา"],
-    "Whale": ["ปลาวาฬ"],
-    "Shark": ["ปลาฉลาม"],
-    "Octopus": ["ปลาหมึกยักษ์"],
-    "Crab": ["ปู"],
-    "Lobster": ["กุ้งมังกร"],
-    "Bird": ["นก"],
-    "Eagle": ["นกอินทรี"],
-    "Owl": ["นกฮูก"],
-    "Pigeon": ["นกพิราบ"],
-    "Swan": ["หงส์"],
-    "Peacock": ["นกยูง"],
-    "Ferret": ["เฟอเร็ต"],
-    "Chinchilla": ["ชินชิลลา"],
-    "Budgerigar": ["นกหงส์หยก"],
-    "Hedgehog": ["เม่นแคระ"],
-    "Rooster": ["ไก่ตัวผู้"],
-    "Hen": ["แม่ไก่"],
-    "Goose": ["ห่าน"],
-    "Turkey": ["ไก่งวง"],
-    "Ox": ["วัวตัวผู้"],
-    "Llama": ["ลามะ"],
-    "Alpaca": ["อัลปาก้า"],
-    "Leopard": ["เสือดาว"],
-    "Cheetah": ["ชีตาห์"],
-    "Hyena": ["ไฮยีน่า"],
-    "Kangaroo": ["จิงโจ้"],
-    "Koala": ["โคอาลา"],
-    "Panda": ["แพนด้า"],
-    "Wolf": ["หมาป่า"],
-    "Fox": ["สุนัขจิ้งจอก"],
-    "Raccoon": ["แรคคูน"],
-    "Hippopotamus": ["ฮิปโปโปเตมัส"],
-    "Rhinoceros": ["แรด"],
-    "Bat": ["ค้างคาว"],
-    "Gecko": ["ตุ๊กแก"],
-    "Iguana": ["อีกัวน่า"],
-    "Chameleon": ["กิ้งก่าคาเมเลียน"],
-    "Frog": ["กบ"],
-    "Toad": ["คางคก"],
-    "Newt": ["ซาลาแมนเดอร์น้ำ"],
-    "Salamander": ["ซาลาแมนเดอร์"],
-    "Seahorse": ["ม้าน้ำ"],
-    "Seal": ["แมวน้ำ"],
-    "Sea lion": ["สิงโตทะเล"],
-    "Starfish": ["ปลาดาว"],
-    "Jellyfish": ["แมงกะพรุน"],
-    "Clownfish": ["ปลาการ์ตูน"],
-    "Manta ray": ["กระเบนราหู"],
-    "Flamingo": ["นกฟลามิงโก"],
-    "Penguin": ["เพนกวิน"],
-    "Toucan": ["นกทูแคน"],
-    "Woodpecker": ["นกหัวขวาน"],
-    "Crow": ["อีกา"],
-    "Hawk": ["เหยี่ยว"],
-    "Vulture": ["แร้ง"],
-  };
-  static Map<String, List<String>> get entries {
-    return dicAnimal().dicAnimal_eng;
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+
+class DicEntry {
+  final String word;
+  final String meaning;
+  final String imageUrl;
+
+  DicEntry({required this.word, required this.meaning, required this.imageUrl});
+
+  factory DicEntry.fromJson(Map<String, dynamic> json) {
+    return DicEntry(
+      word: json['word'],
+      meaning: json['meaning'],
+      imageUrl: json['image_url'] ?? '',
+    );
+  }
+}
+
+class DicService {
+  static Future<List<DicEntry>> fetchWords({int categoryId = 2}) async {
+    var url = Uri.parse(
+      "http://192.168.1.112/dataweb/get_words.php?category_id=$categoryId",
+    );
+    var response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      List data = jsonDecode(response.body);
+      return data.map((e) => DicEntry.fromJson(e)).toList();
+    } else {
+      throw Exception("Failed to load words");
+    }
+  }
+}
+
+class DicAnimal {
+  List<DicEntry> _entries = [];
+
+  Future<void> loadEntries() async {
+    try {
+      _entries = await DicService.fetchWords(categoryId: 2);
+    } catch (e) {
+      print("❌ Error loading animal entries: $e");
+    }
   }
 
-  dicAnimal();
+  List<DicEntry> get entries => _entries;
 }

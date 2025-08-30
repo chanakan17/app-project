@@ -1,128 +1,54 @@
-class dicHome {
-  final Map<String, List<String>> dicHome_eng = {
-    "Living room": ["ห้องนั่งเล่น"],
-    "Bedroom": ["ห้องนอน"],
-    "Bathroom": ["ห้องน้ำ"],
-    "Kitchen": ["ห้องครัว"],
-    "Dining room": ["ห้องรับประทานอาหาร"],
-    "Garage": ["โรงรถ"],
-    "Hallway": ["ทางเดิน"],
-    "Laundry room": ["ห้องซักผ้า"],
-    "Balcony": ["ระเบียง"],
-    "Attic": ["ห้องใต้หลังคา"],
-    "Basement": ["ห้องใต้ดิน"],
-    "Closet": ["ตู้เสื้อผ้า/ห้องเก็บของ"],
-    "Sofa": ["โซฟา"],
-    "Armchair": ["เก้าอี้นวม"],
-    "Table": ["โต๊ะ"],
-    "Chair": ["เก้าอี้"],
-    "Desk": ["โต๊ะเขียนหนังสือ"],
-    "Bed": ["เตียงนอน"],
-    "Wardrobe": ["ตู้เสื้อผ้า"],
-    "Dresser": ["ตู้ลิ้นชัก"],
-    "Bookshelf": ["ชั้นวางหนังสือ"],
-    "Cabinet": ["ตู้เก็บของ"],
-    "Coffee table": ["โต๊ะกาแฟ"],
-    "Nightstand": ["โต๊ะหัวเตียง"],
-    "Refrigerator": ["ตู้เย็น"],
-    "Microwave": ["ไมโครเวฟ"],
-    "Stove": ["เตาแก๊ส/เตาไฟฟ้า"],
-    "Oven": ["เตาอบ"],
-    "Toaster": ["เครื่องปิ้งขนมปัง"],
-    "Blender": ["เครื่องปั่น"],
-    "Sink": ["อ่างล้างจาน"],
-    "Pan": ["กระทะ"],
-    "Pot": ["หม้อ"],
-    "Plate": ["จาน"],
-    "Bowl": ["ชาม"],
-    "Spoon": ["ช้อน"],
-    "Fork": ["ส้อม"],
-    "Knife": ["มีด"],
-    "Cup": ["ถ้วย"],
-    "Mug": ["แก้วมัค"],
-    "Toilet": ["โถส้วม"],
-    "Shower": ["ฝักบัว"],
-    "Bathtub": ["อ่างอาบน้ำ"],
-    "Sink (bathroom)": ["อ่างล้างหน้า"],
-    "Mirror": ["กระจก"],
-    "Towel": ["ผ้าเช็ดตัว"],
-    "Toothbrush": ["แปรงสีฟัน"],
-    "Toothpaste": ["ยาสีฟัน"],
-    "Shampoo": ["แชมพู"],
-    "Soap": ["สบู่"],
-    "Television": ["โทรทัศน์"],
-    "Fan": ["พัดลม"],
-    "Air conditioner": ["เครื่องปรับอากาศ"],
-    "Heater": ["เครื่องทำความร้อน"],
-    "Washing machine": ["เครื่องซักผ้า"],
-    "Dryer": ["เครื่องอบผ้า"],
-    "Lamp": ["โคมไฟ"],
-    "Computer": ["คอมพิวเตอร์"],
-    "Phone": ["โทรศัพท์"],
-    "Clock": ["นาฬิกา"],
-    "Curtain": ["ผ้าม่าน"],
-    "Carpet": ["พรม"],
-    "Mat": ["เสื่อ/แผ่นรอง"],
-    "Trash can": ["ถังขยะ"],
-    "Broom": ["ไม้กวาด"],
-    "Mop": ["ไม้ม็อบถูพื้น"],
-    "Vacuum cleaner": ["เครื่องดูดฝุ่น"],
-    "Iron": ["เตารีด"],
-    "Clothes hanger": ["ไม้แขวนเสื้อ"],
-    "Guest room": ["ห้องรับรองแขก"],
-    "Study room": ["ห้องอ่านหนังสือ"],
-    "Storage room": ["ห้องเก็บของ"],
-    "Porch": ["เฉลียงหน้าบ้าน"],
-    "Deck": ["ระเบียงไม้"],
-    "Fence": ["รั้ว"],
-    "Garden": ["สวน"],
-    "Yard": ["สนามหญ้า"],
-    "Driveway": ["ทางรถวิ่งหน้าบ้าน"],
-    "Chandelier": ["โคมไฟระย้า"],
-    "Cushion": ["หมอนอิง"],
-    "Mattress": ["ที่นอน"],
-    "Rug": ["พรมขนาดเล็ก"],
-    "Vase": ["แจกัน"],
-    "Painting": ["ภาพวาด"],
-    "Poster": ["โปสเตอร์"],
-    "Frame": ["กรอบรูป"],
-    "Shelf": ["ชั้นวางของ"],
-    "Coat rack": ["ที่แขวนเสื้อโค้ต"],
-    "Rice cooker": ["หม้อหุงข้าว"],
-    "Electric kettle": ["กาน้ำร้อนไฟฟ้า"],
-    "Hair dryer": ["ไดร์เป่าผม"],
-    "Speaker": ["ลำโพง"],
-    "Remote control": ["รีโมทคอนโทรล"],
-    "Router": ["เราเตอร์"],
-    "Extension cord": ["ปลั๊กพ่วง"],
-    "Chopping board": ["เขียง"],
-    "Ladle": ["ทัพพี"],
-    "Whisk": ["ที่ตีไข่"],
-    "Can opener": ["ที่เปิดกระป๋อง"],
-    "Peeler": ["ที่ปอกเปลือก"],
-    "Grater": ["ที่ขูดชีสหรือผัก"],
-    "Measuring cup": ["ถ้วยตวง"],
-    "Rolling pin": ["ไม้คลึงแป้ง"],
-    "Colander": ["ตะแกรงล้างผัก"],
-    "Tray": ["ถาด"],
-    "Razor": ["มีดโกน"],
-    "Tissue": ["กระดาษทิชชู่"],
-    "Toilet paper": ["กระดาษชำระ"],
-    "Plunger": ["ที่ปั๊มส้วม"],
-    "Bath mat": ["แผ่นรองพื้นในห้องน้ำ"],
-    "Toolbox": ["กล่องเครื่องมือ"],
-    "Ladder": ["บันไดพับ"],
-    "Light bulb": ["หลอดไฟ"],
-    "Switch": ["สวิตช์"],
-    "Socket": ["ปลั๊กไฟ"],
-    "Doorbell": ["กริ่งประตู"],
-    "Doormat": ["พรมเช็ดเท้า"],
-    "Key": ["กุญแจ"],
-    "Lock": ["แม่กุญแจ/ตัวล็อก"],
-  };
-  static Map<String, List<String>> get entries {
-    return dicHome().dicHome_eng;
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+
+/// คลาสเก็บข้อมูลคำศัพท์แต่ละคำ
+class DicEntry {
+  final String word;
+  final String meaning;
+  final String imageUrl;
+
+  DicEntry({required this.word, required this.meaning, required this.imageUrl});
+
+  factory DicEntry.fromJson(Map<String, dynamic> json) {
+    return DicEntry(
+      word: json['word'],
+      meaning: json['meaning'],
+      imageUrl: json['image_url'] ?? '',
+    );
+  }
+}
+
+/// บริการดึงข้อมูลคำศัพท์จาก API
+class DicService {
+  static Future<List<DicEntry>> fetchWords({required int categoryId}) async {
+    final url = Uri.parse(
+      "http://192.168.1.112/dataweb/get_words.php?category_id=$categoryId",
+    );
+
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      final List data = jsonDecode(response.body);
+      return data.map((e) => DicEntry.fromJson(e)).toList();
+    } else {
+      throw Exception("Failed to load words for category $categoryId");
+    }
+  }
+}
+
+/// คลาสสำหรับหมวดคำศัพท์ "ภายในบ้าน"
+class DicHome {
+  List<DicEntry> _entries = [];
+
+  /// โหลดข้อมูลจากฐานข้อมูล (category_id = 3)
+  Future<void> loadEntries() async {
+    try {
+      _entries = await DicService.fetchWords(categoryId: 3);
+    } catch (e) {
+      print("❌ Error loading home entries: $e");
+    }
   }
 
-  dicHome();
+  /// คืนรายการคำศัพท์ทั้งหมด
+  List<DicEntry> get entries => _entries;
 }

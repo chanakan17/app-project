@@ -31,14 +31,14 @@ class MyApp extends StatelessWidget {
         ),
         useMaterial3: true,
       ),
-      darkTheme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: Colors.deepPurple,
-          brightness: Brightness.dark,
-        ),
-        useMaterial3: true,
-      ),
-      themeMode: ThemeMode.system,
+      // darkTheme: ThemeData(
+      //   colorScheme: ColorScheme.fromSeed(
+      //     seedColor: Colors.deepPurple,
+      //     brightness: Brightness.dark,
+      //   ),
+      //   useMaterial3: true,
+      // ),
+      // themeMode: ThemeMode.system,
       debugShowCheckedModeBanner: false,
 
       // ✅ เลือกหน้าแรกตามว่า login แล้วหรือยัง

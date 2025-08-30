@@ -1,7 +1,9 @@
-import 'package:app/management/dicsp.dart';
+import 'dart:convert';
+import 'package:app/management/dic.dart'; // ✅ ต้องมี DicEntry class
 import 'package:app/screen/homescreen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
+import 'package:http/http.dart' as http;
 
 class Dicsportscreen extends StatefulWidget {
   const Dicsportscreen({super.key});
@@ -11,8 +13,46 @@ class Dicsportscreen extends StatefulWidget {
 }
 
 class _DicsportscreenState extends State<Dicsportscreen> {
-  List<MapEntry<String, List<String>>> searchResults = [];
+  List<DicEntry> _allWords = [];
+  List<DicEntry> _searchResults = [];
   final FlutterTts _flutterTts = FlutterTts();
+  final TextEditingController _searchController = TextEditingController();
+  bool _isLoading = true;
+  String _error = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _loadWords();
+  }
+
+  Future<void> _loadWords() async {
+    try {
+      var url = Uri.parse(
+        "http://192.168.1.112/dataweb/get_words.php?category_id=4", // 🎯 category_id = 4 สำหรับกีฬา
+      );
+      var response = await http.get(url);
+      print('Status code: ${response.statusCode}');
+      print('Response body: ${response.body}');
+
+      if (response.statusCode == 200) {
+        List data = jsonDecode(response.body);
+        List<DicEntry> words = data.map((e) => DicEntry.fromJson(e)).toList();
+        setState(() {
+          _allWords = words;
+          _searchResults = [];
+          _isLoading = false;
+        });
+      } else {
+        throw Exception("Failed to load words");
+      }
+    } catch (e) {
+      setState(() {
+        _error = 'ไม่สามารถโหลดข้อมูลได้: $e';
+        _isLoading = false;
+      });
+    }
+  }
 
   Future<void> _speakWord(String word) async {
     await _flutterTts.setLanguage("en-US");
@@ -22,29 +62,34 @@ class _DicsportscreenState extends State<Dicsportscreen> {
   }
 
   void _filterSearchResults(String query) {
-    final allEntries = dicSport.entries.entries.toList();
     if (query.isEmpty) {
       setState(() {
-        searchResults.clear();
+        _searchResults = [];
       });
-    } else {
-      setState(() {
-        searchResults =
-            allEntries
-                .where(
-                  (entry) =>
-                      entry.key.toLowerCase().startsWith(query.toLowerCase()) ||
-                      entry.value.any(
-                        (v) => v.toLowerCase().startsWith(query.toLowerCase()),
-                      ),
-                )
-                .toList();
-      });
+      return;
     }
+
+    final results =
+        _allWords.where((entry) {
+          final wordLower = entry.word.toLowerCase();
+          final meaningLower = entry.meaning.toLowerCase();
+          final queryLower = query.toLowerCase();
+          return wordLower.contains(queryLower) ||
+              meaningLower.contains(queryLower);
+        }).toList();
+
+    setState(() {
+      _searchResults = results;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
+    final displayList =
+        _searchResults.isNotEmpty || _searchController.text.isNotEmpty
+            ? _searchResults
+            : _allWords;
+
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -54,9 +99,7 @@ class _DicsportscreenState extends State<Dicsportscreen> {
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(
-                builder: (context) {
-                  return HomeScreen(initialTabIndex: 1);
-                },
+                builder: (context) => HomeScreen(initialTabIndex: 1),
               ),
             );
           },
@@ -77,108 +120,59 @@ class _DicsportscreenState extends State<Dicsportscreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                SizedBox(height: 20),
+                // 🔍 Search Box
                 TextField(
-                  onChanged: _filterSearchResults,
+                  controller: _searchController,
                   decoration: InputDecoration(
-                    labelText: "ค้นหาคำศัพท์",
+                    hintText: "ค้นหาคำศัพท์กีฬา...",
                     prefixIcon: Icon(Icons.search),
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
+                      borderRadius: BorderRadius.circular(12.0),
                     ),
                   ),
+                  onChanged: _filterSearchResults,
                 ),
                 SizedBox(height: 20),
+
+                // 📖 Display Word List
                 Expanded(
                   child:
-                      (searchResults.isEmpty &&
-                              dicSport.entries.entries.isNotEmpty)
-                          ? ListView(
-                            children:
-                                (dicSport.entries.entries.toList()
-                                      ..sort((a, b) => a.key.compareTo(b.key)))
-                                    .map((entry) {
-                                      return Column(
-                                        children: [
-                                          ListTile(
-                                            leading: IconButton(
-                                              onPressed:
-                                                  () => _speakWord(entry.key),
-                                              icon: Icon(
-                                                Icons.volume_up,
-                                                size: 30,
-                                              ),
-                                            ),
-                                            title: Text(entry.key),
-                                            subtitle: Wrap(
-                                              children:
-                                                  entry.value
-                                                      .map(
-                                                        (subtitle) => Padding(
-                                                          padding:
-                                                              const EdgeInsets.all(
-                                                                8.0,
-                                                              ),
-                                                          child: Text(subtitle),
-                                                        ),
-                                                      )
-                                                      .toList(),
-                                            ),
-                                          ),
-                                          Divider(
-                                            thickness: 1.5,
-                                            color: Colors.grey,
-                                          ),
-                                        ],
-                                      );
-                                    })
-                                    .toList(),
-                          )
-                          : (searchResults.isNotEmpty
-                              ? ListView(
-                                children:
-                                    searchResults.map((entry) {
-                                      return Column(
-                                        children: [
-                                          ListTile(
-                                            leading: IconButton(
-                                              onPressed:
-                                                  () => _speakWord(entry.key),
-                                              icon: Icon(
-                                                Icons.volume_up,
-                                                size: 30,
-                                              ),
-                                            ),
-                                            title: Text(entry.key),
-                                            subtitle: Wrap(
-                                              children:
-                                                  entry.value
-                                                      .map(
-                                                        (subtitle) => Padding(
-                                                          padding:
-                                                              const EdgeInsets.all(
-                                                                8.0,
-                                                              ),
-                                                          child: Text(subtitle),
-                                                        ),
-                                                      )
-                                                      .toList(),
-                                            ),
-                                          ),
-                                          Divider(
-                                            thickness: 1.5,
-                                            color: Colors.grey,
-                                          ),
-                                        ],
-                                      );
-                                    }).toList(),
-                              )
-                              : Center(
-                                child: Text(
-                                  "ไม่พบคำศัพท์",
-                                  style: TextStyle(fontSize: 18),
+                      _isLoading
+                          ? Center(child: CircularProgressIndicator())
+                          : _error.isNotEmpty
+                          ? Center(child: Text(_error))
+                          : displayList.isEmpty
+                          ? Center(child: Text('ไม่พบคำศัพท์'))
+                          : ListView.separated(
+                            itemCount: displayList.length,
+                            separatorBuilder:
+                                (context, index) => Divider(
+                                  thickness: 1.5,
+                                  color: Colors.grey,
+                                  indent: 16,
+                                  endIndent: 16,
                                 ),
-                              )),
+                            itemBuilder: (context, index) {
+                              final entry = displayList[index];
+                              return ListTile(
+                                leading: IconButton(
+                                  onPressed: () => _speakWord(entry.word),
+                                  icon: Icon(Icons.volume_up, size: 30),
+                                ),
+                                title: Text(entry.word),
+                                subtitle: Text(entry.meaning),
+                                trailing:
+                                    entry.imageUrl.isNotEmpty
+                                        ? Image.network(
+                                          entry.imageUrl,
+                                          width: 50,
+                                          height: 50,
+                                          fit: BoxFit.cover,
+                                        )
+                                        : null,
+                              );
+                            },
+                          ),
                 ),
               ],
             ),

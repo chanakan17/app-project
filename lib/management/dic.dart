@@ -1,66 +1,34 @@
-class Dic {
-  final Map<String, List<String>> dic_eng = {
-    "Transportation": ["การขนส่ง", "การเดินทาง"],
-    "Car": ["รถยนต์"],
-    "Bus": ["รถบัส"],
-    "Truck": ["รถบรรทุก"],
-    "Motorcycle": ["จักรยานยนต์"],
-    "Bicycle": ["จักรยาน"],
-    "Train": ["รถไฟ"],
-    "Subway": ["รถไฟใต้ดิน"],
-    "Tram": ["รถราง"],
-    "Airplane": ["เครื่องบิน"],
-    "Helicopter": ["เฮลิคอปเตอร์"],
-    "Boat": ["เรือ"],
-    "Ship": ["เรือสำราญ"],
-    "Ferry": ["เรือข้ามฟาก"],
-    "Taxi": ["แท็กซี่"],
-    "Ride-sharing": ["บริการรถร่วม"],
-    "Scooter": ["สกู๊ตเตอร์"],
-    "Bus stop": ["ป้ายรถบัส"],
-    "Train station": ["สถานีรถไฟ"],
-    "Airport": ["สนามบิน"],
-    "Port": ["ท่าเรือ"],
-    "Dock": ["ท่าเรือ"],
-    "Ticket": ["ตั๋ว"],
-    "Luggage": ["สัมภาระ"],
-    "Suitcase": ["กระเป๋าเดินทาง"],
-    "Backpack": ["กระเป๋าเป้"],
-    "Passport": ["หนังสือเดินทาง"],
-    "Flight": ["เที่ยวบิน"],
-    "Departure": ["การออกเดินทาง"],
-    "Arrival": ["การมาถึง"],
-    "Customs": ["ศุลกากร"],
-    "Immigration": ["การตรวจคนเข้าเมือง"],
-    "Security check": ["การตรวจความปลอดภัย"],
-    "Check-in": ["เช็คอิน"],
-    "Gate": ["ประตูทางขึ้นเครื่อง"],
-    "Boarding pass": ["บัตรขึ้นเครื่อง"],
-    "Layover": ["การหยุดพักระหว่างเที่ยวบิน"],
-    "Route": ["เส้นทาง"],
-    "Traffic": ["การจราจร"],
-    "Congestion": ["การจราจรติดขัด"],
-    "Road": ["ถนน"],
-    "Highway": ["ทางหลวง"],
-    "Pedestrian": ["คนเดินเท้า"],
-    "Crosswalk": ["ทางข้าม"],
-    "Parking": ["ที่จอดรถ"],
-    "Fuel": ["น้ำมัน"],
-    "Driver": ["คนขับ"],
-    "Passenger": ["ผู้โดยสาร"],
-    "Ticket counter": ["เคาน์เตอร์จำหน่ายตั๋ว"],
-    "Car rental": ["บริการเช่ารถ"],
-    "Carpool": ["การเดินทางร่วมกัน"],
-    "Bus fare": ["ค่าโดยสารรถบัส"],
-    "Train fare": ["ค่าโดยสารรถไฟ"],
-    "Flight ticket": ["ตั๋วเครื่องบิน"],
-    "Travel agency": ["บริษัททัวร์"],
-    "Road trip": ["การเดินทางทางถนน"],
-  };
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 
-  static Map<String, List<String>> get entries {
-    return Dic().dic_eng;
+class DicService {
+  static Future<List<DicEntry>> fetchWords({int categoryId = 1}) async {
+    var url = Uri.parse(
+      "http://192.168.1.112/dataweb/get_words.php?category_id=1",
+    );
+    var response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      List data = jsonDecode(response.body);
+      return data.map((e) => DicEntry.fromJson(e)).toList();
+    } else {
+      throw Exception("Failed to load words");
+    }
   }
+}
 
-  Dic();
+class DicEntry {
+  final String word;
+  final String meaning;
+  final String imageUrl;
+
+  DicEntry({required this.word, required this.meaning, required this.imageUrl});
+
+  factory DicEntry.fromJson(Map<String, dynamic> json) {
+    return DicEntry(
+      word: json['word'],
+      meaning: json['meaning'],
+      imageUrl: json['image_url'] ?? '',
+    );
+  }
 }

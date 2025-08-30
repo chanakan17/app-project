@@ -1,7 +1,10 @@
+import 'dart:convert';
+
 import 'package:app/management/dic.dart';
 import 'package:app/screen/homescreen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
+import 'package:http/http.dart' as http;
 
 class Dicallscreen extends StatefulWidget {
   const Dicallscreen({super.key});
@@ -11,9 +14,47 @@ class Dicallscreen extends StatefulWidget {
 }
 
 class _DicallscreenState extends State<Dicallscreen> {
-  List<MapEntry<String, List<String>>> searchResults = [];
+  List<DicEntry> _allWords = [];
+  List<DicEntry> _searchResults = [];
   final FlutterTts _flutterTts = FlutterTts();
   final TextEditingController _searchController = TextEditingController();
+  bool _isLoading = true;
+  String _error = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _loadWords();
+  }
+
+  Future<void> _loadWords() async {
+    try {
+      var url = Uri.parse(
+        "http://192.168.1.112/dataweb/get_words.php?category_id=1",
+      );
+
+      var response = await http.get(url);
+      print('Status code: ${response.statusCode}');
+      print('Response body: ${response.body}');
+
+      if (response.statusCode == 200) {
+        List data = jsonDecode(response.body);
+        List<DicEntry> words = data.map((e) => DicEntry.fromJson(e)).toList();
+        setState(() {
+          _allWords = words;
+          _searchResults = [];
+          _isLoading = false;
+        });
+      } else {
+        throw Exception("Failed to load words");
+      }
+    } catch (e) {
+      setState(() {
+        _error = 'ไม่สามารถโหลดข้อมูลได้: $e';
+        _isLoading = false;
+      });
+    }
+  }
 
   Future<void> _speakWord(String word) async {
     await _flutterTts.setLanguage("en-US");
@@ -23,31 +64,34 @@ class _DicallscreenState extends State<Dicallscreen> {
   }
 
   void _filterSearchResults(String query) {
-    final allEntries = Dic.entries.entries.toList();
     if (query.isEmpty) {
       setState(() {
-        searchResults.clear();
+        _searchResults = [];
       });
-    } else {
-      setState(() {
-        searchResults =
-            allEntries
-                .where(
-                  (entry) =>
-                      entry.key.toLowerCase().startsWith(
-                        query.toLowerCase(),
-                      ) || // ค้นหาคำศัพท์ขึ้นต้น
-                      entry.value.any(
-                        (v) => v.toLowerCase().startsWith(query.toLowerCase()),
-                      ),
-                ) // ค้นหาคำแปลขึ้นต้น
-                .toList();
-      });
+      return;
     }
+
+    final results =
+        _allWords.where((entry) {
+          final wordLower = entry.word.toLowerCase();
+          final meaningLower = entry.meaning.toLowerCase();
+          final queryLower = query.toLowerCase();
+          return wordLower.contains(queryLower) ||
+              meaningLower.contains(queryLower);
+        }).toList();
+
+    setState(() {
+      _searchResults = results;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
+    final displayList =
+        _searchResults.isNotEmpty || _searchController.text.isNotEmpty
+            ? _searchResults
+            : _allWords;
+
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -57,9 +101,7 @@ class _DicallscreenState extends State<Dicallscreen> {
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(
-                builder: (context) {
-                  return HomeScreen(initialTabIndex: 1);
-                },
+                builder: (context) => HomeScreen(initialTabIndex: 1),
               ),
             );
           },
@@ -80,7 +122,7 @@ class _DicallscreenState extends State<Dicallscreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // 🔎 Search Box
+                // Search Box
                 TextField(
                   controller: _searchController,
                   decoration: InputDecoration(
@@ -94,53 +136,45 @@ class _DicallscreenState extends State<Dicallscreen> {
                 ),
                 SizedBox(height: 20),
 
-                // 📖 แสดงรายการ
+                // แสดงผลหรือข้อความสถานะ
                 Expanded(
-                  child: ListView(
-                    children:
-                        (searchResults.isNotEmpty ||
-                                    _searchController.text.isNotEmpty
-                                ? searchResults
-                                : (Dic.entries.entries.toList()
-                                  ..sort((a, b) => a.key.compareTo(b.key))))
-                            .map((entry) {
-                              return Column(
-                                children: [
-                                  Container(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: ListTile(
-                                      leading: IconButton(
-                                        onPressed: () => _speakWord(entry.key),
-                                        icon: Icon(Icons.volume_up, size: 30),
-                                      ),
-                                      title: Text(entry.key),
-                                      subtitle: Wrap(
-                                        children:
-                                            entry.value
-                                                .map(
-                                                  (subtitle) => Padding(
-                                                    padding:
-                                                        const EdgeInsets.all(
-                                                          8.0,
-                                                        ),
-                                                    child: Text(subtitle),
-                                                  ),
-                                                )
-                                                .toList(),
-                                      ),
-                                    ),
-                                  ),
-                                  Divider(
-                                    thickness: 1.5,
-                                    color: Colors.grey,
-                                    indent: 16,
-                                    endIndent: 16,
-                                  ),
-                                ],
+                  child:
+                      _isLoading
+                          ? Center(child: CircularProgressIndicator())
+                          : _error.isNotEmpty
+                          ? Center(child: Text(_error))
+                          : displayList.isEmpty
+                          ? Center(child: Text('ไม่พบคำศัพท์'))
+                          : ListView.separated(
+                            itemCount: displayList.length,
+                            separatorBuilder:
+                                (context, index) => Divider(
+                                  thickness: 1.5,
+                                  color: Colors.grey,
+                                  indent: 16,
+                                  endIndent: 16,
+                                ),
+                            itemBuilder: (context, index) {
+                              final entry = displayList[index];
+                              return ListTile(
+                                leading: IconButton(
+                                  onPressed: () => _speakWord(entry.word),
+                                  icon: Icon(Icons.volume_up, size: 30),
+                                ),
+                                title: Text(entry.word),
+                                subtitle: Text(entry.meaning),
+                                trailing:
+                                    entry.imageUrl.isNotEmpty
+                                        ? Image.network(
+                                          entry.imageUrl,
+                                          width: 50,
+                                          height: 50,
+                                          fit: BoxFit.cover,
+                                        )
+                                        : null,
                               );
-                            })
-                            .toList(),
-                  ),
+                            },
+                          ),
                 ),
               ],
             ),

@@ -1,61 +1,53 @@
-class dicSport {
-  final Map<String, List<String>> dicSport_eng = {
-    "Football": ["ฟุตบอล"],
-    "Soccer": ["ฟุตบอล (แบบสากล)"],
-    "Basketball": ["บาสเกตบอล"],
-    "Volleyball": ["วอลเลย์บอล"],
-    "Baseball": ["เบสบอล"],
-    "Rugby": ["รักบี้"],
-    "Hockey": ["ฮอกกี้"],
-    "Cricket": ["คริกเก็ต"],
-    "American football": ["อเมริกันฟุตบอล"],
-    "Softball": ["ซอฟต์บอล"],
-    "Water polo": ["โปโลน้ำ"],
-    "Handball": ["แฮนด์บอล"],
-    "Tennis": ["เทนนิส"],
-    "Table tennis": ["ปิงปอง"],
-    "Badminton": ["แบดมินตัน"],
-    "Golf": ["กอล์ฟ"],
-    "Boxing": ["มวย"],
-    "Karate": ["คาราเต้"],
-    "Taekwondo": ["เทควันโด"],
-    "Judo": ["ยูโด"],
-    "Wrestling": ["มวยปล้ำ"],
-    "Archery": ["ยิงธนู"],
-    "Fencing": ["ฟันดาบ"],
-    "Running": ["วิ่ง"],
-    "Cycling": ["ปั่นจักรยาน"],
-    "Swimming": ["ว่ายน้ำ"],
-    "Skateboarding": ["สเก็ตบอร์ด"],
-    "Roller skating": ["โรลเลอร์สเกต"],
-    "Motorsport": ["มอเตอร์สปอร์ต"],
-    "Skiing": ["สกี"],
-    "Snowboarding": ["สโนว์บอร์ด"],
-    "Surfing": ["โต้คลื่น"],
-    "Climbing": ["ปีนเขา"],
-    "Parkour": ["พาร์กัวร์"],
-    "Long jump": ["กระโดดไกล"],
-    "High jump": ["กระโดดสูง"],
-    "Hurdles": ["วิ่งข้ามรั้ว"],
-    "Pole vault": ["กระโดดค้ำ"],
-    "Shot put": ["ทุ่มน้ำหนัก"],
-    "Discus throw": ["ขว้างจักร"],
-    "Javelin throw": ["พุ่งแหลน"],
-    "Diving": ["ดำน้ำ"],
-    "Rowing": ["พายเรือ"],
-    "Canoeing": ["พายเรือแคนู"],
-    "Sailing": ["แล่นเรือ"],
-    "Jet skiing": ["เจ็ตสกี"],
-    "Wakeboarding": ["เวคบอร์ด"],
-    "Chess": ["หมากรุก"],
-    "Esports": ["อีสปอร์ต"],
-    "Snooker": ["สนุกเกอร์"],
-    "Bowling": ["โบว์ลิ่ง"],
-    "Darts": ["ปาเป้า"],
-  };
-  static Map<String, List<String>> get entries {
-    return dicSport().dicSport_eng;
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+
+/// คลาสข้อมูลคำศัพท์ 1 รายการ
+class DicEntry {
+  final String word;
+  final String meaning;
+  final String imageUrl;
+
+  DicEntry({required this.word, required this.meaning, required this.imageUrl});
+
+  factory DicEntry.fromJson(Map<String, dynamic> json) {
+    return DicEntry(
+      word: json['word'],
+      meaning: json['meaning'],
+      imageUrl: json['image_url'] ?? '',
+    );
+  }
+}
+
+/// บริการดึงข้อมูลคำศัพท์จาก API
+class DicService {
+  static Future<List<DicEntry>> fetchWords({required int categoryId}) async {
+    var url = Uri.parse(
+      "http://192.168.1.112/dataweb/get_words.php?category_id=$categoryId",
+    );
+    var response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      List data = jsonDecode(response.body);
+      return data.map((e) => DicEntry.fromJson(e)).toList();
+    } else {
+      throw Exception("Failed to load words");
+    }
+  }
+}
+
+/// หมวดหมู่: กีฬา (Sport) - ดึงจาก category_id = 4
+class DicSport {
+  List<DicEntry> _entries = [];
+
+  /// โหลดข้อมูลจาก API
+  Future<void> loadEntries() async {
+    try {
+      _entries = await DicService.fetchWords(categoryId: 4);
+    } catch (e) {
+      print("❌ Error loading sport entries: $e");
+    }
   }
 
-  dicSport();
+  /// คืนค่ารายการคำศัพท์
+  List<DicEntry> get entries => _entries;
 }

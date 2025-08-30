@@ -110,7 +110,7 @@ class _ProfilescreenState extends State<Profilescreen> {
 
     try {
       final url = Uri.parse(
-        'http://192.168.1.172/dataweb/get_user.php?id=$userId',
+        'http://192.168.1.112/dataweb/get_user.php?id=$userId',
       );
       final response = await http.get(url);
 
@@ -144,7 +144,7 @@ class _ProfilescreenState extends State<Profilescreen> {
     if (userId == null) return;
 
     try {
-      final url = Uri.parse('http://192.168.1.172/dataweb/update_user.php');
+      final url = Uri.parse('http://192.168.1.112/dataweb/update_user.php');
       final response = await http.post(
         url,
         body: {'id': userId.toString(), 'username': newName},
