@@ -1,12 +1,9 @@
-import 'package:app/management/dic.dart';
-import 'package:app/management/dicanimal.dart';
-import 'package:app/management/dichome.dart';
-import 'package:app/management/dicsp.dart';
+import 'package:flutter/material.dart';
 import 'package:app/management/sound/sound.dart';
 import 'package:app/screen/game/game1screen.dart';
 import 'package:app/screen/game/game2screen.dart';
 import 'package:app/screen/game/game3screen.dart';
-import 'package:flutter/material.dart';
+import 'package:app/management/dic_service.dart'; // ✅ ใช้ DicService
 
 class Menuscreen extends StatefulWidget {
   const Menuscreen({super.key});
@@ -71,8 +68,8 @@ class _MenuscreenState extends State<Menuscreen> {
                       height: 90,
                     ),
                     Colors.blue[100]!,
-                    (dict, title) =>
-                        Game1screen(dictionary: dict, title: title),
+                    (dictionary, title) =>
+                        Game1screen(dictionary: dictionary, title: title),
                   ),
                   buildGameButton(
                     "เกมจับคู่คำศัพท์",
@@ -82,21 +79,16 @@ class _MenuscreenState extends State<Menuscreen> {
                       height: 90,
                     ),
                     Colors.orange[100]!,
-                    (dict, title) =>
-                        Game2screen(dictionary: dict, title: title),
+                    (dictionary, title) =>
+                        Game2screen(dictionary: dictionary, title: title),
                   ),
                   buildGameButton(
                     "เกมเติมคำ",
                     Image.asset('assets/icons/add.png', width: 90, height: 90),
                     Colors.deepPurpleAccent[100]!,
-                    (dict, title) =>
-                        Game3screen(dictionary: dict, title: title),
+                    (dictionary, title) =>
+                        Game3screen(dictionary: dictionary, title: title),
                   ),
-
-                  // buildGameButton(
-                  //   "เกม4",
-                  //   (dict) => Game4screen(dictionary: dict),
-                  // ),
                 ],
               ),
             ),
@@ -104,6 +96,15 @@ class _MenuscreenState extends State<Menuscreen> {
         ],
       ),
     );
+  }
+
+  // ฟังก์ชันแปลง List<DicEntry> เป็น Map<String, List<String>>
+  Map<String, List<String>> convertEntriesToMap(List<DicEntry> entries) {
+    final map = <String, List<String>>{};
+    for (var entry in entries) {
+      map[entry.word] = [entry.meaning, entry.imageUrl];
+    }
+    return map;
   }
 
   Widget buildGameButton(
@@ -116,16 +117,17 @@ class _MenuscreenState extends State<Menuscreen> {
       padding: const EdgeInsets.fromLTRB(8, 15, 8, 15),
       child: SizedBox(
         child: ElevatedButton(
+          onPressed: () {
+            SoundManager.playClick8BitSound();
+            showCategoryDialog(screenBuilder);
+          },
           style: ElevatedButton.styleFrom(
             fixedSize: Size(340, 135),
             shape: RoundedRectangleBorder(
-              // side: BorderSide(color: Colors.grey),
-              borderRadius: BorderRadius.circular(25), // <-- ปรับความโค้งที่นี่
+              borderRadius: BorderRadius.circular(25),
             ),
-            // backgroundColor: Colors.grey[300],
           ),
           child: Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               ClipRRect(
                 borderRadius: BorderRadius.circular(25),
@@ -137,29 +139,15 @@ class _MenuscreenState extends State<Menuscreen> {
                   child: iconWidget,
                 ),
               ),
-
               SizedBox(width: 16),
               Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      title,
-                      style: TextStyle(
-                        fontSize: 25,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ],
+                child: Text(
+                  title,
+                  style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
                 ),
               ),
             ],
           ),
-          onPressed: () {
-            SoundManager.playClick8BitSound();
-            showCategoryDialog(screenBuilder);
-          },
         ),
       ),
     );
@@ -171,7 +159,7 @@ class _MenuscreenState extends State<Menuscreen> {
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (BuildContext context) {
+      builder: (context) {
         return AlertDialog(
           title: Text("เลือกหมวดหมู่ที่ต้องการ"),
           actions: [
@@ -179,43 +167,41 @@ class _MenuscreenState extends State<Menuscreen> {
               width: 300,
               height: 400,
               child: SingleChildScrollView(
-                child: Center(
-                  child: Column(
-                    children: [
-                      // categoryButton(
-                      //   "Vehicles",
-                      //   "คำศัพท์เกี่ยวกับยานพาหนะ",
-                      //   Icons.directions_car,
-                      //   Colors.yellow[100]!,
-                      //   Dic.entries,
-                      //   screenBuilder,
-                      // ),
-                      // categoryButton(
-                      //   "Animals",
-                      //   "คำศัพท์เกี่ยวกับสัตว์",
-                      //   Icons.pets,
-                      //   Colors.orange[100]!,
-                      //   dicAnimal.entries,
-                      //   screenBuilder,
-                      // ),
-                      // categoryButton(
-                      //   "House",
-                      //   "คำศัพท์สิ่งของในบ้าน",
-                      //   Icons.home,
-                      //   Colors.green[100]!,
-                      //   dicHome.entries,
-                      //   screenBuilder,
-                      // ),
-                      // categoryButton(
-                      //   "Sports",
-                      //   "คำศัพท์เกี่ยวกับกีฬา",
-                      //   Icons.sports_soccer,
-                      //   Colors.red[100]!,
-                      //   dicSport.entries,
-                      //   screenBuilder,
-                      // ),
-                    ],
-                  ),
+                child: Column(
+                  children: [
+                    categoryButton(
+                      "Vehicles",
+                      "คำศัพท์เกี่ยวกับยานพาหนะ",
+                      Icons.directions_car,
+                      Colors.yellow[100]!,
+                      1,
+                      screenBuilder,
+                    ),
+                    categoryButton(
+                      "Animals",
+                      "คำศัพท์เกี่ยวกับสัตว์",
+                      Icons.pets,
+                      Colors.orange[100]!,
+                      2,
+                      screenBuilder,
+                    ),
+                    categoryButton(
+                      "House",
+                      "คำศัพท์สิ่งของในบ้าน",
+                      Icons.home,
+                      Colors.green[100]!,
+                      3,
+                      screenBuilder,
+                    ),
+                    categoryButton(
+                      "Sports",
+                      "คำศัพท์เกี่ยวกับกีฬา",
+                      Icons.sports_soccer,
+                      Colors.red[100]!,
+                      4,
+                      screenBuilder,
+                    ),
+                  ],
                 ),
               ),
             ),
@@ -230,32 +216,38 @@ class _MenuscreenState extends State<Menuscreen> {
     String subtitle,
     IconData icon,
     Color iconBackgroundColor,
-    dynamic dictionary,
+    int categoryId,
     Widget Function(Map<String, List<String>>, String) screenBuilder,
   ) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(0, 8, 0, 8),
+      padding: const EdgeInsets.symmetric(vertical: 8),
       child: ElevatedButton(
-        onPressed: () {
+        onPressed: () async {
           SoundManager.playClick8BitSound();
           Navigator.of(context).pop();
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-              builder: (context) => screenBuilder(dictionary, title),
-            ),
-          );
+
+          try {
+            final words = await DicService.fetchWords(categoryId: categoryId);
+            final dictionaryMap = convertEntriesToMap(words);
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (context) => screenBuilder(dictionaryMap, title),
+              ),
+            );
+          } catch (e) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('เกิดข้อผิดพลาดในการโหลดคำศัพท์')),
+            );
+          }
         },
         style: ElevatedButton.styleFrom(
           fixedSize: Size(280, 80),
           shape: RoundedRectangleBorder(
-            // side: BorderSide(color: Colors.grey),
             borderRadius: BorderRadius.circular(16),
           ),
-          // backgroundColor: Colors.grey[300],
         ),
         child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             CircleAvatar(
               backgroundColor: iconBackgroundColor,

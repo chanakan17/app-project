@@ -98,6 +98,7 @@ class _Game1screenState extends State<Game1screen> {
                 ),
               ),
               onPressed: () async {
+                _endGame();
                 GameData.updateTopScore();
                 Navigator.of(context).pop();
                 Navigator.pushReplacement(
@@ -161,9 +162,12 @@ class _Game1screenState extends State<Game1screen> {
   }
 
   // ฟังก์ชันสุ่ม value จาก List<String> ที่ตรงกับ key
+  // String getRandomValue(List<String> values) {
+  //   var random = Random();
+  //   return values[random.nextInt(values.length)];
+  // }
   String getRandomValue(List<String> values) {
-    var random = Random();
-    return values[random.nextInt(values.length)];
+    return values.isNotEmpty ? values[0] : '';
   }
 
   @override

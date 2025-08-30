@@ -102,6 +102,7 @@ class _Game3screenState extends State<Game3screen> {
                 ),
               ),
               onPressed: () async {
+                _endGame();
                 GameData.updateTopScore();
                 Navigator.of(context).pop();
                 Navigator.pushReplacement(
@@ -147,8 +148,7 @@ class _Game3screenState extends State<Game3screen> {
   }
 
   String getRandomValue(List<String> values) {
-    var random = Random();
-    return values[random.nextInt(values.length)];
+    return values.isNotEmpty ? values[0] : '';
   }
 
   void _maskWord(String word) {
