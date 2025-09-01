@@ -125,6 +125,7 @@ class _Game3screenState extends State<Game3screen> {
 
   void _getRandomEntries() {
     if (availableKeys.isEmpty) {
+      _endGame();
       _showFinishDialog();
       return;
     }

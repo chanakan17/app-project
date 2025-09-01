@@ -103,6 +103,7 @@ class _Game2screenState extends State<Game2screen> {
               onPressed: () async {
                 _endGame();
                 GameData.updateTopScore();
+                await GameData.saveScoreToDB();
                 Navigator.of(context).pop();
                 Navigator.pushReplacement(
                   context,
@@ -112,7 +113,6 @@ class _Game2screenState extends State<Game2screen> {
                     },
                   ),
                 );
-                await GameData.saveScoreToDB();
               },
               child: Text("ย้อนกลับไปยังเมนู"),
             ),
@@ -124,6 +124,7 @@ class _Game2screenState extends State<Game2screen> {
 
   void _getRandomEntries() {
     if (availableKeys.length < 4) {
+      _endGame();
       _showFinishDialog();
       return;
     }

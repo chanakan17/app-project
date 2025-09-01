@@ -123,11 +123,23 @@ class GameData {
       if (data is Map<String, dynamic>) {
         topScoresByGame.clear();
 
-        data.forEach((gameName, topList) {
-          if (topList is List) {
-            topScoresByGame[gameName] = List<Map<String, dynamic>>.from(
-              topList,
-            );
+        data.forEach((gameName, categoryMap) {
+          if (categoryMap is Map<String, dynamic>) {
+            // สร้าง list ถ้ายังไม่มี
+            topScoresByGame.putIfAbsent(gameName, () => []);
+
+            categoryMap.forEach((category, topList) {
+              if (topList is List) {
+                for (var item in topList) {
+                  topScoresByGame[gameName]!.add({
+                    "category": category,
+                    "username": item['username'],
+                    "score": item['score'],
+                    "time": item['time'],
+                  });
+                }
+              }
+            });
           }
         });
       }

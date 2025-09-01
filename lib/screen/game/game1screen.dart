@@ -124,6 +124,7 @@ class _Game1screenState extends State<Game1screen> {
 
   void _getRandomEntries() {
     if (availableKeys.length < 4) {
+      _endGame();
       _showFinishDialog();
       return;
     }

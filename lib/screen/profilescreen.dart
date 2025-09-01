@@ -246,44 +246,62 @@ class _ProfilescreenState extends State<Profilescreen> {
     );
   }
 
+  Map<String, List<Map<String, dynamic>>> groupByCategory(
+    List<Map<String, dynamic>> games,
+  ) {
+    final Map<String, List<Map<String, dynamic>>> grouped = {};
+    for (var game in games) {
+      final category = game["category"] ?? "ไม่ระบุหมวด";
+      if (!grouped.containsKey(category)) {
+        grouped[category] = [];
+      }
+      grouped[category]!.add(game);
+    }
+    return grouped;
+  }
+
+  List<Map<String, dynamic>> _getTop3PerCategory(List<dynamic> scores) {
+    Map<String, List<dynamic>> grouped = {};
+
+    for (var score in scores) {
+      String category = score["category"] ?? "ไม่ระบุหมวด";
+      grouped.putIfAbsent(category, () => []).add(score);
+    }
+
+    List<Map<String, dynamic>> result = [];
+
+    grouped.forEach((category, list) {
+      list.sort((a, b) => (b["score"] ?? 0).compareTo(a["score"] ?? 0));
+      for (int i = 0; i < list.length && i < 3; i++) {
+        result.add({
+          "icon": Icons.emoji_events,
+          "color":
+              i == 0
+                  ? Colors.amber
+                  : i == 1
+                  ? Colors.grey
+                  : Colors.brown,
+          "username": list[i]["username"] ?? "",
+          "category": category,
+          "score": "${list[i]["score"] ?? 0} คะแนน",
+          "time": list[i]["time"] ?? "",
+        });
+      }
+    });
+
+    return result;
+  }
+
   Future<void> loadScores() async {
     await GameData.loadTopScores();
     await GameData.loadTopScores1();
-    // เกมทายคำศัพท์
-    final topGameScores1 = GameData.topScoresByGame["เกมทายคำศัพท์"] ?? [];
-    topGameScores1.sort((a, b) => (b["score"] ?? 0).compareTo(a["score"] ?? 0));
-    for (int i = 0; i < 3; i++) {
-      if (i < topGameScores1.length) {
-        games1[i]["username"] = topGameScores1[i]["username"] ?? "";
-        games1[i]["category"] = topGameScores1[i]["category"] ?? "";
-        games1[i]["score"] = "${topGameScores1[i]["score"] ?? 0} คะแนน";
-        games1[i]["time"] = topGameScores1[i]["time"] ?? "";
-      }
-    }
-
-    // เกมจับคู่คำศัพท์
-    final topGameScores2 = GameData.topScoresByGame["เกมจับคู่คำศัพท์"] ?? [];
-    topGameScores2.sort((a, b) => (b["score"] ?? 0).compareTo(a["score"] ?? 0));
-    for (int i = 0; i < 3; i++) {
-      if (i < topGameScores2.length) {
-        games2[i]["username"] = topGameScores2[i]["username"] ?? "";
-        games2[i]["category"] = topGameScores2[i]["category"] ?? "";
-        games2[i]["score"] = "${topGameScores2[i]["score"] ?? 0} คะแนน";
-        games2[i]["time"] = topGameScores2[i]["time"] ?? "";
-      }
-    }
-
-    // เกมเติมคำ
-    final topGameScores3 = GameData.topScoresByGame["เกมเติมคำ"] ?? [];
-    topGameScores3.sort((a, b) => (b["score"] ?? 0).compareTo(a["score"] ?? 0));
-    for (int i = 0; i < 3; i++) {
-      if (i < topGameScores3.length) {
-        games3[i]["username"] = topGameScores3[i]["username"] ?? "";
-        games3[i]["category"] = topGameScores3[i]["category"] ?? "";
-        games3[i]["score"] = "${topGameScores3[i]["score"] ?? 0} คะแนน";
-        games3[i]["time"] = topGameScores3[i]["time"] ?? "";
-      }
-    }
+    games1 = _getTop3PerCategory(
+      GameData.topScoresByGame["เกมทายคำศัพท์"] ?? [],
+    );
+    games2 = _getTop3PerCategory(
+      GameData.topScoresByGame["เกมจับคู่คำศัพท์"] ?? [],
+    );
+    games3 = _getTop3PerCategory(GameData.topScoresByGame["เกมเติมคำ"] ?? []);
     setState(() {
       games = [
         {
@@ -503,58 +521,88 @@ class _ProfilescreenState extends State<Profilescreen> {
                   ),
                   onPressed: () {
                     SoundManager.playClickSound();
+                    final grouped = groupByCategory(games1);
+
                     showDialog(
                       context: context,
                       builder: (BuildContext context) {
                         return AlertDialog(
                           title: Text("อันดับคะแนนเกมทายคำ"),
-                          content: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children:
-                                games1.map((game) {
-                                  return Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                      vertical: 6,
-                                    ),
-                                    child: Row(
-                                      children: [
-                                        Icon(
-                                          game["icon"],
-                                          color: game["color"],
-                                          size: 24,
-                                        ),
-                                        SizedBox(width: 12),
-                                        Expanded(
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Text(
-                                                "👤 ${game["username"]}",
-                                                style: TextStyle(fontSize: 14),
-                                              ),
-                                              Text(
-                                                "📂 ${game["category"]}",
-                                                style: TextStyle(fontSize: 14),
-                                              ),
-                                              Text(
-                                                "⏱ ${game["time"]}",
-                                                style: TextStyle(fontSize: 14),
-                                              ),
-                                            ],
+                          content: Container(
+                            height: 400,
+                            child: SingleChildScrollView(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children:
+                                    grouped.entries.map((entry) {
+                                      final category = entry.key;
+                                      final items = entry.value;
+
+                                      return Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            "📂 $category",
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 16,
+                                            ),
                                           ),
-                                        ),
-                                        Text(
-                                          game["score"],
-                                          style: TextStyle(
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  );
-                                }).toList(),
+                                          SizedBox(height: 8),
+                                          ...items.map((game) {
+                                            return Padding(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                    vertical: 6,
+                                                  ),
+                                              child: Row(
+                                                children: [
+                                                  Icon(
+                                                    game["icon"],
+                                                    color: game["color"],
+                                                    size: 24,
+                                                  ),
+                                                  SizedBox(width: 12),
+                                                  Expanded(
+                                                    child: Column(
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .start,
+                                                      children: [
+                                                        Text(
+                                                          "👤 ${game["username"]}",
+                                                          style: TextStyle(
+                                                            fontSize: 14,
+                                                          ),
+                                                        ),
+                                                        Text(
+                                                          "⏱ ${game["time"]}",
+                                                          style: TextStyle(
+                                                            fontSize: 14,
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                  Text(
+                                                    "${game["score"]}",
+                                                    style: TextStyle(
+                                                      fontSize: 16,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            );
+                                          }).toList(),
+                                          Divider(),
+                                        ],
+                                      );
+                                    }).toList(),
+                              ),
+                            ),
                           ),
                         );
                       },
@@ -575,58 +623,88 @@ class _ProfilescreenState extends State<Profilescreen> {
                   ),
                   onPressed: () {
                     SoundManager.playClickSound();
+                    final grouped = groupByCategory(games2);
+
                     showDialog(
                       context: context,
                       builder: (BuildContext context) {
                         return AlertDialog(
                           title: Text("อันดับคะแนนเกมจับคู่"),
-                          content: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children:
-                                games2.map((game) {
-                                  return Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                      vertical: 6,
-                                    ),
-                                    child: Row(
-                                      children: [
-                                        Icon(
-                                          game["icon"],
-                                          color: game["color"],
-                                          size: 24,
-                                        ),
-                                        SizedBox(width: 12),
-                                        Expanded(
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Text(
-                                                "👤 ${game["username"]}",
-                                                style: TextStyle(fontSize: 14),
-                                              ),
-                                              Text(
-                                                "📂 ${game["category"]}",
-                                                style: TextStyle(fontSize: 14),
-                                              ),
-                                              Text(
-                                                "⏱ ${game["time"]}",
-                                                style: TextStyle(fontSize: 14),
-                                              ),
-                                            ],
+                          content: Container(
+                            height: 400,
+                            child: SingleChildScrollView(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children:
+                                    grouped.entries.map((entry) {
+                                      final category = entry.key;
+                                      final items = entry.value;
+
+                                      return Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            "📂 $category",
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 16,
+                                            ),
                                           ),
-                                        ),
-                                        Text(
-                                          game["score"],
-                                          style: TextStyle(
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  );
-                                }).toList(),
+                                          SizedBox(height: 8),
+                                          ...items.map((game) {
+                                            return Padding(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                    vertical: 6,
+                                                  ),
+                                              child: Row(
+                                                children: [
+                                                  Icon(
+                                                    game["icon"],
+                                                    color: game["color"],
+                                                    size: 24,
+                                                  ),
+                                                  SizedBox(width: 12),
+                                                  Expanded(
+                                                    child: Column(
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .start,
+                                                      children: [
+                                                        Text(
+                                                          "👤 ${game["username"]}",
+                                                          style: TextStyle(
+                                                            fontSize: 14,
+                                                          ),
+                                                        ),
+                                                        Text(
+                                                          "⏱ ${game["time"]}",
+                                                          style: TextStyle(
+                                                            fontSize: 14,
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                  Text(
+                                                    "${game["score"]}",
+                                                    style: TextStyle(
+                                                      fontSize: 16,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            );
+                                          }).toList(),
+                                          Divider(),
+                                        ],
+                                      );
+                                    }).toList(),
+                              ),
+                            ),
                           ),
                         );
                       },
@@ -647,58 +725,88 @@ class _ProfilescreenState extends State<Profilescreen> {
                   ),
                   onPressed: () {
                     SoundManager.playClickSound();
+                    final grouped = groupByCategory(games3);
+
                     showDialog(
                       context: context,
                       builder: (BuildContext context) {
                         return AlertDialog(
                           title: Text("อันดับคะแนนเติมคำ"),
-                          content: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children:
-                                games3.map((game) {
-                                  return Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                      vertical: 6,
-                                    ),
-                                    child: Row(
-                                      children: [
-                                        Icon(
-                                          game["icon"],
-                                          color: game["color"],
-                                          size: 24,
-                                        ),
-                                        SizedBox(width: 12),
-                                        Expanded(
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Text(
-                                                "👤 ${game["username"]}",
-                                                style: TextStyle(fontSize: 14),
-                                              ),
-                                              Text(
-                                                "📂 ${game["category"]}",
-                                                style: TextStyle(fontSize: 14),
-                                              ),
-                                              Text(
-                                                "⏱ ${game["time"]}",
-                                                style: TextStyle(fontSize: 14),
-                                              ),
-                                            ],
+                          content: Container(
+                            height: 400,
+                            child: SingleChildScrollView(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children:
+                                    grouped.entries.map((entry) {
+                                      final category = entry.key;
+                                      final items = entry.value;
+
+                                      return Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            "📂 $category",
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 16,
+                                            ),
                                           ),
-                                        ),
-                                        Text(
-                                          game["score"],
-                                          style: TextStyle(
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  );
-                                }).toList(),
+                                          SizedBox(height: 8),
+                                          ...items.map((game) {
+                                            return Padding(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                    vertical: 6,
+                                                  ),
+                                              child: Row(
+                                                children: [
+                                                  Icon(
+                                                    game["icon"],
+                                                    color: game["color"],
+                                                    size: 24,
+                                                  ),
+                                                  SizedBox(width: 12),
+                                                  Expanded(
+                                                    child: Column(
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .start,
+                                                      children: [
+                                                        Text(
+                                                          "👤 ${game["username"]}",
+                                                          style: TextStyle(
+                                                            fontSize: 14,
+                                                          ),
+                                                        ),
+                                                        Text(
+                                                          "⏱ ${game["time"]}",
+                                                          style: TextStyle(
+                                                            fontSize: 14,
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                  Text(
+                                                    "${game["score"]}",
+                                                    style: TextStyle(
+                                                      fontSize: 16,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            );
+                                          }).toList(),
+                                          Divider(),
+                                        ],
+                                      );
+                                    }).toList(),
+                              ),
+                            ),
                           ),
                         );
                       },
