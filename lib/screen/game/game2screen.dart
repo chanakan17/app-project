@@ -144,7 +144,7 @@ class _Game2screenState extends State<Game2screen> {
       randomValues.add(getRandomValue(typeDic[randomKey]!));
     }
 
-    availableKeys.remove(randomKeys[0]);
+    availableKeys.removeWhere((key) => randomKeys.contains(key));
 
     userAnswers = {for (var key in randomKeys) key: null};
 

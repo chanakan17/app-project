@@ -158,7 +158,7 @@ class _MenuscreenState extends State<Menuscreen> {
   ) {
     showDialog(
       context: context,
-      barrierDismissible: false,
+      // barrierDismissible: false,
       builder: (context) {
         return AlertDialog(
           title: Text("เลือกหมวดหมู่ที่ต้องการ"),
