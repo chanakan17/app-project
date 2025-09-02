@@ -1,28 +1,28 @@
 import 'dart:math';
-import 'package:app/management/game_data/game_data.dart';
+import 'package:app/management/dic_service1.dart';
 import 'package:app/management/sound/sound.dart';
 import 'package:app/screen/homescreen.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
 
-class Game1screen extends StatefulWidget {
-  final Map<String, List<String>> dictionary;
-  final String title;
+class Game extends StatefulWidget {
+  const Game({super.key});
 
-  const Game1screen({super.key, required this.dictionary, required this.title});
   @override
-  State<Game1screen> createState() => _Game1screenState();
+  State<Game> createState() => _GameState();
 }
 
 late Map<String, List<String>> typeDic;
 
-class _Game1screenState extends State<Game1screen> {
+class _GameState extends State<Game> {
+  List<DicEntry> allWords = [];
+  List<DicEntry> availableWords = [];
   List<String> randomKeys = [];
   List<String> randomValues = [];
   String? correctValue;
   int score = 0;
   int scoredis = 5;
-  late List<String> availableKeys; // ลิสต์ของ key ที่สามารถสุ่มได้
+  late List<String> availableKeys;
   late String title;
   Stopwatch _stopwatch = Stopwatch();
   Timer? _timer;
@@ -31,14 +31,28 @@ class _Game1screenState extends State<Game1screen> {
   @override
   void initState() {
     super.initState();
-    GameData.reset();
-    typeDic = widget.dictionary;
-    title = widget.title;
-    availableKeys = typeDic.keys.toList(); // เก็บ key ทั้งหมด
-    _getRandomEntries(); // เรียกสุ่มค่าเริ่มต้น
+    _loadWords();
+    availableKeys = typeDic.keys.toList();
+    _getRandomEntries();
     _startGameTimer();
-    GameData.gameName = 'เกมทายคำศัพท์';
-    GameData.title = title;
+  }
+
+  Future<void> _loadWords() async {
+    try {
+      allWords = await DictionaryService.fetchAllWords();
+      availableWords = List.from(allWords);
+
+      // สร้าง typeDic จากคำศัพท์
+      typeDic = {};
+      for (var entry in availableWords) {
+        typeDic.putIfAbsent(entry.word, () => []).add(entry.meaning);
+      }
+
+      availableKeys = typeDic.keys.toList();
+      _getRandomEntries(); // เรียกหลังจาก typeDic ถูกสร้าง
+    } catch (e) {
+      print("❌ โหลดคำศัพท์ล้มเหลว: $e");
+    }
   }
 
   void _startGameTimer() {
@@ -54,15 +68,8 @@ class _Game1screenState extends State<Game1screen> {
     _stopwatch.stop();
     _timer?.cancel();
 
-    GameData.playTimeMs = _stopwatch.elapsedMilliseconds;
-    GameData.playTimeStr = _formatTime(_stopwatch.elapsed);
-
-    final finalTime = _stopwatch.elapsedMilliseconds; // เวลาแบบ ms
+    final finalTime = _stopwatch.elapsedMilliseconds;
     print("⏱ เวลาเล่นทั้งหมด: $finalTime ms");
-
-    // ✅ เก็บเวลาในตัวแปร / DB / SharedPreferences / API
-    // เช่น ส่งไปที่ GameData หรือ API
-    // GameData.playTime = finalTime;
   }
 
   String _formatTime(Duration duration) {
@@ -99,7 +106,6 @@ class _Game1screenState extends State<Game1screen> {
               ),
               onPressed: () async {
                 _endGame();
-                GameData.updateTopScore();
                 Navigator.of(context).pop();
                 Navigator.pushReplacement(
                   context,
@@ -109,7 +115,6 @@ class _Game1screenState extends State<Game1screen> {
                     },
                   ),
                 );
-                await GameData.saveScoreToDB();
               },
               child: Text("ย้อนกลับไปยังเมนู"),
             ),
@@ -162,11 +167,6 @@ class _Game1screenState extends State<Game1screen> {
     return availableKeys[random.nextInt(availableKeys.length)];
   }
 
-  // ฟังก์ชันสุ่ม value จาก List<String> ที่ตรงกับ key
-  // String getRandomValue(List<String> values) {
-  //   var random = Random();
-  //   return values[random.nextInt(values.length)];
-  // }
   String getRandomValue(List<String> values) {
     return values.isNotEmpty ? values[0] : '';
   }
@@ -187,7 +187,6 @@ class _Game1screenState extends State<Game1screen> {
             iconSize: 40,
             onPressed: () {
               SoundManager.playClickSound();
-              _stopwatch.stop();
               // แสดง AlertDialog เมื่อกดปุ่มปิด
               showDialog(
                 context: context,
@@ -206,7 +205,6 @@ class _Game1screenState extends State<Game1screen> {
                           ),
                         ),
                         onPressed: () {
-                          _stopwatch.start();
                           SoundManager.playClickSound();
                           Navigator.of(context).pop();
                         },
@@ -330,10 +328,13 @@ class _Game1screenState extends State<Game1screen> {
                                         0,
                                         0,
                                       ),
-                                      child: Text(
-                                        '${randomKeys[0]}',
-                                        style: TextStyle(fontSize: 25),
-                                      ),
+                                      child:
+                                          randomKeys.isEmpty
+                                              ? CircularProgressIndicator() // แสดง loading
+                                              : Text(
+                                                '${randomKeys[0]}',
+                                                style: TextStyle(fontSize: 25),
+                                              ),
                                     ),
                                   ],
                                 ),
@@ -345,8 +346,6 @@ class _Game1screenState extends State<Game1screen> {
                         Padding(
                           padding: const EdgeInsets.fromLTRB(8, 20, 8, 8),
                           child: Column(
-                            spacing:
-                                10.0, // ระยะห่างระหว่างปุ่ม// ระยะห่างแนวตั้ง
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               for (int i = 0; i < randomKeys.length; i++)
@@ -357,7 +356,6 @@ class _Game1screenState extends State<Game1screen> {
                                       setState(() {
                                         if (shuffledValues[i] == correctValue) {
                                           score++;
-                                          GameData.score = score;
                                           SoundManager.playChecktrueSound();
                                         } else {
                                           scoredis--;

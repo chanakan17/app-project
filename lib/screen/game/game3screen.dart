@@ -407,6 +407,7 @@ class _Game3screenState extends State<Game3screen> {
             icon: Icon(Icons.close),
             iconSize: 40,
             onPressed: () {
+              _stopwatch.stop();
               SoundManager.playClickSound();
               showDialog(
                 context: context,
@@ -425,6 +426,7 @@ class _Game3screenState extends State<Game3screen> {
                           ),
                         ),
                         onPressed: () {
+                          _stopwatch.start();
                           SoundManager.playClickSound();
                           Navigator.of(context).pop();
                         },

@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:math';
+import 'package:app/management/game_data/game_data.dart';
 import 'package:app/management/sound/sound.dart';
 import 'package:app/screen/homescreen.dart';
 import 'package:flutter/material.dart';
@@ -8,20 +9,22 @@ import 'package:flutter_tts/flutter_tts.dart';
 
 class Game4screen extends StatefulWidget {
   final Map<String, List<String>> dictionary;
+  final String title;
 
-  const Game4screen({super.key, required this.dictionary});
+  const Game4screen({super.key, required this.dictionary, required this.title});
 
   @override
   State<Game4screen> createState() => _Game4screenState();
 }
 
+late Map<String, List<String>> typeDic;
+
 class _Game4screenState extends State<Game4screen> {
-  late Map<String, List<String>> typeDic;
   late List<String> availableKeys;
   late String currentKey;
   late String correctValue;
-
   int score = 0;
+  int scoredis = 5;
   String _spokenText = "";
   String _feedback = "";
   bool _isListening = false;
@@ -29,6 +32,9 @@ class _Game4screenState extends State<Game4screen> {
   late FlutterTts _flutterTts;
   late stt.SpeechToText _speech;
   Timer? _silenceTimer;
+  Stopwatch _stopwatch = Stopwatch();
+  Timer? _timer;
+  String _elapsedTime = "00:00:00";
 
   @override
   void initState() {
@@ -37,10 +43,53 @@ class _Game4screenState extends State<Game4screen> {
     availableKeys = typeDic.keys.toList();
     _flutterTts = FlutterTts();
     _speech = stt.SpeechToText();
+
+    _speech.initialize(
+      onStatus: (status) => print('Speech status: $status'),
+      onError: (error) => print('Speech error: $error'),
+    );
+
     _loadNextQuestion();
+    _startGameTimer();
+
+    GameData.reset();
+    GameData.gameName = 'เกมพูดคำศัพท์';
+    GameData.title = widget.title;
+  }
+
+  void _startGameTimer() {
+    _stopwatch.start();
+    _timer = Timer.periodic(Duration(milliseconds: 100), (_) {
+      setState(() {
+        _elapsedTime = _formatTime(_stopwatch.elapsed);
+      });
+    });
+  }
+
+  void _endGame() {
+    _stopwatch.stop();
+    _timer?.cancel();
+    GameData.playTimeMs = _stopwatch.elapsedMilliseconds;
+    GameData.playTimeStr = _formatTime(_stopwatch.elapsed);
+  }
+
+  String _formatTime(Duration duration) {
+    String twoDigits(int n) => n.toString().padLeft(2, '0');
+    final minutes = twoDigits(duration.inMinutes.remainder(60));
+    final seconds = twoDigits(duration.inSeconds.remainder(60));
+    final milliseconds = twoDigits(
+      duration.inMilliseconds.remainder(1000) ~/ 10,
+    );
+    return "$minutes:$seconds:$milliseconds";
   }
 
   void _loadNextQuestion() {
+    if (availableKeys.isEmpty) {
+      _endGame();
+      _showFinishDialog();
+      return;
+    }
+
     var rand = Random();
     currentKey = availableKeys[rand.nextInt(availableKeys.length)];
     var values = typeDic[currentKey]!;
@@ -71,21 +120,21 @@ class _Game4screenState extends State<Game4screen> {
 
       if (available) {
         setState(() => _isListening = true);
-        _speech.listen(
-          localeId: 'en-TH',
-          onResult: (result) {
-            if (result.recognizedWords.trim().isNotEmpty) {
-              setState(() {
-                _spokenText = result.recognizedWords.trim();
-              });
 
-              _silenceTimer?.cancel();
-              _silenceTimer = Timer(Duration(milliseconds: 1200), () {
-                _speech.stop();
-                setState(() => _isListening = false);
-                _checkAnswer();
-              });
-            }
+        _speech.listen(
+          localeId: 'en_US', // ปรับให้ตรงกับภาษา
+          onResult: (result) {
+            setState(() {
+              _spokenText = result.recognizedWords.trim();
+            });
+
+            // จับเวลาหยุดฟังอัตโนมัติ
+            _silenceTimer?.cancel();
+            _silenceTimer = Timer(Duration(milliseconds: 1200), () {
+              _speech.stop();
+              setState(() => _isListening = false);
+              _checkAnswer();
+            });
           },
           listenMode: stt.ListenMode.dictation,
           partialResults: true,
@@ -93,6 +142,8 @@ class _Game4screenState extends State<Game4screen> {
           listenFor: Duration(minutes: 5),
           pauseFor: Duration(seconds: 5),
         );
+      } else {
+        print("Speech recognition not available");
       }
     } else {
       _speech.stop();
@@ -102,24 +153,11 @@ class _Game4screenState extends State<Game4screen> {
   }
 
   void _checkAnswer() {
-    List<TextSpan> textSpans = [];
-    bool isCorrect = true;
+    // ลบช่องว่างและเปรียบเทียบตัวพิมพ์เล็ก
+    String userWord = _spokenText.replaceAll(' ', '').toLowerCase();
+    String correctWord = currentKey.replaceAll(' ', '').toLowerCase();
 
-    for (int i = 0; i < currentKey.length; i++) {
-      String userChar = _spokenText.length > i ? _spokenText[i] : '';
-      String correctChar = currentKey[i];
-
-      if (userChar.toLowerCase() == correctChar.toLowerCase()) {
-        textSpans.add(
-          TextSpan(text: correctChar, style: TextStyle(color: Colors.green)),
-        );
-      } else {
-        textSpans.add(
-          TextSpan(text: correctChar, style: TextStyle(color: Colors.red)),
-        );
-        isCorrect = false;
-      }
-    }
+    bool isCorrect = userWord == correctWord;
 
     setState(() {
       _feedback =
@@ -127,78 +165,133 @@ class _Game4screenState extends State<Game4screen> {
     });
 
     if (isCorrect) {
+      score++;
+      GameData.score = score;
       SoundManager.playChecktrueSound();
     } else {
+      scoredis--;
       SoundManager.playCheckfalseSound();
     }
 
+    if (scoredis < 1) {
+      _endGame();
+      _showFinishDialog();
+      return;
+    }
+
+    // แสดงผลลัพธ์ใน modal
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      showModalBottomSheet(
-        context: context,
-        isDismissible: false,
-        enableDrag: false,
-        isScrollControlled: true,
-        builder: (BuildContext context) {
-          return Container(
-            height: 150,
-            width: double.infinity,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Text(
-                  isCorrect ? "✅ ถูกต้อง!" : "❌ ผิดจร้าาา",
-                  style: TextStyle(fontSize: 25),
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text.rich(
-                      TextSpan(children: textSpans),
-                      style: TextStyle(fontSize: 18),
-                    ),
-                    Text(" = $correctValue", style: TextStyle(fontSize: 18)),
-                  ],
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    if (!isCorrect)
-                      ElevatedButton(
-                        onPressed: () {
-                          Navigator.pop(context);
-                        },
-                        child: Text("อีกครั้ง"),
-                      ),
-                    if (!isCorrect) SizedBox(width: 10),
-                    ElevatedButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                        if (isCorrect) score++;
-                        _loadNextQuestion();
-                      },
-                      child: Text("ไปต่อ"),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          );
-        },
-      );
+      _showResultModal(isCorrect, [
+        TextSpan(
+          text: currentKey,
+          style: TextStyle(color: isCorrect ? Colors.green : Colors.red),
+        ),
+      ]);
     });
+  }
+
+  void _showResultModal(bool isCorrect, List<TextSpan> textSpans) {
+    showModalBottomSheet(
+      context: context,
+      isDismissible: false,
+      enableDrag: false,
+      isScrollControlled: true,
+      builder: (_) {
+        return Container(
+          height: 200,
+          padding: EdgeInsets.all(8),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Icon(
+                    isCorrect ? Icons.check : Icons.close,
+                    color: isCorrect ? Colors.green : Colors.red,
+                    size: 40,
+                  ),
+                  SizedBox(width: 8),
+                  Text(
+                    isCorrect ? "ถูกต้องแล้ว" : "ผิดจร้าาา",
+                    style: TextStyle(
+                      fontSize: 25,
+                      color: isCorrect ? Colors.green : Colors.red,
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(height: 10),
+              Text.rich(
+                TextSpan(children: textSpans),
+                style: TextStyle(fontSize: 18),
+              ),
+              SizedBox(height: 8),
+              Text("คำแปล: $correctValue", style: TextStyle(fontSize: 18)),
+              Spacer(),
+              Center(
+                child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                    _loadNextQuestion();
+                  },
+                  child: Text("ไปข้อต่อไป"),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  void _showFinishDialog() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) {
+        return AlertDialog(
+          title: Text("จบเกมแล้ว!"),
+          content: Text("คุณทำคะแนนได้ทั้งหมด $score คะแนน"),
+          actions: [
+            ElevatedButton(
+              onPressed: () async {
+                _endGame();
+                GameData.updateTopScore();
+                Navigator.of(context).pop();
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => HomeScreen(initialTabIndex: 0),
+                  ),
+                );
+                await GameData.saveScoreToDB();
+              },
+              child: Text("ย้อนกลับไปยังเมนู"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    _stopwatch.stop();
+    _speech.stop();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("เกมพูดคำศัพท์ภาษาอังกฤษ"),
+        title: Text("เกมพูดคำศัพท์"),
+        centerTitle: true,
         bottom: PreferredSize(
-          preferredSize: Size.fromHeight(1.0), // ความสูงของเส้น
-          child: Container(
-            color: Colors.black, // สีของเส้น
-            height: 1.0,
-          ),
+          preferredSize: Size.fromHeight(1.0),
+          child: Container(color: Colors.white, height: 1.0),
         ),
         actions: <Widget>[
           IconButton(
@@ -206,21 +299,37 @@ class _Game4screenState extends State<Game4screen> {
             iconSize: 40,
             onPressed: () {
               SoundManager.playClickSound();
+              _stopwatch.stop();
+              // แสดง AlertDialog เมื่อกดปุ่มปิด
               showDialog(
                 context: context,
                 builder: (BuildContext context) {
                   return AlertDialog(
-                    title: Text("คุณต้องการออกจากเกมหรือไม่?"),
+                    title: Text(
+                      "คุณต้องการออกจากเกมหรือไม่?",
+                      style: TextStyle(fontSize: 21),
+                    ),
                     content: Text("หากคุณออกจากเกม ข้อมูลจะไม่ได้รับการบันทึก"),
                     actions: <Widget>[
-                      TextButton(
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                        ),
                         onPressed: () {
+                          _stopwatch.start();
                           SoundManager.playClickSound();
                           Navigator.of(context).pop();
                         },
                         child: Text("อยู่ต่อ"),
                       ),
-                      TextButton(
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                        ),
                         onPressed: () {
                           SoundManager.playClickSound();
                           Navigator.of(context).pop();
@@ -243,61 +352,158 @@ class _Game4screenState extends State<Game4screen> {
             },
           ),
         ],
-        backgroundColor: Colors.blue,
+        backgroundColor: Color(0xFFFFF895),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(24.0),
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text('คะแนน: $score', style: TextStyle(fontSize: 22)),
-              SizedBox(height: 30),
-              Text(
-                "ฟังคำศัพท์แล้วพูดออกเสียงตาม (ภาษาอังกฤษ)",
-                style: TextStyle(fontSize: 18),
-                textAlign: TextAlign.center,
-              ),
-              SizedBox(height: 10),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: IconButton(
-                      onPressed: _speakWord,
-                      icon: Icon(Icons.volume_up, size: 30),
-                    ),
-                  ),
-                  SizedBox(height: 20),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text(
-                      currentKey,
-                      style: TextStyle(
-                        fontSize: 36,
-                        fontWeight: FontWeight.bold,
+      body: Stack(
+        fit: StackFit.expand,
+        children: [
+          Image.asset('assets/image/bg.png', fit: BoxFit.cover),
+          Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Row(
+                        children: [
+                          Icon(Icons.access_time, size: 24),
+                          SizedBox(width: 4), // ระยะห่างระหว่างไอคอนกับเวลา
+                          Text("$_elapsedTime", style: TextStyle(fontSize: 20)),
+                        ],
                       ),
                     ),
+                    Row(
+                      // mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Text(
+                            'คะแนน: $score',
+                            style: TextStyle(fontSize: 20),
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Row(
+                            children: [
+                              Image.asset(
+                                'assets/icons/banana.png',
+                                width: 35,
+                                height: 35,
+                              ),
+                              Text('$scoredis', style: TextStyle(fontSize: 20)),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(8, 8, 8, 8),
+                      child: Text(
+                        "พูดคำศัพท์ต่อไปนี้",
+                        style: TextStyle(fontSize: 23),
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 20),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(8, 8, 8, 8),
+                  child: Row(
+                    children: [
+                      Image.asset(
+                        'assets/image/monkey.png',
+                        width: 180,
+                        height: 180,
+                      ),
+                      Container(
+                        width: 180,
+                        height: 180,
+                        padding: EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Colors.blue, width: 2),
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        child: Stack(
+                          children: [
+                            // ขอบเครื่องหมายคำพูด
+                            Positioned(
+                              top: 0,
+                              left: 0,
+                              child: Text(
+                                '“',
+                                style: TextStyle(
+                                  fontSize: 40,
+                                  color: Colors.blue,
+                                ),
+                              ),
+                            ),
+                            Positioned(
+                              bottom: 0,
+                              right: 0,
+                              child: Text(
+                                '”',
+                                style: TextStyle(
+                                  fontSize: 40,
+                                  color: Colors.blue,
+                                ),
+                              ),
+                            ),
+
+                            // เนื้อหาข้างใน
+                            Center(
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  IconButton(
+                                    onPressed: _speakWord,
+                                    icon: Icon(Icons.volume_up, size: 25),
+                                  ),
+                                  SizedBox(width: 5),
+                                  Text(
+                                    currentKey,
+                                    style: TextStyle(
+                                      fontSize: 25,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
-                  SizedBox(height: 20),
-                ],
-              ),
-              ElevatedButton.icon(
-                onPressed: _listen,
-                icon: Icon(Icons.mic),
-                label: Text(_isListening ? "กำลังฟัง..." : "พูดคำศัพท์"),
-              ),
-              SizedBox(height: 20),
-              Text("คุณพูดว่า: $_spokenText", style: TextStyle(fontSize: 16)),
-              SizedBox(height: 10),
-              Text(
-                _feedback,
-                style: TextStyle(fontSize: 18, color: Colors.deepPurple),
-              ),
-            ],
+                ),
+                SizedBox(height: 20),
+                ElevatedButton.icon(
+                  onPressed: () {
+                    print("Button pressed"); // debug
+                    _listen();
+                  },
+                  icon: Icon(Icons.mic),
+                  label: Text(_isListening ? "กำลังฟัง..." : "พูดคำศัพท์"),
+                ),
+                SizedBox(height: 20),
+                Text("คุณพูดว่า: $_spokenText", style: TextStyle(fontSize: 16)),
+                SizedBox(height: 10),
+                Text(
+                  _feedback,
+                  style: TextStyle(fontSize: 18, color: Colors.deepPurple),
+                ),
+              ],
+            ),
           ),
-        ),
+        ],
       ),
     );
   }

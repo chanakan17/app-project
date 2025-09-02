@@ -5,18 +5,18 @@ import 'package:app/screen/homescreen.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
 
-class Game1screen extends StatefulWidget {
+class Game5screen extends StatefulWidget {
   final Map<String, List<String>> dictionary;
   final String title;
 
-  const Game1screen({super.key, required this.dictionary, required this.title});
+  const Game5screen({super.key, required this.dictionary, required this.title});
   @override
-  State<Game1screen> createState() => _Game1screenState();
+  State<Game5screen> createState() => _Game5screenState();
 }
 
 late Map<String, List<String>> typeDic;
 
-class _Game1screenState extends State<Game1screen> {
+class _Game5screenState extends State<Game5screen> {
   List<String> randomKeys = [];
   List<String> randomValues = [];
   String? correctValue;
@@ -37,7 +37,7 @@ class _Game1screenState extends State<Game1screen> {
     availableKeys = typeDic.keys.toList(); // เก็บ key ทั้งหมด
     _getRandomEntries(); // เรียกสุ่มค่าเริ่มต้น
     _startGameTimer();
-    GameData.gameName = 'เกมทายคำศัพท์';
+    GameData.gameName = 'เกมทายรูปภาพ';
     GameData.title = title;
   }
 
@@ -148,10 +148,10 @@ class _Game1screenState extends State<Game1screen> {
 
     availableKeys.remove(randomKeys[0]);
 
-    correctValue = randomValues[0];
+    correctValue = randomKeys[0]; // key คือคำตอบ
 
     /// 👇 shuffle ค่าที่นี่ครั้งเดียว
-    shuffledValues = List.from(randomValues)..shuffle();
+    shuffledValues = List.from(randomKeys)..shuffle();
 
     setState(() {});
   }
@@ -168,14 +168,14 @@ class _Game1screenState extends State<Game1screen> {
   //   return values[random.nextInt(values.length)];
   // }
   String getRandomValue(List<String> values) {
-    return values.isNotEmpty ? values[0] : '';
+    return values.isNotEmpty ? values[1] : '';
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("เกมทายคำศัพท์"),
+        title: Text("เกมทายรูปภาพ"),
         centerTitle: true,
         bottom: PreferredSize(
           preferredSize: Size.fromHeight(1.0),
@@ -186,8 +186,8 @@ class _Game1screenState extends State<Game1screen> {
             icon: Icon(Icons.close),
             iconSize: 40,
             onPressed: () {
-              SoundManager.playClickSound();
               _stopwatch.stop();
+              SoundManager.playClickSound();
               // แสดง AlertDialog เมื่อกดปุ่มปิด
               showDialog(
                 context: context,
@@ -299,48 +299,30 @@ class _Game1screenState extends State<Game1screen> {
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
                             Padding(
-                              padding: const EdgeInsets.fromLTRB(8, 8, 8, 8),
+                              padding: const EdgeInsets.fromLTRB(8, 8, 8, 0),
                               child: Text(
-                                "เลือกคำให้ถูกต้อง ?",
+                                "รูปภาพนี้คืออะไร ?",
                                 style: TextStyle(fontSize: 23),
                               ),
                             ),
                           ],
                         ),
                         SizedBox(height: 20),
-                        Padding(
-                          padding: const EdgeInsets.fromLTRB(8, 8, 8, 8),
-                          child: Row(
-                            children: [
-                              Image.asset(
-                                'assets/image/monkey.png',
-                                width: 180,
-                                height: 180,
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Container(
+                              width: 200,
+                              height: 200,
+                              child: Image.network(
+                                randomValues[0],
+                                fit: BoxFit.contain,
                               ),
-                              Container(
-                                width: 180,
-                                height: 180,
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Padding(
-                                      padding: const EdgeInsets.fromLTRB(
-                                        5,
-                                        15,
-                                        0,
-                                        0,
-                                      ),
-                                      child: Text(
-                                        '${randomKeys[0]}',
-                                        style: TextStyle(fontSize: 25),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
+                        SizedBox(height: 20),
                         // ใช้ Wrap หรือ Row เพื่อจัดปุ่มในแนวนอน
                         Padding(
                           padding: const EdgeInsets.fromLTRB(8, 20, 8, 8),
@@ -432,7 +414,7 @@ class _Game1screenState extends State<Game1screen> {
                                                               8.0,
                                                             ),
                                                         child: Text(
-                                                          "${randomKeys[0]} --> ${correctValue}",
+                                                          "คำตอบคือ --> ${correctValue}",
                                                           style: TextStyle(
                                                             fontSize: 20,
                                                             color: Colors.green,
@@ -567,7 +549,7 @@ class _Game1screenState extends State<Game1screen> {
                                                               8.0,
                                                             ),
                                                         child: Text(
-                                                          "${randomKeys[0]} --> ${correctValue}",
+                                                          "คำตอบคือ --> ${correctValue}",
                                                           style: TextStyle(
                                                             fontSize: 20,
                                                             color: Colors.red,

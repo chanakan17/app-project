@@ -1,3 +1,6 @@
+import 'package:app/screen/game/game.dart';
+import 'package:app/screen/game/game4screen.dart';
+import 'package:app/screen/game/game5screen.dart';
 import 'package:flutter/material.dart';
 import 'package:app/management/sound/sound.dart';
 import 'package:app/screen/game/game1screen.dart';
@@ -57,39 +60,76 @@ class _MenuscreenState extends State<Menuscreen> {
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  buildGameButton(
-                    "เกมทายคำศัพท์",
-                    Image.asset(
-                      'assets/icons/guess.png',
-                      width: 90,
-                      height: 90,
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    ElevatedButton(
+                      onPressed: () {
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(builder: (context) => Game()),
+                        );
+                      },
+                      child: Text("GameNa"),
                     ),
-                    Colors.blue[100]!,
-                    (dictionary, title) =>
-                        Game1screen(dictionary: dictionary, title: title),
-                  ),
-                  buildGameButton(
-                    "เกมจับคู่คำศัพท์",
-                    Image.asset(
-                      'assets/icons/match.png',
-                      width: 90,
-                      height: 90,
+                    buildGameButton(
+                      "เกมทายคำศัพท์",
+                      Image.asset(
+                        'assets/icons/guess.png',
+                        width: 90,
+                        height: 90,
+                      ),
+                      Colors.blue[100]!,
+                      (dictionary, title) =>
+                          Game1screen(dictionary: dictionary, title: title),
                     ),
-                    Colors.orange[100]!,
-                    (dictionary, title) =>
-                        Game2screen(dictionary: dictionary, title: title),
-                  ),
-                  buildGameButton(
-                    "เกมเติมคำ",
-                    Image.asset('assets/icons/add.png', width: 90, height: 90),
-                    Colors.deepPurpleAccent[100]!,
-                    (dictionary, title) =>
-                        Game3screen(dictionary: dictionary, title: title),
-                  ),
-                ],
+                    buildGameButton(
+                      "เกมจับคู่คำศัพท์",
+                      Image.asset(
+                        'assets/icons/match.png',
+                        width: 90,
+                        height: 90,
+                      ),
+                      Colors.orange[100]!,
+                      (dictionary, title) =>
+                          Game2screen(dictionary: dictionary, title: title),
+                    ),
+                    buildGameButton(
+                      "เกมเติมคำ",
+                      Image.asset(
+                        'assets/icons/add.png',
+                        width: 90,
+                        height: 90,
+                      ),
+                      Colors.deepPurpleAccent[100]!,
+                      (dictionary, title) =>
+                          Game3screen(dictionary: dictionary, title: title),
+                    ),
+                    buildGameButton(
+                      "เกมพูดคำศัพท์",
+                      Image.asset(
+                        'assets/icons/add.png',
+                        width: 90,
+                        height: 90,
+                      ),
+                      Colors.deepPurpleAccent[100]!,
+                      (dictionary, title) =>
+                          Game4screen(dictionary: dictionary, title: title),
+                    ),
+                    buildGameButton(
+                      "เกมทายรูปภาพ",
+                      Image.asset(
+                        'assets/icons/add.png',
+                        width: 90,
+                        height: 90,
+                      ),
+                      Colors.deepPurpleAccent[100]!,
+                      (dictionary, title) =>
+                          Game5screen(dictionary: dictionary, title: title),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),

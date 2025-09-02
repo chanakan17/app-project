@@ -179,6 +179,7 @@ class _Game2screenState extends State<Game2screen> {
             icon: Icon(Icons.close),
             iconSize: 40,
             onPressed: () {
+              _stopwatch.stop();
               SoundManager.playClickSound();
               showDialog(
                 context: context,
@@ -197,6 +198,7 @@ class _Game2screenState extends State<Game2screen> {
                           ),
                         ),
                         onPressed: () {
+                          _stopwatch.start();
                           SoundManager.playClickSound();
                           Navigator.of(context).pop();
                         },
@@ -412,7 +414,7 @@ class _Game2screenState extends State<Game2screen> {
                                         answer ?? '',
                                         style: TextStyle(
                                           fontSize: 16,
-                                          color: Colors.black87,
+                                          color: Colors.black,
                                         ),
                                       ),
                                     ),
@@ -451,10 +453,10 @@ class _Game2screenState extends State<Game2screen> {
                                     val,
                                     style: TextStyle(
                                       fontSize: 16,
-                                      color: Colors.black87,
+                                      color: Colors.black,
                                     ),
                                   ),
-                                  backgroundColor: Colors.blue,
+                                  backgroundColor: Colors.lightBlue,
                                 ),
                               ),
                               childWhenDragging: Chip(
@@ -469,10 +471,10 @@ class _Game2screenState extends State<Game2screen> {
                                   val,
                                   style: TextStyle(
                                     fontSize: 16,
-                                    color: Colors.black87,
+                                    color: Colors.black,
                                   ),
                                 ),
-                                backgroundColor: Colors.blue,
+                                backgroundColor: Colors.lightBlue,
                               ),
                             );
                       }).toList(),
