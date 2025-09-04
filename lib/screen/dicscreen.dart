@@ -24,16 +24,17 @@ class _DicscreenState extends State<Dicscreen> {
         // ),
         title: Text("Vocabulary"),
         centerTitle: true,
-        bottom: PreferredSize(
-          preferredSize: Size.fromHeight(1.0),
-          child: Container(color: Colors.white, height: 1.0),
-        ),
-        backgroundColor: Color(0xFFFFF895),
+        // bottom: PreferredSize(
+        //   preferredSize: Size.fromHeight(1.0),
+        //   child: Container(color: Colors.white, height: 1.0),
+        // ),
+        backgroundColor: Color(0xFFFFD54F),
       ),
+      backgroundColor: Color(0xFFFFE082),
       body: Stack(
         fit: StackFit.expand,
         children: [
-          Image.asset('assets/image/bg.png', fit: BoxFit.cover),
+          // Image.asset('assets/image/bg.png', fit: BoxFit.cover),
           Padding(
             padding: const EdgeInsets.fromLTRB(8, 50, 8, 50),
             child: SingleChildScrollView(
@@ -108,10 +109,14 @@ class _DicscreenState extends State<Dicscreen> {
       child: SizedBox(
         child: ElevatedButton(
           style: ElevatedButton.styleFrom(
-            fixedSize: Size(300, 80),
+            backgroundColor: Colors.white.withOpacity(0.8),
+            fixedSize: Size(360, 115),
             shape: RoundedRectangleBorder(
-              // side: BorderSide(color: Colors.grey),
-              borderRadius: BorderRadius.circular(16),
+              side: BorderSide(
+                color: Colors.orange, // สีของขอบ
+                width: 2, // ความหนาของขอบ
+              ),
+              borderRadius: BorderRadius.circular(25),
             ),
             // backgroundColor: Colors.grey[300],
           ),
@@ -127,8 +132,8 @@ class _DicscreenState extends State<Dicscreen> {
             children: [
               CircleAvatar(
                 backgroundColor: iconBackgroundColor,
-                radius: 30,
-                child: Icon(icon, size: 40, color: Colors.blue),
+                radius: 45,
+                child: Icon(icon, size: 60, color: Colors.blue),
               ),
               SizedBox(width: 16),
               Expanded(
@@ -139,11 +144,11 @@ class _DicscreenState extends State<Dicscreen> {
                     Text(
                       title,
                       style: TextStyle(
-                        fontSize: 18,
+                        fontSize: 22,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    Text(subtitle, style: TextStyle(fontSize: 14)),
+                    Text(subtitle, style: TextStyle(fontSize: 18)),
                   ],
                 ),
               ),

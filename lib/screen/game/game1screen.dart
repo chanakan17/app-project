@@ -177,10 +177,10 @@ class _Game1screenState extends State<Game1screen> {
       appBar: AppBar(
         title: Text("เกมทายคำศัพท์"),
         centerTitle: true,
-        bottom: PreferredSize(
-          preferredSize: Size.fromHeight(1.0),
-          child: Container(color: Colors.white, height: 1.0),
-        ),
+        // bottom: PreferredSize(
+        //   preferredSize: Size.fromHeight(1.0),
+        //   child: Container(color: Colors.white, height: 1.0),
+        // ),
         actions: <Widget>[
           IconButton(
             icon: Icon(Icons.close),
@@ -240,12 +240,13 @@ class _Game1screenState extends State<Game1screen> {
             },
           ),
         ],
-        backgroundColor: Color(0xFFFFF895),
+        backgroundColor: Color(0xFFFFD54F),
       ),
+      backgroundColor: Color(0xFFFFE082),
       body: Stack(
         fit: StackFit.expand,
         children: [
-          Image.asset('assets/image/bg.png', fit: BoxFit.cover),
+          // Image.asset('assets/image/bg.png', fit: BoxFit.cover),
           Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,

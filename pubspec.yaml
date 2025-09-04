@@ -46,6 +46,8 @@ flutter:
     - assets/icons/guess.png
     - assets/icons/match.png
     - assets/icons/add.png
+    - assets/icons/pic.png
+    - assets/icons/speak.png
     - assets/icons/worm.png
     - assets/image/monkey.png
     - assets/image/bg.png

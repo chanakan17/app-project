@@ -29,7 +29,7 @@ class _DicaniscreenState extends State<Dicaniscreen> {
   Future<void> _loadWords() async {
     try {
       var url = Uri.parse(
-        "http://192.168.1.112/dataweb/get_words.php?category_id=2", // 🐾 ใช้ category_id = 2
+        "http://192.168.1.147/dataweb/get_words.php?category_id=2", // 🐾 ใช้ category_id = 2
       );
       var response = await http.get(url);
       print('Status code: ${response.statusCode}');
@@ -105,16 +105,13 @@ class _DicaniscreenState extends State<Dicaniscreen> {
           },
         ),
         title: Text("คำศัพท์สัตว์"),
-        bottom: PreferredSize(
-          preferredSize: Size.fromHeight(1.0),
-          child: Container(color: Colors.white, height: 1.0),
-        ),
-        backgroundColor: Color(0xFFFFF895),
+        backgroundColor: Color(0xFFFFD54F),
       ),
+      backgroundColor: Color(0xFFFFE082),
       body: Stack(
         fit: StackFit.expand,
         children: [
-          Image.asset('assets/image/bg.png', fit: BoxFit.cover),
+          // Image.asset('assets/image/bg.png', fit: BoxFit.cover),
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: Column(

@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class DictionaryService {
-  static const String _baseUrl = "http://192.168.1.112/dataweb/geta_words.php";
+  static const String _baseUrl = "http://192.168.1.147/dataweb/geta_words.php";
 
   // ดึงทั้งหมด
   static Future<List<DicEntry>> fetchAllWords() async {

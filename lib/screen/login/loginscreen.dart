@@ -38,7 +38,7 @@ class _LoginScreenState extends State<LoginScreen> {
     final email = _emailController.text;
     final password = _passwordController.text;
 
-    final url = Uri.parse('http://192.168.1.112/dataweb/login_app.php');
+    final url = Uri.parse('http://192.168.1.147/dataweb/login_app.php');
     try {
       final response = await http.post(
         url,
@@ -113,6 +113,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   const SizedBox(height: 40),
                   TextFormField(
                     controller: _emailController,
+                    keyboardType: TextInputType.text,
                     decoration: const InputDecoration(
                       labelText: 'อีเมล',
                       border: OutlineInputBorder(),

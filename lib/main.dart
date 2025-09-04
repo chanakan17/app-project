@@ -25,6 +25,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'DicOfEng',
       theme: ThemeData(
+        fontFamily: 'Roboto',
         colorScheme: ColorScheme.fromSeed(
           seedColor: Colors.deepPurple,
           brightness: Brightness.light,

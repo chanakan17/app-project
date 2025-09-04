@@ -397,11 +397,11 @@ class _Game3screenState extends State<Game3screen> {
       appBar: AppBar(
         title: Text("เกมเติมคำ"),
         centerTitle: true,
-        bottom: PreferredSize(
-          preferredSize: Size.fromHeight(1.0),
-          child: Container(color: Colors.white, height: 1.0),
-        ),
-        backgroundColor: Color(0xFFFFF895),
+        // bottom: PreferredSize(
+        //   preferredSize: Size.fromHeight(1.0),
+        //   child: Container(color: Colors.white, height: 1.0),
+        // ),
+        backgroundColor: Color(0xFFFFD54F),
         actions: <Widget>[
           IconButton(
             icon: Icon(Icons.close),
@@ -461,10 +461,11 @@ class _Game3screenState extends State<Game3screen> {
           ),
         ],
       ),
+      backgroundColor: Color(0xFFFFE082),
+      resizeToAvoidBottomInset: true,
       body: Stack(
-        fit: StackFit.expand,
         children: [
-          Image.asset('assets/image/bg.png', fit: BoxFit.cover),
+          // Image.asset('assets/image/bg.png', fit: BoxFit.cover),
           Padding(
             padding: const EdgeInsets.fromLTRB(8, 8, 8, 40),
             child: Center(

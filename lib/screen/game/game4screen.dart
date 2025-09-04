@@ -289,10 +289,10 @@ class _Game4screenState extends State<Game4screen> {
       appBar: AppBar(
         title: Text("เกมพูดคำศัพท์"),
         centerTitle: true,
-        bottom: PreferredSize(
-          preferredSize: Size.fromHeight(1.0),
-          child: Container(color: Colors.white, height: 1.0),
-        ),
+        // bottom: PreferredSize(
+        //   preferredSize: Size.fromHeight(1.0),
+        //   child: Container(color: Colors.white, height: 1.0),
+        // ),
         actions: <Widget>[
           IconButton(
             icon: Icon(Icons.close),
@@ -352,12 +352,13 @@ class _Game4screenState extends State<Game4screen> {
             },
           ),
         ],
-        backgroundColor: Color(0xFFFFF895),
+        backgroundColor: Color(0xFFFFD54F),
       ),
+      backgroundColor: Color(0xFFFFE082),
       body: Stack(
         fit: StackFit.expand,
         children: [
-          Image.asset('assets/image/bg.png', fit: BoxFit.cover),
+          // Image.asset('assets/image/bg.png', fit: BoxFit.cover),
           Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
@@ -418,48 +419,21 @@ class _Game4screenState extends State<Game4screen> {
                 Padding(
                   padding: const EdgeInsets.fromLTRB(8, 8, 8, 8),
                   child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Image.asset(
                         'assets/image/monkey.png',
                         width: 180,
                         height: 180,
                       ),
-                      Container(
-                        width: 180,
-                        height: 180,
-                        padding: EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                          border: Border.all(color: Colors.blue, width: 2),
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                        child: Stack(
-                          children: [
-                            // ขอบเครื่องหมายคำพูด
-                            Positioned(
-                              top: 0,
-                              left: 0,
-                              child: Text(
-                                '“',
-                                style: TextStyle(
-                                  fontSize: 40,
-                                  color: Colors.blue,
-                                ),
-                              ),
-                            ),
-                            Positioned(
-                              bottom: 0,
-                              right: 0,
-                              child: Text(
-                                '”',
-                                style: TextStyle(
-                                  fontSize: 40,
-                                  color: Colors.blue,
-                                ),
-                              ),
-                            ),
-
-                            // เนื้อหาข้างใน
-                            Center(
+                      Expanded(
+                        child: CustomPaint(
+                          painter: BubblePainter(),
+                          child: Container(
+                            width: 200,
+                            height: 80,
+                            padding: const EdgeInsets.all(12),
+                            child: Center(
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
@@ -468,17 +442,22 @@ class _Game4screenState extends State<Game4screen> {
                                     icon: Icon(Icons.volume_up, size: 25),
                                   ),
                                   SizedBox(width: 5),
-                                  Text(
-                                    currentKey,
-                                    style: TextStyle(
-                                      fontSize: 25,
-                                      fontWeight: FontWeight.bold,
+                                  Expanded(
+                                    child: FittedBox(
+                                      child: Text(
+                                        currentKey,
+                                        style: TextStyle(
+                                          fontSize: 25,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
                                     ),
                                   ),
                                 ],
                               ),
                             ),
-                          ],
+                          ),
                         ),
                       ),
                     ],
@@ -507,4 +486,60 @@ class _Game4screenState extends State<Game4screen> {
       ),
     );
   }
+}
+
+class BubblePainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    // สร้าง LinearGradient สำหรับพื้นหลังไล่ระดับสี
+    final gradient = LinearGradient(
+      colors: [Colors.blue.shade200, Colors.blue.shade400],
+      begin: Alignment.centerLeft, // เริ่มไล่สีจากซ้ายกลาง
+      end: Alignment.centerRight, // ไปสิ้นสุดที่ขวากลาง
+    );
+
+    // สีเติมของฟองข้อความ (ใช้ gradient)
+    final paintFill =
+        Paint()
+          ..shader = gradient.createShader(
+            Rect.fromLTWH(0, 0, size.width, size.height),
+          )
+          ..style = PaintingStyle.fill;
+
+    // สีขอบของฟองข้อความ
+    final paintStroke =
+        Paint()
+          ..color = Colors.blue.shade800
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = 3;
+
+    // กล่องโค้ง
+    final rrect = RRect.fromLTRBR(
+      0,
+      0,
+      size.width,
+      size.height,
+      const Radius.circular(30),
+    );
+
+    // วาดกล่องพื้นหลังแบบไล่สี
+    canvas.drawRRect(rrect, paintFill);
+    // วาดขอบกล่อง
+    canvas.drawRRect(rrect, paintStroke);
+
+    // สร้าง path หางด้านซ้าย
+    final path = Path();
+    path.moveTo(0, size.height / 2 - 10);
+    path.lineTo(-20, size.height / 1.5);
+    path.lineTo(0, size.height / 2 + 15);
+    path.close();
+
+    // วาดหางเติมสี
+    canvas.drawPath(path, paintFill);
+    // วาดขอบหาง
+    canvas.drawPath(path, paintStroke);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }

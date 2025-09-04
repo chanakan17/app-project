@@ -69,6 +69,40 @@ class _ProfilescreenState extends State<Profilescreen> {
     },
   );
 
+  List<Map<String, dynamic>> games4 = List.generate(
+    3,
+    (index) => {
+      "icon": Icons.emoji_events,
+      "color":
+          index == 0
+              ? Colors.amber
+              : index == 1
+              ? Colors.grey
+              : Colors.brown,
+      "username": "",
+      "category": "",
+      "score": "คะแนน",
+      "time": "",
+    },
+  );
+
+  List<Map<String, dynamic>> games5 = List.generate(
+    3,
+    (index) => {
+      "icon": Icons.emoji_events,
+      "color":
+          index == 0
+              ? Colors.amber
+              : index == 1
+              ? Colors.grey
+              : Colors.brown,
+      "username": "",
+      "category": "",
+      "score": "คะแนน",
+      "time": "",
+    },
+  );
+
   Future<void> logout(BuildContext context) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('id');
@@ -110,7 +144,7 @@ class _ProfilescreenState extends State<Profilescreen> {
 
     try {
       final url = Uri.parse(
-        'http://192.168.1.112/dataweb/get_user.php?id=$userId',
+        'http://192.168.1.147/dataweb/get_user.php?id=$userId',
       );
       final response = await http.get(url);
 
@@ -144,7 +178,7 @@ class _ProfilescreenState extends State<Profilescreen> {
     if (userId == null) return;
 
     try {
-      final url = Uri.parse('http://192.168.1.112/dataweb/update_user.php');
+      final url = Uri.parse('http://192.168.1.147/dataweb/update_user.php');
       final response = await http.post(
         url,
         body: {'id': userId.toString(), 'username': newName},
@@ -302,6 +336,13 @@ class _ProfilescreenState extends State<Profilescreen> {
       GameData.topScoresByGame["เกมจับคู่คำศัพท์"] ?? [],
     );
     games3 = _getTop3PerCategory(GameData.topScoresByGame["เกมเติมคำ"] ?? []);
+    games4 = _getTop3PerCategory(
+      GameData.topScoresByGame["เกมพูดคำศัพท์"] ?? [],
+    );
+    games5 = _getTop3PerCategory(
+      GameData.topScoresByGame["เกมทายรูปภาพ"] ?? [],
+    );
+
     setState(() {
       games = [
         {
@@ -335,10 +376,10 @@ class _ProfilescreenState extends State<Profilescreen> {
       appBar: AppBar(
         title: Text("Profile"),
         centerTitle: true,
-        bottom: PreferredSize(
-          preferredSize: Size.fromHeight(1.0),
-          child: Container(color: Colors.white, height: 1.0),
-        ),
+        // bottom: PreferredSize(
+        //   preferredSize: Size.fromHeight(1.0),
+        //   child: Container(color: Colors.white, height: 1.0),
+        // ),
         actions: <Widget>[
           IconButton(
             icon: Icon(Icons.settings),
@@ -418,13 +459,14 @@ class _ProfilescreenState extends State<Profilescreen> {
             },
           ),
         ],
-        backgroundColor: Color(0xFFFFF895),
+        backgroundColor: Color(0xFFFFD54F),
       ),
+      backgroundColor: Color(0xFFFFE082),
       body: Stack(
         fit: StackFit.expand,
         children: [
           // 🔹 พื้นหลัง
-          Image.asset('assets/image/bg.png', fit: BoxFit.cover),
+          // Image.asset('assets/image/bg.png', fit: BoxFit.cover),
           SafeArea(
             child: Column(
               children: [
@@ -731,7 +773,7 @@ class _ProfilescreenState extends State<Profilescreen> {
                       context: context,
                       builder: (BuildContext context) {
                         return AlertDialog(
-                          title: Text("อันดับคะแนนเติมคำ"),
+                          title: Text("อันดับคะแนนเกมเติมคำ"),
                           content: Container(
                             height: 400,
                             child: SingleChildScrollView(
@@ -813,7 +855,211 @@ class _ProfilescreenState extends State<Profilescreen> {
                     );
                   },
                   child: Text(
-                    "อันดับคะแนนเติมคำ",
+                    "อันดับคะแนนเกมเติมคำ",
+                    style: TextStyle(fontSize: 18),
+                  ),
+                ),
+                SizedBox(height: 30),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    fixedSize: Size(350, 40),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  onPressed: () {
+                    SoundManager.playClickSound();
+                    final grouped = groupByCategory(games4);
+
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: Text("อันดับคะแนนเกมพูดคำศัพท์"),
+                          content: Container(
+                            height: 400,
+                            child: SingleChildScrollView(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children:
+                                    grouped.entries.map((entry) {
+                                      final category = entry.key;
+                                      final items = entry.value;
+
+                                      return Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            "📂 $category",
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 16,
+                                            ),
+                                          ),
+                                          SizedBox(height: 8),
+                                          ...items.map((game) {
+                                            return Padding(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                    vertical: 6,
+                                                  ),
+                                              child: Row(
+                                                children: [
+                                                  Icon(
+                                                    game["icon"],
+                                                    color: game["color"],
+                                                    size: 24,
+                                                  ),
+                                                  SizedBox(width: 12),
+                                                  Expanded(
+                                                    child: Column(
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .start,
+                                                      children: [
+                                                        Text(
+                                                          "👤 ${game["username"]}",
+                                                          style: TextStyle(
+                                                            fontSize: 14,
+                                                          ),
+                                                        ),
+                                                        Text(
+                                                          "⏱ ${game["time"]}",
+                                                          style: TextStyle(
+                                                            fontSize: 14,
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                  Text(
+                                                    "${game["score"]}",
+                                                    style: TextStyle(
+                                                      fontSize: 16,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            );
+                                          }).toList(),
+                                          Divider(),
+                                        ],
+                                      );
+                                    }).toList(),
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                    );
+                  },
+                  child: Text(
+                    "อันดับคะแนนเกมพูดคำศัพท์",
+                    style: TextStyle(fontSize: 18),
+                  ),
+                ),
+                SizedBox(height: 30),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    fixedSize: Size(350, 40),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  onPressed: () {
+                    SoundManager.playClickSound();
+                    final grouped = groupByCategory(games5);
+
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: Text("อันดับคะแนนเกมทายรูปภาพ"),
+                          content: Container(
+                            height: 400,
+                            child: SingleChildScrollView(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children:
+                                    grouped.entries.map((entry) {
+                                      final category = entry.key;
+                                      final items = entry.value;
+
+                                      return Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            "📂 $category",
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 16,
+                                            ),
+                                          ),
+                                          SizedBox(height: 8),
+                                          ...items.map((game) {
+                                            return Padding(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                    vertical: 6,
+                                                  ),
+                                              child: Row(
+                                                children: [
+                                                  Icon(
+                                                    game["icon"],
+                                                    color: game["color"],
+                                                    size: 24,
+                                                  ),
+                                                  SizedBox(width: 12),
+                                                  Expanded(
+                                                    child: Column(
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .start,
+                                                      children: [
+                                                        Text(
+                                                          "👤 ${game["username"]}",
+                                                          style: TextStyle(
+                                                            fontSize: 14,
+                                                          ),
+                                                        ),
+                                                        Text(
+                                                          "⏱ ${game["time"]}",
+                                                          style: TextStyle(
+                                                            fontSize: 14,
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                  Text(
+                                                    "${game["score"]}",
+                                                    style: TextStyle(
+                                                      fontSize: 16,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            );
+                                          }).toList(),
+                                          Divider(),
+                                        ],
+                                      );
+                                    }).toList(),
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                    );
+                  },
+                  child: Text(
+                    "อันดับคะแนนเกมทายรูปภาพ",
                     style: TextStyle(fontSize: 18),
                   ),
                 ),

@@ -28,7 +28,7 @@ class _MenuscreenState extends State<Menuscreen> {
             height: 40,
           ),
         ),
-        title: Text("Games"),
+        title: Text("Games", style: TextStyle(fontWeight: FontWeight.bold)),
         centerTitle: true,
         // bottom: PreferredSize(
         //   preferredSize: Size.fromHeight(1.0), // ความสูงของเส้น
@@ -37,26 +37,28 @@ class _MenuscreenState extends State<Menuscreen> {
         //     height: 1.0,
         //   ),
         // ),
-        bottom: PreferredSize(
-          preferredSize: Size.fromHeight(1.0),
-          child: Container(color: Colors.white, height: 1.0),
-        ),
+        // bottom: PreferredSize(
+        //   preferredSize: Size.fromHeight(1.0),
+        //   child: Container(color: Colors.white, height: 1.0),
+        // ),
         actions: [
           Padding(
             padding: const EdgeInsets.all(8.0),
-            child: Image.asset(
-              'assets/icons/star96.png',
-              width: 40,
-              height: 40,
-            ),
+            child: Icon(Icons.star, size: 40, color: Colors.orange),
+            // Image.asset(
+            //   'assets/icons/star96.png',
+            //   width: 40,
+            //   height: 40,
+            // ),
           ),
         ],
-        backgroundColor: Color(0xFFE37400),
+        backgroundColor: Color(0xFFFFD54F),
       ),
+      backgroundColor: Color(0xFFFFE082),
       body: Stack(
         fit: StackFit.expand,
         children: [
-          Image.asset('assets/image/bg.png', fit: BoxFit.cover),
+          // Image.asset('assets/image/bg.png', fit: BoxFit.cover),
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Center(
@@ -64,15 +66,15 @@ class _MenuscreenState extends State<Menuscreen> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    ElevatedButton(
-                      onPressed: () {
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(builder: (context) => Game()),
-                        );
-                      },
-                      child: Text("GameNa"),
-                    ),
+                    // ElevatedButton(
+                    //   onPressed: () {
+                    //     Navigator.pushReplacement(
+                    //       context,
+                    //       MaterialPageRoute(builder: (context) => Game()),
+                    //     );
+                    //   },
+                    //   child: Text("GameNa"),
+                    // ),
                     buildGameButton(
                       "เกมทายคำศัพท์",
                       Image.asset(
@@ -80,7 +82,7 @@ class _MenuscreenState extends State<Menuscreen> {
                         width: 90,
                         height: 90,
                       ),
-                      Colors.blue[100]!,
+                      Colors.orange[100]!,
                       (dictionary, title) =>
                           Game1screen(dictionary: dictionary, title: title),
                     ),
@@ -91,7 +93,7 @@ class _MenuscreenState extends State<Menuscreen> {
                         width: 90,
                         height: 90,
                       ),
-                      Colors.orange[100]!,
+                      Colors.blue[100]!,
                       (dictionary, title) =>
                           Game2screen(dictionary: dictionary, title: title),
                     ),
@@ -109,22 +111,22 @@ class _MenuscreenState extends State<Menuscreen> {
                     buildGameButton(
                       "เกมพูดคำศัพท์",
                       Image.asset(
-                        'assets/icons/add.png',
+                        'assets/icons/speak.png',
                         width: 90,
                         height: 90,
                       ),
-                      Colors.deepPurpleAccent[100]!,
+                      Colors.pink[100]!,
                       (dictionary, title) =>
                           Game4screen(dictionary: dictionary, title: title),
                     ),
                     buildGameButton(
                       "เกมทายรูปภาพ",
                       Image.asset(
-                        'assets/icons/add.png',
+                        'assets/icons/pic.png',
                         width: 90,
                         height: 90,
                       ),
-                      Colors.deepPurpleAccent[100]!,
+                      Colors.green[100]!,
                       (dictionary, title) =>
                           Game5screen(dictionary: dictionary, title: title),
                     ),
@@ -154,7 +156,7 @@ class _MenuscreenState extends State<Menuscreen> {
     Widget Function(Map<String, List<String>>, String) screenBuilder,
   ) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(8, 15, 8, 15),
+      padding: const EdgeInsets.all(8.0),
       child: SizedBox(
         child: ElevatedButton(
           onPressed: () {
@@ -162,31 +164,55 @@ class _MenuscreenState extends State<Menuscreen> {
             showCategoryDialog(screenBuilder);
           },
           style: ElevatedButton.styleFrom(
-            fixedSize: Size(340, 135),
+            backgroundColor: Colors.white.withOpacity(0.8), //ความทึมแสง
+            // backgroundColor: Colors.transparent,
+            // shadowColor: Colors.transparent,
+            fixedSize: Size(370, 120),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(25),
+              side: BorderSide(
+                color: Colors.orange, // สีของขอบ
+                width: 2, // ความหนาของขอบ
+              ),
             ),
           ),
-          child: Row(
-            children: [
-              ClipRRect(
-                borderRadius: BorderRadius.circular(25),
-                child: Container(
-                  color: iconBackgroundColor,
-                  width: 90,
+          child: Center(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(50),
+                  child: Container(
+                    color: iconBackgroundColor,
+                    width: 90,
+                    height: 90,
+                    padding: EdgeInsets.all(10),
+                    child: iconWidget,
+                  ),
+                ),
+                SizedBox(width: 24),
+                Container(
+                  width: 200,
                   height: 90,
-                  padding: EdgeInsets.all(10),
-                  child: iconWidget,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Center(
+                        child: Expanded(
+                          child: Text(
+                            title,
+                            style: TextStyle(
+                              fontSize: 30,
+                              color: Colors.black87,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-              SizedBox(width: 16),
-              Expanded(
-                child: Text(
-                  title,
-                  style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
-                ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
@@ -202,6 +228,7 @@ class _MenuscreenState extends State<Menuscreen> {
       builder: (context) {
         return AlertDialog(
           title: Text("เลือกหมวดหมู่ที่ต้องการ"),
+          backgroundColor: Color.fromARGB(255, 236, 217, 159),
           actions: [
             SizedBox(
               width: 300,
@@ -282,9 +309,11 @@ class _MenuscreenState extends State<Menuscreen> {
           }
         },
         style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.white.withOpacity(0.8),
           fixedSize: Size(280, 80),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
+            side: BorderSide(color: Colors.orange, width: 2),
           ),
         ),
         child: Row(
