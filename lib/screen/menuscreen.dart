@@ -77,6 +77,7 @@ class _MenuscreenState extends State<Menuscreen> {
                     // ),
                     buildGameButton(
                       "เกมทายคำศัพท์",
+                      "Guessing Game",
                       Image.asset(
                         'assets/icons/guess.png',
                         width: 90,
@@ -88,6 +89,7 @@ class _MenuscreenState extends State<Menuscreen> {
                     ),
                     buildGameButton(
                       "เกมจับคู่คำศัพท์",
+                      "Matching Game",
                       Image.asset(
                         'assets/icons/match.png',
                         width: 90,
@@ -99,6 +101,7 @@ class _MenuscreenState extends State<Menuscreen> {
                     ),
                     buildGameButton(
                       "เกมเติมคำ",
+                      "Completion Game",
                       Image.asset(
                         'assets/icons/add.png',
                         width: 90,
@@ -110,6 +113,7 @@ class _MenuscreenState extends State<Menuscreen> {
                     ),
                     buildGameButton(
                       "เกมพูดคำศัพท์",
+                      "Speaking Game",
                       Image.asset(
                         'assets/icons/speak.png',
                         width: 90,
@@ -121,6 +125,7 @@ class _MenuscreenState extends State<Menuscreen> {
                     ),
                     buildGameButton(
                       "เกมทายรูปภาพ",
+                      "Picture Game",
                       Image.asset(
                         'assets/icons/pic.png',
                         width: 90,
@@ -151,6 +156,7 @@ class _MenuscreenState extends State<Menuscreen> {
 
   Widget buildGameButton(
     String title,
+    String subtitle,
     Widget iconWidget,
     Color iconBackgroundColor,
     Widget Function(Map<String, List<String>>, String) screenBuilder,
@@ -199,12 +205,25 @@ class _MenuscreenState extends State<Menuscreen> {
                     children: [
                       Center(
                         child: Expanded(
-                          child: Text(
-                            title,
-                            style: TextStyle(
-                              fontSize: 30,
-                              color: Colors.black87,
-                            ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                subtitle,
+                                style: TextStyle(
+                                  fontSize: 22,
+                                  color: Colors.black87,
+                                ),
+                              ),
+                              Text(
+                                title,
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  color: Colors.black87,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       ),

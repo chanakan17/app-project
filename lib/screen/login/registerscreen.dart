@@ -58,7 +58,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
       // เรียก API
       var url = Uri.parse(
-        'http://192.168.1.147/dataweb/flutter_insert_user.php',
+        'http://192.168.1.109/dataweb/flutter_insert_user.php',
       );
       var response = await http.post(
         url,
@@ -120,15 +120,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
         ),
       ),
       extendBodyBehindAppBar: true,
+      backgroundColor: Color(0xFFFFE082),
       body: Container(
-        width: double.infinity,
-        height: double.infinity,
-        decoration: BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage('assets/image/bg.png'),
-            fit: BoxFit.cover,
-          ),
-        ),
         child: Center(
           child: SingleChildScrollView(
             padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -296,14 +289,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             padding: const EdgeInsets.fromLTRB(15, 0, 0, 0),
                             child: ElevatedButton(
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.blue,
+                                backgroundColor: Colors.orangeAccent,
                               ),
                               onPressed: _submitForm,
                               child: const Text(
                                 'ยืนยัน',
                                 style: TextStyle(
                                   fontSize: 16,
-                                  color: Colors.white,
+                                  color: Colors.black87,
                                 ),
                               ),
                             ),

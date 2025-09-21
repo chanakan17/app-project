@@ -323,10 +323,11 @@ class _Game5screenState extends State<Game5screen> {
                             ),
                           ],
                         ),
-                        SizedBox(height: 20),
+                        Spacer(),
+                        // SizedBox(height: 20),
                         // ใช้ Wrap หรือ Row เพื่อจัดปุ่มในแนวนอน
                         Padding(
-                          padding: const EdgeInsets.fromLTRB(8, 20, 8, 8),
+                          padding: const EdgeInsets.fromLTRB(8, 0, 8, 100),
                           child: Column(
                             spacing:
                                 10.0, // ระยะห่างระหว่างปุ่ม// ระยะห่างแนวตั้ง

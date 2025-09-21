@@ -22,7 +22,10 @@ class _DicscreenState extends State<Dicscreen> {
         //   padding: const EdgeInsets.all(8.0),
         //   child: Image.asset('assets/icons/booka96.png', width: 40, height: 40),
         // ),
-        title: Text("Vocabulary"),
+        title: Text(
+          "Vocabulary",
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
         centerTitle: true,
         // bottom: PreferredSize(
         //   preferredSize: Size.fromHeight(1.0),

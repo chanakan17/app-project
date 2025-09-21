@@ -15,6 +15,7 @@ class Profilescreen extends StatefulWidget {
 
 class _ProfilescreenState extends State<Profilescreen> {
   bool isEditing = false;
+  bool isGuest = false;
   TextEditingController _controller = TextEditingController();
   IconData selectedIcon = Icons.person;
   List<Map<String, dynamic>> games = [];
@@ -108,8 +109,6 @@ class _ProfilescreenState extends State<Profilescreen> {
     await prefs.remove('id');
     await prefs.remove('isGuest');
     await prefs.remove('guestUsername');
-    await prefs.remove('guestBirthday');
-    await prefs.remove('guestAge');
     Navigator.pushAndRemoveUntil(
       context,
       MaterialPageRoute(builder: (_) => const LoginScreen()),
@@ -131,7 +130,7 @@ class _ProfilescreenState extends State<Profilescreen> {
     if (userId != null) {
       GameData.userId = userId;
     }
-    bool isGuest = prefs.getBool('isGuest') ?? false;
+    isGuest = prefs.getBool('isGuest') ?? false;
 
     if (isGuest) {
       setState(() {
@@ -144,7 +143,7 @@ class _ProfilescreenState extends State<Profilescreen> {
 
     try {
       final url = Uri.parse(
-        'http://192.168.1.147/dataweb/get_user.php?id=$userId',
+        'http://192.168.1.109/dataweb/get_user.php?id=$userId',
       );
       final response = await http.get(url);
 
@@ -178,7 +177,7 @@ class _ProfilescreenState extends State<Profilescreen> {
     if (userId == null) return;
 
     try {
-      final url = Uri.parse('http://192.168.1.147/dataweb/update_user.php');
+      final url = Uri.parse('http://192.168.1.109/dataweb/update_user.php');
       final response = await http.post(
         url,
         body: {'id': userId.toString(), 'username': newName},
@@ -188,6 +187,11 @@ class _ProfilescreenState extends State<Profilescreen> {
         setState(() {
           isEditing = false;
         });
+      } else {
+        // แสดงข้อความ error จาก server
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(data['error'] ?? 'เกิดข้อผิดพลาด')),
+        );
       }
     } catch (e) {
       print('Error updating username: $e');
@@ -374,7 +378,7 @@ class _ProfilescreenState extends State<Profilescreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Profile"),
+        title: Text("Profile", style: TextStyle(fontWeight: FontWeight.bold)),
         centerTitle: true,
         // bottom: PreferredSize(
         //   preferredSize: Size.fromHeight(1.0),
@@ -454,7 +458,6 @@ class _ProfilescreenState extends State<Profilescreen> {
                     },
                   );
                 },
-                barrierDismissible: false,
               );
             },
           ),
@@ -487,41 +490,69 @@ class _ProfilescreenState extends State<Profilescreen> {
                       ),
                     ),
                     SizedBox(width: 10),
-                    isEditing
-                        ? Expanded(
-                          child: TextField(
-                            controller: _controller,
-                            autofocus: true,
-                            maxLength: 20,
-                            decoration: InputDecoration(
-                              counterText: '',
-                              hintText: 'กรอกชื่อไม่เกิน 20 ตัว',
-                            ),
-                          ),
-                        )
-                        : Expanded(
-                          child: Text(
-                            _controller.text,
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                    IconButton(
-                      icon: Icon(isEditing ? Icons.check : Icons.edit),
-                      onPressed: () {
-                        if (isEditing) {
-                          saveUsername();
-                        } else {
-                          setState(() => isEditing = true);
-                        }
-                      },
+                    Flexible(
+                      child:
+                          isEditing
+                              ? Row(
+                                children: [
+                                  // TextField มีขนาดจำกัด
+                                  Expanded(
+                                    child: TextField(
+                                      controller: _controller,
+                                      autofocus: true,
+                                      maxLength: 20,
+                                      decoration: InputDecoration(
+                                        counterText: '',
+                                        hintText: 'กรอกชื่อไม่เกิน 20 ตัว',
+                                      ),
+                                    ),
+                                  ),
+                                  IconButton(
+                                    icon: Icon(Icons.check),
+                                    onPressed: saveUsername,
+                                  ),
+                                ],
+                              )
+                              : Row(
+                                children: [
+                                  Expanded(
+                                    child: Row(
+                                      children: [
+                                        Text(
+                                          _controller.text,
+                                          style: TextStyle(
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                        IconButton(
+                                          icon: Icon(Icons.edit),
+                                          onPressed:
+                                              () => setState(
+                                                () => isEditing = true,
+                                              ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
                     ),
                   ],
                 ),
                 SizedBox(height: 30),
                 ...games.map((game) {
+                  if (isGuest) {
+                    return const SizedBox.shrink();
+                  }
+                  final scoreText = game["score"]?.toString().trim();
+                  if (scoreText == null ||
+                      scoreText == "null คะแนน" ||
+                      scoreText == "0 คะแนน" ||
+                      scoreText.isEmpty) {
+                    return const SizedBox.shrink();
+                  }
+
                   return Padding(
                     padding: const EdgeInsets.symmetric(
                       horizontal: 12,
@@ -1081,7 +1112,18 @@ class _ProfilescreenState extends State<Profilescreen> {
                         context: context,
                         builder: (BuildContext context) {
                           return AlertDialog(
-                            title: Text("คุณต้องการออกจากระบบหรือไม่?"),
+                            title: Row(
+                              children: [
+                                Flexible(
+                                  child: Text(
+                                    "คุณต้องการออกจากระบบหรือไม่?",
+                                    overflow: TextOverflow.ellipsis,
+                                    maxLines: 1,
+                                    style: TextStyle(fontSize: 20),
+                                  ),
+                                ),
+                              ],
+                            ),
                             actions: <Widget>[
                               Padding(
                                 padding: const EdgeInsets.fromLTRB(0, 0, 8, 0),
@@ -1113,7 +1155,6 @@ class _ProfilescreenState extends State<Profilescreen> {
                             ],
                           );
                         },
-                        barrierDismissible: false,
                       );
                     },
                     child: Text(

@@ -344,7 +344,7 @@ class _Game1screenState extends State<Game1screen> {
                         ),
                         // ใช้ Wrap หรือ Row เพื่อจัดปุ่มในแนวนอน
                         Padding(
-                          padding: const EdgeInsets.fromLTRB(8, 20, 8, 8),
+                          padding: const EdgeInsets.fromLTRB(8, 80, 8, 8),
                           child: Column(
                             spacing:
                                 10.0, // ระยะห่างระหว่างปุ่ม// ระยะห่างแนวตั้ง

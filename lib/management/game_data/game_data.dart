@@ -57,7 +57,7 @@ class GameData {
 
   // บันทึกคะแนนลงฐานข้อมูล
   static Future<void> saveScoreToDB() async {
-    final url = Uri.parse('http://192.168.1.147/dataweb/save_score.php');
+    final url = Uri.parse('http://192.168.1.109/dataweb/save_score.php');
     final response = await http.post(
       url,
       body: {
@@ -84,7 +84,7 @@ class GameData {
   // โหลด Top 3 คะแนนจากฐานข้อมูล
   static Future<void> loadTopScores() async {
     final url = Uri.parse(
-      'http://192.168.1.147/dataweb/get_top_scores.php?user_id=$userId',
+      'http://192.168.1.109/dataweb/get_top_scores.php?user_id=$userId',
     );
     final response = await http.get(url);
 
@@ -114,7 +114,7 @@ class GameData {
   static Map<String, List<Map<String, dynamic>>> topScoresByGame = {};
 
   static Future<void> loadTopScores1() async {
-    final url = Uri.parse('http://192.168.1.147/dataweb/get_topa_scores.php');
+    final url = Uri.parse('http://192.168.1.109/dataweb/get_topa_scores.php');
     final response = await http.get(url);
 
     if (response.statusCode == 200) {

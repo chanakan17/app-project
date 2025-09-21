@@ -22,7 +22,7 @@ class DicEntry {
 class DicService {
   static Future<List<DicEntry>> fetchWords({required int categoryId}) async {
     final url = Uri.parse(
-      "http://192.168.1.147/dataweb/get_words.php?category_id=$categoryId",
+      "http://192.168.1.109/dataweb/get_words.php?category_id=$categoryId",
     );
 
     final response = await http.get(url);

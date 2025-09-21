@@ -23,7 +23,7 @@ class _ForgotrscreenState extends State<Forgotrscreen> {
     if (_formKey.currentState!.validate()) {
       try {
         final response = await http.post(
-          Uri.parse('http://192.168.1.147/dataweb/reset_password.php'),
+          Uri.parse('http://192.168.1.109/dataweb/reset_password.php'),
           body: {
             'email': widget.email,
             'new_password': _passwordController.text.trim(),
@@ -71,15 +71,8 @@ class _ForgotrscreenState extends State<Forgotrscreen> {
     return Scaffold(
       appBar: AppBar(backgroundColor: Colors.transparent, elevation: 0),
       extendBodyBehindAppBar: true,
+      backgroundColor: Color(0xFFFFE082),
       body: Container(
-        width: double.infinity,
-        height: double.infinity,
-        decoration: BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage('assets/image/bg.png'),
-            fit: BoxFit.cover,
-          ),
-        ),
         child: Center(
           child: SingleChildScrollView(
             padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -162,14 +155,14 @@ class _ForgotrscreenState extends State<Forgotrscreen> {
                         children: [
                           ElevatedButton(
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.blue,
+                              backgroundColor: Colors.orangeAccent,
                             ),
                             onPressed: _resetPassword,
                             child: const Text(
                               'ยืนยัน',
                               style: TextStyle(
                                 fontSize: 16,
-                                color: Colors.white,
+                                color: Colors.black87,
                               ),
                             ),
                           ),
