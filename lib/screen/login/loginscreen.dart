@@ -17,13 +17,24 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   bool _obscurePassword = true;
+  bool isLoading = false;
+  bool isLoadingGuest = false;
+
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
   void _submitForm() async {
+    if (isLoadingGuest) return;
+
+    setState(() {
+      isLoadingGuest = true;
+    });
+
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('isGuest', true);
+
+    await Future.delayed(const Duration(seconds: 2));
 
     if (context.mounted) {
       Navigator.pushAndRemoveUntil(
@@ -32,13 +43,23 @@ class _LoginScreenState extends State<LoginScreen> {
         (Route<dynamic> route) => false,
       );
     }
+
+    setState(() {
+      isLoadingGuest = false;
+    });
   }
 
   Future<void> login() async {
+    if (isLoading) return;
+
+    setState(() {
+      isLoading = true;
+    });
+
     final email = _emailController.text;
     final password = _passwordController.text;
+    final url = Uri.parse('http://192.168.1.101/dataweb/login_app.php');
 
-    final url = Uri.parse('http://192.168.1.109/dataweb/login_app.php');
     try {
       final response = await http.post(
         url,
@@ -50,20 +71,22 @@ class _LoginScreenState extends State<LoginScreen> {
         final result = json.decode(response.body);
 
         if (result['status'] == 'Success') {
-          // สมมติ PHP ส่ง userId กลับมาด้วย เช่น {"status":"Success","userId":5}
           int userId = result['id'];
-
-          // 👉 เก็บ userId ไว้ใน SharedPreferences
           final prefs = await SharedPreferences.getInstance();
           await prefs.setInt('id', userId);
           GameData.userId = userId;
-          print('Login success, id=$userId');
-          Navigator.pushAndRemoveUntil(
-            context,
-            MaterialPageRoute(builder: (_) => const HomeScreen()),
-            (Route<dynamic> route) => false,
-          );
+
+          await Future.delayed(const Duration(seconds: 2));
+
+          if (context.mounted) {
+            Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(builder: (_) => const HomeScreen()),
+              (Route<dynamic> route) => false,
+            );
+          }
         } else {
+          await Future.delayed(const Duration(seconds: 2));
           _showMessage('อีเมลหรือรหัสผ่านไม่ถูกต้อง');
         }
       } else {
@@ -71,6 +94,12 @@ class _LoginScreenState extends State<LoginScreen> {
       }
     } catch (e) {
       _showMessage('ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์');
+    } finally {
+      if (mounted) {
+        setState(() {
+          isLoading = false;
+        });
+      }
     }
   }
 
@@ -199,17 +228,34 @@ class _LoginScreenState extends State<LoginScreen> {
                           backgroundColor: Colors.orangeAccent,
                           padding: const EdgeInsets.symmetric(vertical: 12),
                         ),
-                        onPressed: () {
-                          if (_formKey.currentState!.validate()) {
-                            login();
-                          }
-                        },
-                        child: const Text(
-                          'เข้าสู่ระบบ',
-                          style: TextStyle(fontSize: 16, color: Colors.black87),
-                        ),
+                        onPressed:
+                            isLoading
+                                ? null
+                                : () {
+                                  if (_formKey.currentState!.validate()) {
+                                    login();
+                                  }
+                                },
+                        child:
+                            isLoading
+                                ? const SizedBox(
+                                  height: 20,
+                                  width: 20,
+                                  child: CircularProgressIndicator(
+                                    color: Colors.white,
+                                    strokeWidth: 2,
+                                  ),
+                                )
+                                : const Text(
+                                  'เข้าสู่ระบบ',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    color: Colors.black87,
+                                  ),
+                                ),
                       ),
                     ),
+
                     const SizedBox(height: 30),
                     const Row(
                       children: [
@@ -229,11 +275,21 @@ class _LoginScreenState extends State<LoginScreen> {
                           backgroundColor: Colors.black87,
                           padding: const EdgeInsets.symmetric(vertical: 12),
                         ),
-                        onPressed: _submitForm,
-                        child: const Text(
-                          'ล็อกอินด้วย Guest',
-                          style: TextStyle(color: Colors.white),
-                        ),
+                        onPressed: isLoadingGuest ? null : _submitForm,
+                        child:
+                            isLoadingGuest
+                                ? const SizedBox(
+                                  width: 20,
+                                  height: 20,
+                                  child: CircularProgressIndicator(
+                                    color: Colors.white,
+                                    strokeWidth: 2,
+                                  ),
+                                )
+                                : const Text(
+                                  'ล็อกอินด้วย Guest',
+                                  style: TextStyle(color: Colors.white),
+                                ),
                       ),
                     ),
                   ],

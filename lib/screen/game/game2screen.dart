@@ -457,7 +457,7 @@ class _Game2screenState extends State<Game2screen> {
                                       color: Colors.black,
                                     ),
                                   ),
-                                  backgroundColor: Colors.lightBlue,
+                                  backgroundColor: Colors.orange,
                                 ),
                               ),
                               childWhenDragging: Chip(
@@ -475,7 +475,7 @@ class _Game2screenState extends State<Game2screen> {
                                     color: Colors.black,
                                   ),
                                 ),
-                                backgroundColor: Colors.lightBlue,
+                                backgroundColor: Colors.orange,
                               ),
                             );
                       }).toList(),

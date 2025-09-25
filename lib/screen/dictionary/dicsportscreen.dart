@@ -29,7 +29,7 @@ class _DicsportscreenState extends State<Dicsportscreen> {
   Future<void> _loadWords() async {
     try {
       var url = Uri.parse(
-        "http://192.168.1.109/dataweb/get_words.php?category_id=4", // 🎯 category_id = 4 สำหรับกีฬา
+        "http://192.168.1.101/dataweb/get_words.php?category_id=4", // 🎯 category_id = 4 สำหรับกีฬา
       );
       var response = await http.get(url);
       print('Status code: ${response.statusCode}');

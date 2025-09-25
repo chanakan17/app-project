@@ -58,7 +58,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
       // เรียก API
       var url = Uri.parse(
-        'http://192.168.1.109/dataweb/flutter_insert_user.php',
+        'http://192.168.1.101/dataweb/flutter_insert_user.php',
       );
       var response = await http.post(
         url,
@@ -96,6 +96,49 @@ class _RegisterScreenState extends State<RegisterScreen> {
         );
       }
     }
+  }
+
+  final Set<String> bannedWords = {
+    'ควย',
+    'หี',
+    'เย็ด',
+    'สัส',
+    'เหี้ย',
+    'เงี่ยน',
+    'ควาย',
+    'แม่ง',
+    'อีดอก',
+    'อีเหี้ย',
+    'hee',
+    'kuy',
+    'fuck',
+    'shit',
+    'pussy',
+    'dick',
+    'cock',
+  };
+
+  String normalizeText(String input) {
+    return input
+        .toLowerCase()
+        .replaceAll(RegExp(r'[\s\._\-]'), '')
+        .replaceAll('0', 'o')
+        .replaceAll('1', 'i')
+        .replaceAll('3', 'e')
+        .replaceAll('4', 'a')
+        .replaceAll('5', 's')
+        .replaceAll('7', 't');
+  }
+
+  bool isBadUsername(String username) {
+    final normalized = normalizeText(username);
+
+    for (final word in bannedWords) {
+      if (normalized.contains(word)) {
+        return true;
+      }
+    }
+    return false;
   }
 
   @override
@@ -168,11 +211,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         labelText: 'ชื่อผู้ใช้งาน',
                         border: OutlineInputBorder(),
                       ),
-                      validator:
-                          (value) =>
-                              value == null || value.isEmpty
-                                  ? 'กรุณากรอกชื่อผู้ใช้งาน'
-                                  : null,
+                      validator: (value) {
+                        if (value == null || value.trim().isEmpty) {
+                          return 'กรุณากรอกชื่อผู้ใช้งาน';
+                        }
+                        if (isBadUsername(value)) {
+                          return 'ชื่อผู้ใช้งานไม่เหมาะสม';
+                        }
+                        return null;
+                      },
                     ),
                     const SizedBox(height: 12),
                     TextFormField(

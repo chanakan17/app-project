@@ -642,9 +642,9 @@ class _Game5screenState extends State<Game5screen> {
                                           decoration: BoxDecoration(
                                             color: Color.fromARGB(
                                               255,
-                                              59,
-                                              134,
                                               255,
+                                              162,
+                                              0,
                                             ),
                                             borderRadius: BorderRadius.circular(
                                               25,
@@ -653,9 +653,9 @@ class _Game5screenState extends State<Game5screen> {
                                               bottom: BorderSide(
                                                 color: Color.fromARGB(
                                                   255,
-                                                  6,
-                                                  73,
-                                                  181,
+                                                  248,
+                                                  120,
+                                                  0,
                                                 ),
                                                 width: 4,
                                               ),

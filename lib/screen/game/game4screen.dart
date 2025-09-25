@@ -465,6 +465,14 @@ class _Game4screenState extends State<Game4screen> {
                 ),
                 SizedBox(height: 20),
                 ElevatedButton.icon(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.white.withOpacity(0.8),
+                    fixedSize: Size(280, 80),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                      side: BorderSide(color: Colors.grey, width: 2),
+                    ),
+                  ),
                   onPressed: () {
                     print("Button pressed"); // debug
                     _listen();
@@ -493,7 +501,7 @@ class BubblePainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     // สร้าง LinearGradient สำหรับพื้นหลังไล่ระดับสี
     final gradient = LinearGradient(
-      colors: [Colors.blue.shade200, Colors.blue.shade400],
+      colors: [Colors.orange.shade200, Colors.orange.shade400],
       begin: Alignment.centerLeft, // เริ่มไล่สีจากซ้ายกลาง
       end: Alignment.centerRight, // ไปสิ้นสุดที่ขวากลาง
     );
@@ -509,7 +517,7 @@ class BubblePainter extends CustomPainter {
     // สีขอบของฟองข้อความ
     final paintStroke =
         Paint()
-          ..color = Colors.blue.shade800
+          ..color = Colors.orange.shade800
           ..style = PaintingStyle.stroke
           ..strokeWidth = 3;
 

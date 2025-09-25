@@ -103,12 +103,27 @@ class _ProfilescreenState extends State<Profilescreen> {
       "time": "",
     },
   );
+  void _loadSelectedIcon() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    int? iconCode = prefs.getInt('selected_icon');
+    if (iconCode != null) {
+      setState(() {
+        selectedIcon = IconData(iconCode, fontFamily: 'MaterialIcons');
+      });
+    }
+  }
+
+  void _saveSelectedIcon(IconData icon) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setInt('selected_icon', icon.codePoint);
+  }
 
   Future<void> logout(BuildContext context) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('id');
     await prefs.remove('isGuest');
     await prefs.remove('guestUsername');
+    await prefs.remove('selected_icon');
     Navigator.pushAndRemoveUntil(
       context,
       MaterialPageRoute(builder: (_) => const LoginScreen()),
@@ -121,6 +136,7 @@ class _ProfilescreenState extends State<Profilescreen> {
     super.initState();
     loadUsername();
     loadScores();
+    _loadSelectedIcon();
   }
 
   // ดึงชื่อผู้ใช้จาก PHP API
@@ -143,7 +159,7 @@ class _ProfilescreenState extends State<Profilescreen> {
 
     try {
       final url = Uri.parse(
-        'http://192.168.1.109/dataweb/get_user.php?id=$userId',
+        'http://192.168.1.101/dataweb/get_user.php?id=$userId',
       );
       final response = await http.get(url);
 
@@ -159,43 +175,114 @@ class _ProfilescreenState extends State<Profilescreen> {
   }
 
   // บันทึกชื่อผู้ใช้ไปยัง PHP API
-  Future<void> saveUsername() async {
+  Future<bool> saveUsername() async {
     final prefs = await SharedPreferences.getInstance();
-    bool isGuest = prefs.getBool('isGuest') ?? false;
-
     final newName = _controller.text.trim();
-    if (newName.isEmpty) return;
+
+    if (newName.isEmpty) return false;
+
+    if (isBadUsername(newName)) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('ชื่อผู้ใช้งานไม่เหมาะสม')));
+      return false;
+    }
+
+    bool isGuest = prefs.getBool('isGuest') ?? false;
 
     if (isGuest) {
       await prefs.setString('guestUsername', newName);
       setState(() => isEditing = false);
-      return;
+      return true;
     }
 
-    // สำหรับ User ปกติ
     int? userId = prefs.getInt('id');
-    if (userId == null) return;
+    if (userId == null) return false;
 
     try {
-      final url = Uri.parse('http://192.168.1.109/dataweb/update_user.php');
+      final url = Uri.parse('http://192.168.1.101/dataweb/update_user.php');
       final response = await http.post(
         url,
         body: {'id': userId.toString(), 'username': newName},
       );
       final data = jsonDecode(response.body);
+
       if (data['success'] == true) {
-        setState(() {
-          isEditing = false;
-        });
+        setState(() => isEditing = false);
+        return true;
       } else {
-        // แสดงข้อความ error จาก server
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(data['error'] ?? 'เกิดข้อผิดพลาด')),
         );
+        return false;
       }
     } catch (e) {
       print('Error updating username: $e');
+      return false;
     }
+  }
+
+  final Set<String> bannedWords = {
+    'ควย',
+    'หี',
+    'เย็ด',
+    'สัส',
+    'เหี้ย',
+    'เงี่ยน',
+    'ควาย',
+    'แม่ง',
+    'อีดอก',
+    'อีเหี้ย',
+    'hee',
+    'kuy',
+    'fuck',
+    'shit',
+    'pussy',
+    'dick',
+    'cock',
+  };
+
+  String normalizeText(String input) {
+    return input
+        .toLowerCase()
+        .replaceAll(RegExp(r'[\s\._\-]'), '')
+        .replaceAll('0', 'o')
+        .replaceAll('1', 'i')
+        .replaceAll('3', 'e')
+        .replaceAll('4', 'a')
+        .replaceAll('5', 's')
+        .replaceAll('7', 't');
+  }
+
+  bool isBadUsername(String username) {
+    final normalized = normalizeText(username);
+
+    for (final word in bannedWords) {
+      if (normalized.contains(word)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  void _showSuccessDialog(String message) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('เปลี่ยนชื่อสำเร็จ'),
+          content: Text(message),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('ตกลง'),
+              onPressed: () {
+                Navigator.of(context).pop(); // ปิด dialog
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   void _showAvatarPicker() {
@@ -240,6 +327,7 @@ class _ProfilescreenState extends State<Profilescreen> {
                 setState(() {
                   selectedIcon = tempIcon;
                 });
+                _saveSelectedIcon(tempIcon);
                 Navigator.pop(context);
               },
               child: Text("ตกลง"),
@@ -509,7 +597,14 @@ class _ProfilescreenState extends State<Profilescreen> {
                                   ),
                                   IconButton(
                                     icon: Icon(Icons.check),
-                                    onPressed: saveUsername,
+                                    onPressed: () async {
+                                      final success = await saveUsername();
+                                      if (success) {
+                                        _showSuccessDialog(
+                                          'เปลี่ยนชื่อเรียบร้อยแล้ว',
+                                        );
+                                      }
+                                    },
                                   ),
                                 ],
                               )
@@ -906,7 +1001,14 @@ class _ProfilescreenState extends State<Profilescreen> {
                       context: context,
                       builder: (BuildContext context) {
                         return AlertDialog(
-                          title: Text("อันดับคะแนนเกมพูดคำศัพท์"),
+                          title: Expanded(
+                            child: FittedBox(
+                              child: Text(
+                                "อันดับคะแนนเกมพูดคำศัพท์",
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ),
                           content: Container(
                             height: 400,
                             child: SingleChildScrollView(
@@ -1008,7 +1110,14 @@ class _ProfilescreenState extends State<Profilescreen> {
                       context: context,
                       builder: (BuildContext context) {
                         return AlertDialog(
-                          title: Text("อันดับคะแนนเกมทายรูปภาพ"),
+                          title: Expanded(
+                            child: FittedBox(
+                              child: Text(
+                                "อันดับคะแนนเกมทายรูปภาพ",
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ),
                           content: Container(
                             height: 400,
                             child: SingleChildScrollView(
