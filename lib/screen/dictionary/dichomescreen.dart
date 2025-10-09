@@ -29,7 +29,7 @@ class _DichomescreenState extends State<Dichomescreen> {
   Future<void> _loadWords() async {
     try {
       var url = Uri.parse(
-        "http://192.168.1.101/dataweb/get_words.php?category_id=3", // 🏠 ใช้ category_id = 3
+        "http://192.168.1.125/dataweb/get_words.php?category_id=3", // 🏠 ใช้ category_id = 3
       );
       var response = await http.get(url);
       print('Status code: ${response.statusCode}');
@@ -105,9 +105,9 @@ class _DichomescreenState extends State<Dichomescreen> {
           },
         ),
         title: Text("คำศัพท์บ้าน"),
-        backgroundColor: Color(0xFFFFD54F),
+        backgroundColor: Colors.orange,
       ),
-      backgroundColor: Color(0xFFFFE082),
+      backgroundColor: Colors.orangeAccent,
       body: Stack(
         fit: StackFit.expand,
         children: [

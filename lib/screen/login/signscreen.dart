@@ -65,7 +65,7 @@ class _SignscreenState extends State<Signscreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFFFFE082),
+      backgroundColor: Colors.orangeAccent,
       body: Container(
         child: Center(
           child: SingleChildScrollView(

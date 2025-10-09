@@ -1,3 +1,4 @@
+import 'package:app/screen/scorescreen.dart';
 import 'package:flutter/material.dart';
 import 'package:app/screen/menuscreen.dart';
 import 'package:app/screen/dicscreen.dart';
@@ -18,7 +19,7 @@ class _HomeScreenState extends State<HomeScreen>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 3, vsync: this);
+    _tabController = TabController(length: 4, vsync: this);
     _tabController.index = widget.initialTabIndex;
   }
 
@@ -34,17 +35,24 @@ class _HomeScreenState extends State<HomeScreen>
       // ป้องกัน Back Button
       onWillPop: () async => false,
       child: Scaffold(
-        backgroundColor: Color(0xFFFFD96A),
+        backgroundColor: Colors.orange,
+        // backgroundColor: Color(0xFFFFD96A),
         body: TabBarView(
           controller: _tabController,
-          children: const [Menuscreen(), Dicscreen(), Profilescreen()],
+          children: const [
+            Menuscreen(),
+            Dicscreen(),
+            Scorescreen(),
+            Profilescreen(),
+          ],
         ),
         bottomNavigationBar: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             // const Divider(height: 5, thickness: 2, color: Colors.white),
             Container(
-              color: Color(0xFFFFD96A),
+              color: Colors.orange,
+              // color: Color(0xFFFFD96A),
               height: 70,
               child: Material(
                 color: Colors.transparent,
@@ -63,6 +71,7 @@ class _HomeScreenState extends State<HomeScreen>
                   tabs: [
                     Tab(icon: Image.asset('assets/icons/game96.png')),
                     Tab(icon: Image.asset('assets/icons/bookdic100.png')),
+                    Tab(icon: Icon(Icons.score)),
                     Tab(icon: Image.asset('assets/icons/profile80.png')),
                   ],
                 ),

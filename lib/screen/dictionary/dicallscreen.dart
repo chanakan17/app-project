@@ -30,7 +30,7 @@ class _DicallscreenState extends State<Dicallscreen> {
   Future<void> _loadWords() async {
     try {
       var url = Uri.parse(
-        "http://192.168.1.101/dataweb/get_words.php?category_id=1",
+        "http://192.168.1.125/dataweb/get_words.php?category_id=1",
       );
 
       var response = await http.get(url);
@@ -107,9 +107,9 @@ class _DicallscreenState extends State<Dicallscreen> {
           },
         ),
         title: Text("คำศัพท์ยานพาหนะ"),
-        backgroundColor: Color(0xFFFFD54F),
+        backgroundColor: Colors.orange,
       ),
-      backgroundColor: Color(0xFFFFE082),
+      backgroundColor: Colors.orangeAccent,
       body: Stack(
         fit: StackFit.expand,
         children: [

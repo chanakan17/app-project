@@ -173,7 +173,7 @@ class _Game2screenState extends State<Game2screen> {
         //   preferredSize: Size.fromHeight(1.0),
         //   child: Container(color: Colors.white, height: 1.0),
         // ),
-        backgroundColor: Color(0xFFFFD54F),
+        backgroundColor: Colors.orange,
         actions: [
           IconButton(
             icon: Icon(Icons.close),
@@ -233,7 +233,7 @@ class _Game2screenState extends State<Game2screen> {
           ),
         ],
       ),
-      backgroundColor: Color(0xFFFFE082),
+      backgroundColor: Colors.orangeAccent,
       body: Stack(
         fit: StackFit.expand,
         children: [

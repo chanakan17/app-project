@@ -352,9 +352,9 @@ class _Game4screenState extends State<Game4screen> {
             },
           ),
         ],
-        backgroundColor: Color(0xFFFFD54F),
+        backgroundColor: Colors.orange,
       ),
-      backgroundColor: Color(0xFFFFE082),
+      backgroundColor: Colors.orangeAccent,
       body: Stack(
         fit: StackFit.expand,
         children: [

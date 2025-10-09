@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class DicService {
-  static const String _baseUrl = "http://192.168.1.101/dataweb/get_words.php";
+  static const String _baseUrl = "http://192.168.1.125/dataweb/get_words.php";
 
   static Future<List<DicEntry>> fetchWords({int categoryId = 1}) {
     return _fetchWordsByCategory(categoryId);

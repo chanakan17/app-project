@@ -401,7 +401,7 @@ class _Game3screenState extends State<Game3screen> {
         //   preferredSize: Size.fromHeight(1.0),
         //   child: Container(color: Colors.white, height: 1.0),
         // ),
-        backgroundColor: Color(0xFFFFD54F),
+        backgroundColor: Colors.orange,
         actions: <Widget>[
           IconButton(
             icon: Icon(Icons.close),
@@ -461,7 +461,7 @@ class _Game3screenState extends State<Game3screen> {
           ),
         ],
       ),
-      backgroundColor: Color(0xFFFFE082),
+      backgroundColor: Colors.orangeAccent,
       resizeToAvoidBottomInset: true,
       body: Stack(
         children: [

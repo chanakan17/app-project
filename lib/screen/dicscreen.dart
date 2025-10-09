@@ -31,9 +31,9 @@ class _DicscreenState extends State<Dicscreen> {
         //   preferredSize: Size.fromHeight(1.0),
         //   child: Container(color: Colors.white, height: 1.0),
         // ),
-        backgroundColor: Color(0xFFFFD54F),
+        backgroundColor: Colors.orange,
       ),
-      backgroundColor: Color(0xFFFFE082),
+      backgroundColor: Colors.orangeAccent,
       body: Stack(
         fit: StackFit.expand,
         children: [
@@ -54,42 +54,58 @@ class _DicscreenState extends State<Dicscreen> {
                     buildDicButton(
                       "Vehicles",
                       "คำศัพท์เกี่ยวกับยานพาหนะ",
-                      Icons.directions_car,
+                      Image.asset(
+                        'assets/image/vehicle.png',
+                        width: 60,
+                        height: 60,
+                      ),
                       Colors.yellow[100]!,
                       (context) => Dicallscreen(),
                     ),
                     buildDicButton(
                       "Animals",
                       "คำศัพท์เกี่ยวกับสัตว์",
-                      Icons.pets,
+                      Image.asset(
+                        'assets/image/animal.png',
+                        width: 70,
+                        height: 70,
+                      ),
                       Colors.orange[100]!,
                       (context) => Dicaniscreen(),
                     ),
                     buildDicButton(
                       "House",
                       "คำศัพท์สิ่งของในบ้าน",
-                      Icons.home,
+                      Image.asset(
+                        'assets/image/home.png',
+                        width: 76,
+                        height: 76,
+                      ),
                       Colors.green[100]!,
                       (context) => Dichomescreen(),
                     ),
                     buildDicButton(
                       "Sports",
                       "คำศัพท์เกี่ยวกับกีฬา",
-                      Icons.sports_soccer,
+                      Image.asset(
+                        'assets/image/sport.png',
+                        width: 76,
+                        height: 76,
+                      ),
                       Colors.red[100]!,
                       (context) => Dicsportscreen(),
                     ),
-                    SizedBox(height: 20),
-                    const Row(
-                      children: [
-                        Expanded(child: Divider()),
-                        Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 10),
-                          child: Text('เร็วๆ นี้'),
-                        ),
-                        Expanded(child: Divider()),
-                      ],
-                    ),
+                    // SizedBox(height: 20),
+                    // const Row(
+                    //   children: [
+                    //     Expanded(child: Divider()),
+                    //     Padding(
+                    //       padding: EdgeInsets.symmetric(horizontal: 10),
+                    //       child: Text('เร็วๆ นี้'),
+                    //     ),
+                    //     Expanded(child: Divider()),
+                    //   ],
+                    // ),
                   ],
                 ),
               ),
@@ -103,7 +119,7 @@ class _DicscreenState extends State<Dicscreen> {
   Widget buildDicButton(
     String title,
     String subtitle,
-    IconData icon,
+    Widget iconWidget,
     Color iconBackgroundColor,
     Widget Function(BuildContext) screenBuilder,
   ) {
@@ -136,7 +152,7 @@ class _DicscreenState extends State<Dicscreen> {
               CircleAvatar(
                 backgroundColor: iconBackgroundColor,
                 radius: 45,
-                child: Icon(icon, size: 60, color: Colors.blue),
+                child: iconWidget,
               ),
               SizedBox(width: 16),
               Expanded(
@@ -149,9 +165,13 @@ class _DicscreenState extends State<Dicscreen> {
                       style: TextStyle(
                         fontSize: 22,
                         fontWeight: FontWeight.bold,
+                        color: Colors.black87,
                       ),
                     ),
-                    Text(subtitle, style: TextStyle(fontSize: 18)),
+                    Text(
+                      subtitle,
+                      style: TextStyle(fontSize: 18, color: Colors.black87),
+                    ),
                   ],
                 ),
               ),

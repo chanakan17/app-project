@@ -52,9 +52,9 @@ class _MenuscreenState extends State<Menuscreen> {
             // ),
           ),
         ],
-        backgroundColor: Color(0xFFFFD54F),
+        backgroundColor: Colors.orange,
       ),
-      backgroundColor: Color(0xFFFFE082),
+      backgroundColor: Colors.orangeAccent,
       body: Stack(
         fit: StackFit.expand,
         children: [
@@ -258,7 +258,11 @@ class _MenuscreenState extends State<Menuscreen> {
                     categoryButton(
                       "Vehicles",
                       "คำศัพท์เกี่ยวกับยานพาหนะ",
-                      Icons.directions_car,
+                      Image.asset(
+                        'assets/image/vehicle.png',
+                        width: 48,
+                        height: 48,
+                      ),
                       Colors.yellow[100]!,
                       1,
                       screenBuilder,
@@ -266,7 +270,11 @@ class _MenuscreenState extends State<Menuscreen> {
                     categoryButton(
                       "Animals",
                       "คำศัพท์เกี่ยวกับสัตว์",
-                      Icons.pets,
+                      Image.asset(
+                        'assets/image/animal.png',
+                        width: 48,
+                        height: 48,
+                      ),
                       Colors.orange[100]!,
                       2,
                       screenBuilder,
@@ -274,7 +282,11 @@ class _MenuscreenState extends State<Menuscreen> {
                     categoryButton(
                       "House",
                       "คำศัพท์สิ่งของในบ้าน",
-                      Icons.home,
+                      Image.asset(
+                        'assets/image/home.png',
+                        width: 48,
+                        height: 48,
+                      ),
                       Colors.green[100]!,
                       3,
                       screenBuilder,
@@ -282,7 +294,11 @@ class _MenuscreenState extends State<Menuscreen> {
                     categoryButton(
                       "Sports",
                       "คำศัพท์เกี่ยวกับกีฬา",
-                      Icons.sports_soccer,
+                      Image.asset(
+                        'assets/image/sport.png',
+                        width: 48,
+                        height: 48,
+                      ),
                       Colors.red[100]!,
                       4,
                       screenBuilder,
@@ -300,7 +316,7 @@ class _MenuscreenState extends State<Menuscreen> {
   Widget categoryButton(
     String title,
     String subtitle,
-    IconData icon,
+    Widget iconWidget,
     Color iconBackgroundColor,
     int categoryId,
     Widget Function(Map<String, List<String>>, String) screenBuilder,
@@ -340,7 +356,7 @@ class _MenuscreenState extends State<Menuscreen> {
             CircleAvatar(
               backgroundColor: iconBackgroundColor,
               radius: 30,
-              child: Icon(icon, size: 40, color: Colors.blue),
+              child: iconWidget,
             ),
             SizedBox(width: 12),
             Expanded(
@@ -350,9 +366,16 @@ class _MenuscreenState extends State<Menuscreen> {
                 children: [
                   Text(
                     title,
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black87,
+                    ),
                   ),
-                  Text(subtitle, style: TextStyle(fontSize: 14)),
+                  Text(
+                    subtitle,
+                    style: TextStyle(fontSize: 14, color: Colors.black87),
+                  ),
                 ],
               ),
             ),

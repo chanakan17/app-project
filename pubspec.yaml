@@ -60,4 +60,8 @@ flutter:
     - assets/image/monkey.png
     - assets/image/bg.png
     - assets/image/logo1.png
+    - assets/image/home.png
+    - assets/image/sport.png
+    - assets/image/animal.png
+    - assets/image/vehicle.png
 

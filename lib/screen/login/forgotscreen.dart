@@ -24,7 +24,7 @@ class _ForgotscreenState extends State<Forgotscreen> {
     if (_formKey.currentState!.validate()) {
       try {
         final response = await http.post(
-          Uri.parse('http://192.168.1.101/dataweb/reset_forgot.php'),
+          Uri.parse('http://192.168.1.125/dataweb/reset_forgot.php'),
           body: {
             'username': _usernameController.text.trim(),
             'email': _emailController.text.trim(),
@@ -101,7 +101,7 @@ class _ForgotscreenState extends State<Forgotscreen> {
         title: Text("ลืมรหัสผ่าน ?"),
       ),
       extendBodyBehindAppBar: true,
-      backgroundColor: Color(0xFFFFE082),
+      backgroundColor: Colors.orangeAccent,
       body: Container(
         child: Center(
           child: SingleChildScrollView(

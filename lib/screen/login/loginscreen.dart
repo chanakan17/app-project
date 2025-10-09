@@ -58,7 +58,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
     final email = _emailController.text;
     final password = _passwordController.text;
-    final url = Uri.parse('http://192.168.1.101/dataweb/login_app.php');
+    final url = Uri.parse('http://192.168.1.125/dataweb/login_app.php');
 
     try {
       final response = await http.post(
@@ -113,7 +113,7 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: true,
-      backgroundColor: Color(0xFFFFE082),
+      backgroundColor: Colors.orangeAccent,
       body: Center(
         child: Column(
           mainAxisSize: MainAxisSize.min,
