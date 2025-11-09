@@ -33,21 +33,16 @@ class _ScorescreenState extends State<Scorescreen> {
     });
   }
 
-  // ฟังก์ชันดึงชื่อผู้ใช้งานปัจจุบันจาก SharedPreferences และ API
   Future<String> getCurrentUsername() async {
     final prefs = await SharedPreferences.getInstance();
     int? userId = prefs.getInt('id');
-
-    if (userId == null) {
-      return "";
-    }
+    if (userId == null) return "";
 
     try {
       final url = Uri.parse(
-        'http://192.168.1.125/dataweb/get_user.php?id=$userId',
+        'http://10.33.87.68/dataweb/get_user.php?id=$userId',
       );
       final response = await http.get(url);
-
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         return data['username'] ?? "";
@@ -55,7 +50,6 @@ class _ScorescreenState extends State<Scorescreen> {
     } catch (e) {
       print('Error fetching username: $e');
     }
-
     return "";
   }
 
@@ -84,7 +78,6 @@ class _ScorescreenState extends State<Scorescreen> {
     });
   }
 
-  /// ✅ เก็บคะแนนสูงสุดของแต่ละผู้เล่นในแต่ละหมวดย่อย (category)
   List<Map<String, dynamic>> _getTop3PerCategory(List<dynamic> scores) {
     Map<String, List<dynamic>> grouped = {};
     for (var score in scores) {
@@ -93,10 +86,8 @@ class _ScorescreenState extends State<Scorescreen> {
     }
 
     List<Map<String, dynamic>> result = [];
-
     grouped.forEach((category, list) {
       Map<String, Map<String, dynamic>> bestScores = {};
-
       for (var s in list) {
         String user = s["username"] ?? "ไม่ระบุชื่อ";
         if (!bestScores.containsKey(user) ||
@@ -111,8 +102,6 @@ class _ScorescreenState extends State<Scorescreen> {
 
       for (int i = 0; i < filtered.length && i < 3; i++) {
         String user = filtered[i]["username"] ?? "";
-
-        // ✅ เปลี่ยนสีถ้าเป็นของผู้ใช้งาน
         Color rankColor =
             i == 0
                 ? Colors.amber
@@ -135,7 +124,6 @@ class _ScorescreenState extends State<Scorescreen> {
     return result;
   }
 
-  /// ✅ group ข้อมูลในแต่ละแท็บตามหมวดหมู่ย่อย
   Map<String, List<Map<String, dynamic>>> _groupByCategory(
     List<Map<String, dynamic>> data,
   ) {
@@ -147,7 +135,6 @@ class _ScorescreenState extends State<Scorescreen> {
     return grouped;
   }
 
-  // เพิ่มฟังก์ชันแมปชื่อหมวดเป็นไอคอน
   String getImagePathForCategory(String category) {
     switch (category) {
       case "Animals":
@@ -163,142 +150,218 @@ class _ScorescreenState extends State<Scorescreen> {
     }
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return DefaultTabController(
-      length: gameTitles.length,
-      child: Scaffold(
-        appBar: AppBar(
-          title: const Text(
-            "Score Board",
-            style: TextStyle(fontWeight: FontWeight.bold),
-          ),
-          backgroundColor: Colors.orange,
-          centerTitle: true,
-          elevation: 0,
-        ),
-        backgroundColor: Colors.orangeAccent,
-        body: Column(
-          children: [
-            Container(
-              color: Colors.orange,
-              child: TabBar(
-                indicatorColor: Colors.white,
-                labelColor: Colors.white,
-                unselectedLabelColor: Colors.black87,
-                tabs: gameTitles.map((title) => Tab(text: title)).toList(),
-              ),
+  // 🔹 แสดง pop-up ของแต่ละเกม
+  void showGamePopup(String title) {
+    final scores = topScores[title] ?? [];
+    final grouped = _groupByCategory(scores);
+
+    if (scores.isEmpty) {
+      showDialog(
+        context: context,
+        builder:
+            (_) => AlertDialog(
+              title: Text(title),
+              content: const Text("ยังไม่มีข้อมูลคะแนน"),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text("ปิด"),
+                ),
+              ],
             ),
-            Expanded(
-              child: TabBarView(
-                children:
-                    gameTitles.map((title) {
-                      final scores = topScores[title] ?? [];
-                      final grouped = _groupByCategory(scores);
+      );
+      return;
+    }
 
-                      if (scores.isEmpty) {
-                        return const Center(child: Text("ยังไม่มีข้อมูลคะแนน"));
-                      }
-
-                      return ListView(
-                        padding: const EdgeInsets.all(12),
-                        children:
-                            grouped.entries.map((entry) {
-                              final category = entry.key;
-                              final items = entry.value;
-
-                              return Card(
-                                color: Colors.white,
-                                margin: const EdgeInsets.only(bottom: 16),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                child: Padding(
-                                  padding: const EdgeInsets.all(12),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Row(
-                                        children: [
-                                          Image.asset(
-                                            getImagePathForCategory(category),
-                                            width: 20,
-                                            height: 20,
-                                          ),
-
-                                          const SizedBox(width: 6),
-                                          Text(
-                                            "หมวด: $category",
-                                            style: const TextStyle(
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 16,
-                                              color: Colors.deepOrange,
-                                            ),
-                                          ),
-                                        ],
+    showDialog(
+      context: context,
+      builder: (_) {
+        return Dialog(
+          insetPadding: const EdgeInsets.all(12),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: DefaultTabController(
+            length: grouped.keys.length,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: const BoxDecoration(
+                    color: Colors.orange,
+                    borderRadius: BorderRadius.vertical(
+                      top: Radius.circular(16),
+                    ),
+                  ),
+                  child: Column(
+                    children: [
+                      Text(
+                        title,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18,
+                        ),
+                      ),
+                      TabBar(
+                        isScrollable: false, // ให้ทุก tab ขยายเท่ากัน
+                        indicatorColor: Colors.white,
+                        labelColor: Colors.white,
+                        unselectedLabelColor: Colors.black87,
+                        labelPadding:
+                            EdgeInsets.zero, // เอาช่องว่างรอบข้อความออก
+                        tabs:
+                            grouped.keys.map((c) {
+                              return Tab(
+                                child: SizedBox.expand(
+                                  child: Center(
+                                    child: Text(
+                                      c,
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.bold,
                                       ),
-
-                                      const Divider(),
-                                      ...items.map((game) {
-                                        return Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                            vertical: 6,
-                                          ),
-                                          child: Row(
-                                            children: [
-                                              Container(
-                                                width: 28,
-                                                height: 28,
-                                                decoration: BoxDecoration(
-                                                  color: game["color"],
-                                                  shape: BoxShape.circle,
-                                                ),
-                                                alignment: Alignment.center,
-                                                child: Text(
-                                                  game["rank"],
-                                                  style: const TextStyle(
-                                                    color: Colors.white,
-                                                    fontWeight: FontWeight.bold,
-                                                  ),
-                                                ),
-                                              ),
-                                              const SizedBox(width: 12),
-                                              Expanded(
-                                                child: Column(
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.start,
-                                                  children: [
-                                                    Text(
-                                                      "👤 ${game["username"]}",
-                                                      style: TextStyle(
-                                                        color:
-                                                            game["usernameColor"] ??
-                                                            Colors.black,
-                                                      ),
-                                                    ),
-
-                                                    Text("⏱ ${game["time"]}"),
-                                                  ],
-                                                ),
-                                              ),
-                                              Text(
-                                                game["score"],
-                                                style: const TextStyle(
-                                                  fontWeight: FontWeight.bold,
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        );
-                                      }),
-                                    ],
+                                    ),
                                   ),
                                 ),
                               );
                             }).toList(),
-                      );
-                    }).toList(),
+                      ),
+                    ],
+                  ),
+                ),
+                Expanded(
+                  child: TabBarView(
+                    children:
+                        grouped.entries.map((entry) {
+                          final items = entry.value;
+                          return ListView(
+                            padding: const EdgeInsets.all(12),
+                            children:
+                                items.map((game) {
+                                  return Card(
+                                    margin: const EdgeInsets.only(bottom: 10),
+                                    child: ListTile(
+                                      leading: CircleAvatar(
+                                        backgroundColor: game["color"],
+                                        child: Text(
+                                          game["rank"],
+                                          style: const TextStyle(
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                      ),
+                                      title: Text(
+                                        "👤 ${game["username"]}",
+                                        style: TextStyle(
+                                          color: game["usernameColor"],
+                                        ),
+                                      ),
+                                      subtitle: Text("⏱ ${game["time"]}"),
+                                      trailing: Text(
+                                        game["score"],
+                                        style: const TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ),
+                                  );
+                                }).toList(),
+                          );
+                        }).toList(),
+                  ),
+                ),
+                Positioned(
+                  right: 8,
+                  top: 8,
+                  child: IconButton(
+                    icon: const Icon(Icons.close, color: Colors.white),
+                    style: ButtonStyle(
+                      backgroundColor: WidgetStateProperty.all(Colors.black26),
+                    ),
+                    onPressed: () => Navigator.pop(context),
+                    tooltip: "ปิด",
+                  ),
+                ),
+                // Padding(
+                //   padding: const EdgeInsets.symmetric(vertical: 10),
+                //   child: ElevatedButton.icon(
+                //     onPressed: () => Navigator.pop(context),
+                //     icon: const Icon(Icons.close),
+                //     label: const Text(
+                //       "ปิด",
+                //       style: TextStyle(fontWeight: FontWeight.bold),
+                //     ),
+                //     style: ElevatedButton.styleFrom(
+                //       backgroundColor: Colors.orange,
+                //       foregroundColor: Colors.white,
+                //       padding: const EdgeInsets.symmetric(
+                //         horizontal: 24,
+                //         vertical: 12,
+                //       ),
+                //       shape: RoundedRectangleBorder(
+                //         borderRadius: BorderRadius.circular(12),
+                //       ),
+                //     ),
+                //   ),
+                // ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text(
+          "Score Board",
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
+        backgroundColor: Colors.orange,
+        centerTitle: true,
+      ),
+      backgroundColor: Colors.orangeAccent,
+      body: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          children: [
+            const Text(
+              "🏆 เลือกเกมที่ต้องการดูคะแนน",
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+            ),
+            const SizedBox(height: 20),
+            Expanded(
+              child: ListView.builder(
+                itemCount: gameTitles.length,
+                itemBuilder: (context, index) {
+                  final title = gameTitles[index];
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 12),
+                    child: ElevatedButton(
+                      onPressed: () => showGamePopup(title),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.white,
+                        foregroundColor: Colors.orange,
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(Icons.videogame_asset),
+                          const SizedBox(width: 8),
+                          Text(title, style: const TextStyle(fontSize: 16)),
+                        ],
+                      ),
+                    ),
+                  );
+                },
               ),
             ),
           ],

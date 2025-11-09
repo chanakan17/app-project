@@ -18,6 +18,257 @@ class _ProfilescreenState extends State<Profilescreen> {
   bool isGuest = false;
   TextEditingController _controller = TextEditingController();
   IconData selectedIcon = Icons.person;
+  Map<String, List<Map<String, dynamic>>> topScores = {};
+  String currentUsername = "";
+  final List<String> gameTitles = [
+    "เกมทายคำศัพท์",
+    "เกมจับคู่คำศัพท์",
+    "เกมเติมคำ",
+    "เกมพูดคำศัพท์",
+    "เกมทายรูปภาพ",
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+    getCurrentUsername().then((value) {
+      setState(() {
+        currentUsername = value;
+      });
+      loadScores();
+    });
+    loadUsername();
+    _loadSelectedIcon();
+  }
+
+  Future<String> getCurrentUsername() async {
+    final prefs = await SharedPreferences.getInstance();
+    int? userId = prefs.getInt('id');
+    if (userId == null) return "";
+
+    try {
+      final url = Uri.parse(
+        'http://10.33.87.68/dataweb/get_user.php?id=$userId',
+      );
+      final response = await http.get(url);
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        return data['username'] ?? "";
+      }
+    } catch (e) {
+      print('Error fetching username: $e');
+    }
+    return "";
+  }
+
+  Future<void> loadScores() async {
+    await GameData.loadTopScores();
+    await GameData.loadTopScores1();
+
+    setState(() {
+      topScores = {
+        "เกมทายคำศัพท์": _getTop3PerCategory(
+          GameData.topScoresByGame["เกมทายคำศัพท์"] ?? [],
+        ),
+        "เกมจับคู่คำศัพท์": _getTop3PerCategory(
+          GameData.topScoresByGame["เกมจับคู่คำศัพท์"] ?? [],
+        ),
+        "เกมเติมคำ": _getTop3PerCategory(
+          GameData.topScoresByGame["เกมเติมคำ"] ?? [],
+        ),
+        "เกมพูดคำศัพท์": _getTop3PerCategory(
+          GameData.topScoresByGame["เกมพูดคำศัพท์"] ?? [],
+        ),
+        "เกมทายรูปภาพ": _getTop3PerCategory(
+          GameData.topScoresByGame["เกมทายรูปภาพ"] ?? [],
+        ),
+      };
+    });
+  }
+
+  List<Map<String, dynamic>> _getTop3PerCategory(List<dynamic> scores) {
+    Map<String, List<dynamic>> grouped = {};
+    for (var score in scores) {
+      String category = score["category"] ?? "ไม่ระบุหมวด";
+      grouped.putIfAbsent(category, () => []).add(score);
+    }
+
+    List<Map<String, dynamic>> result = [];
+    grouped.forEach((category, list) {
+      Map<String, Map<String, dynamic>> bestScores = {};
+      for (var s in list) {
+        String user = s["username"] ?? "ไม่ระบุชื่อ";
+        if (!bestScores.containsKey(user) ||
+            (s["score"] ?? 0) > (bestScores[user]!["score"] ?? 0)) {
+          bestScores[user] = s;
+        }
+      }
+
+      List<Map<String, dynamic>> filtered =
+          bestScores.values.toList()
+            ..sort((a, b) => (b["score"] ?? 0).compareTo(a["score"] ?? 0));
+
+      for (int i = 0; i < filtered.length && i < 3; i++) {
+        String user = filtered[i]["username"] ?? "";
+        Color rankColor =
+            i == 0
+                ? Colors.amber
+                : i == 1
+                ? Colors.grey
+                : Colors.brown;
+
+        result.add({
+          "rank": (i + 1).toString(),
+          "color": rankColor,
+          "username": user,
+          "usernameColor": user == currentUsername ? Colors.blue : Colors.black,
+          "category": category,
+          "score": "${filtered[i]["score"] ?? 0} คะแนน",
+          "time": filtered[i]["time"] ?? "",
+        });
+      }
+    });
+
+    return result;
+  }
+
+  Map<String, List<Map<String, dynamic>>> _groupByCategory(
+    List<Map<String, dynamic>> data,
+  ) {
+    final Map<String, List<Map<String, dynamic>>> grouped = {};
+    for (var game in data) {
+      final category = game["category"] ?? "ไม่ระบุหมวด";
+      grouped.putIfAbsent(category, () => []).add(game);
+    }
+    return grouped;
+  }
+
+  void showGamePopup(String title) {
+    final scores = topScores[title] ?? [];
+    final grouped = _groupByCategory(scores);
+
+    if (scores.isEmpty) {
+      showDialog(
+        context: context,
+        builder:
+            (_) => AlertDialog(
+              title: Text(title),
+              content: const Text("ยังไม่มีข้อมูลคะแนน"),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text("ปิด"),
+                ),
+              ],
+            ),
+      );
+      return;
+    }
+
+    showDialog(
+      context: context,
+      builder: (_) {
+        return Dialog(
+          insetPadding: const EdgeInsets.all(12),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: DefaultTabController(
+            length: grouped.keys.length,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: const BoxDecoration(
+                    color: Colors.orange,
+                    borderRadius: BorderRadius.vertical(
+                      top: Radius.circular(16),
+                    ),
+                  ),
+                  child: Column(
+                    children: [
+                      Text(
+                        title,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18,
+                        ),
+                      ),
+                      TabBar(
+                        isScrollable: false,
+                        indicatorColor: Colors.white,
+                        labelColor: Colors.white,
+                        unselectedLabelColor: Colors.black87,
+                        labelPadding: EdgeInsets.zero,
+                        tabs:
+                            grouped.keys.map((c) {
+                              return Tab(
+                                child: SizedBox.expand(
+                                  child: Center(
+                                    child: Text(
+                                      c,
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              );
+                            }).toList(),
+                      ),
+                    ],
+                  ),
+                ),
+                Expanded(
+                  child: TabBarView(
+                    children:
+                        grouped.entries.map((entry) {
+                          final items = entry.value;
+                          return ListView(
+                            padding: const EdgeInsets.all(12),
+                            children:
+                                items.map((game) {
+                                  return Card(
+                                    margin: const EdgeInsets.only(bottom: 10),
+                                    child: ListTile(
+                                      leading: CircleAvatar(
+                                        backgroundColor: game["color"],
+                                        child: Text(
+                                          game["rank"],
+                                          style: const TextStyle(
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                      ),
+                                      title: Text(
+                                        "👤 ${game["username"]}",
+                                        style: TextStyle(
+                                          color: game["usernameColor"],
+                                        ),
+                                      ),
+                                      subtitle: Text("⏱ ${game["time"]}"),
+                                      trailing: Text(
+                                        game["score"],
+                                        style: const TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ),
+                                  );
+                                }).toList(),
+                          );
+                        }).toList(),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
 
   void _loadSelectedIcon() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -47,20 +298,10 @@ class _ProfilescreenState extends State<Profilescreen> {
     );
   }
 
-  @override
-  void initState() {
-    super.initState();
-    loadUsername();
-    _loadSelectedIcon();
-  }
-
-  // ดึงชื่อผู้ใช้จาก PHP API
   Future<void> loadUsername() async {
     final prefs = await SharedPreferences.getInstance();
-    int? userId = prefs.getInt('id'); // ดึง id จริง
-    if (userId != null) {
-      GameData.userId = userId;
-    }
+    int? userId = prefs.getInt('id');
+    if (userId != null) GameData.userId = userId;
     isGuest = prefs.getBool('isGuest') ?? false;
 
     if (isGuest) {
@@ -70,11 +311,11 @@ class _ProfilescreenState extends State<Profilescreen> {
       return;
     }
 
-    if (userId == null) return; // ยังไม่ได้ login
+    if (userId == null) return;
 
     try {
       final url = Uri.parse(
-        'http://192.168.1.125/dataweb/get_user.php?id=$userId',
+        'http://10.33.87.68/dataweb/get_user.php?id=$userId',
       );
       final response = await http.get(url);
 
@@ -89,7 +330,6 @@ class _ProfilescreenState extends State<Profilescreen> {
     }
   }
 
-  // บันทึกชื่อผู้ใช้ไปยัง PHP API
   Future<bool> saveUsername() async {
     final prefs = await SharedPreferences.getInstance();
     final newName = _controller.text.trim();
@@ -103,8 +343,6 @@ class _ProfilescreenState extends State<Profilescreen> {
       return false;
     }
 
-    bool isGuest = prefs.getBool('isGuest') ?? false;
-
     if (isGuest) {
       await prefs.setString('guestUsername', newName);
       setState(() => isEditing = false);
@@ -115,7 +353,7 @@ class _ProfilescreenState extends State<Profilescreen> {
     if (userId == null) return false;
 
     try {
-      final url = Uri.parse('http://192.168.1.125/dataweb/update_user.php');
+      final url = Uri.parse('http://10.33.87.68/dataweb/update_user.php');
       final response = await http.post(
         url,
         body: {'id': userId.toString(), 'username': newName},
@@ -171,11 +409,8 @@ class _ProfilescreenState extends State<Profilescreen> {
 
   bool isBadUsername(String username) {
     final normalized = normalizeText(username);
-
     for (final word in bannedWords) {
-      if (normalized.contains(word)) {
-        return true;
-      }
+      if (normalized.contains(word)) return true;
     }
     return false;
   }
@@ -190,9 +425,7 @@ class _ProfilescreenState extends State<Profilescreen> {
           actions: <Widget>[
             TextButton(
               child: const Text('ตกลง'),
-              onPressed: () {
-                Navigator.of(context).pop(); // ปิด dialog
-              },
+              onPressed: () => Navigator.of(context).pop(),
             ),
           ],
         );
@@ -213,21 +446,21 @@ class _ProfilescreenState extends State<Profilescreen> {
               return Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  _buildIconChoice(Icons.person, tempIcon, (icon) {
-                    setStateDialog(() {
-                      tempIcon = icon;
-                    });
-                  }),
-                  _buildIconChoice(Icons.account_circle, tempIcon, (icon) {
-                    setStateDialog(() {
-                      tempIcon = icon;
-                    });
-                  }),
-                  _buildIconChoice(Icons.face, tempIcon, (icon) {
-                    setStateDialog(() {
-                      tempIcon = icon;
-                    });
-                  }),
+                  _buildIconChoice(
+                    Icons.person,
+                    tempIcon,
+                    (icon) => setStateDialog(() => tempIcon = icon),
+                  ),
+                  _buildIconChoice(
+                    Icons.account_circle,
+                    tempIcon,
+                    (icon) => setStateDialog(() => tempIcon = icon),
+                  ),
+                  _buildIconChoice(
+                    Icons.face,
+                    tempIcon,
+                    (icon) => setStateDialog(() => tempIcon = icon),
+                  ),
                 ],
               );
             },
@@ -239,9 +472,7 @@ class _ProfilescreenState extends State<Profilescreen> {
             ),
             ElevatedButton(
               onPressed: () {
-                setState(() {
-                  selectedIcon = tempIcon;
-                });
+                setState(() => selectedIcon = tempIcon);
                 _saveSelectedIcon(tempIcon);
                 Navigator.pop(context);
               },
@@ -259,29 +490,71 @@ class _ProfilescreenState extends State<Profilescreen> {
     void Function(IconData) onSelected,
   ) {
     final bool isSelected = icon == selected;
-
     return GestureDetector(
       onTap: () => onSelected(icon),
       child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 4),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(20, 8, 20, 8),
-              child: Container(
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  border:
-                      isSelected
-                          ? Border.all(color: Colors.blue, width: 3)
-                          : null,
-                ),
-                padding: EdgeInsets.all(4),
-                child: Icon(icon, size: 40),
-              ),
-            ),
-          ],
+        padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+        child: Container(
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            border:
+                isSelected ? Border.all(color: Colors.blue, width: 3) : null,
+          ),
+          padding: EdgeInsets.all(4),
+          child: Icon(icon, size: 40),
+        ),
+      ),
+    );
+  }
+
+  // 🔹 ฟังก์ชันบันทึกภาพที่เลือกจากเกมบน server
+  Future<void> saveSelectedImage(int imageNumber) async {
+    final prefs = await SharedPreferences.getInstance();
+    final userId = prefs.getInt('id');
+    if (userId == null) return;
+
+    try {
+      final url = Uri.parse('http://10.33.87.68/dataweb/update_user_image.php');
+      final response = await http.post(
+        url,
+        body: {
+          'user_id': userId.toString(),
+          'image_number': imageNumber.toString(),
+        },
+      );
+
+      final data = jsonDecode(response.body);
+      if (data['success'] == true) {
+        print('✅ เลือกรูปสำเร็จ');
+      }
+    } catch (e) {
+      print('Error saving selected image: $e');
+    }
+  }
+
+  // 🔹 แก้ path รูปจาก assets -> uploads/user
+  Widget _buildGameImageChoice(int imageNumber) {
+    return GestureDetector(
+      onTap: () async {
+        await saveSelectedImage(imageNumber);
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('คุณเลือกรูปที่ $imageNumber')));
+      },
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Image.network(
+          'http://10.33.87.68/uploads/user/image_$imageNumber.png',
+          width: 60,
+          height: 60,
+          errorBuilder: (context, error, stackTrace) {
+            return Container(
+              width: 60,
+              height: 60,
+              color: Colors.grey[300],
+              child: Icon(Icons.image_not_supported),
+            );
+          },
         ),
       ),
     );
@@ -293,11 +566,8 @@ class _ProfilescreenState extends State<Profilescreen> {
       appBar: AppBar(
         title: Text("Profile", style: TextStyle(fontWeight: FontWeight.bold)),
         centerTitle: true,
-        // bottom: PreferredSize(
-        //   preferredSize: Size.fromHeight(1.0),
-        //   child: Container(color: Colors.white, height: 1.0),
-        // ),
-        actions: <Widget>[
+        backgroundColor: Colors.orange,
+        actions: [
           IconButton(
             icon: Icon(Icons.settings),
             iconSize: 40,
@@ -313,58 +583,103 @@ class _ProfilescreenState extends State<Profilescreen> {
                         content: Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text("เสียงเกม"),
-                                  Switch(
-                                    value: SoundManager.isSoundOn[0],
-                                    onChanged: (bool value) {
-                                      setState(() {
-                                        SoundManager.playClickSound();
-                                        SoundManager.isSoundOn[0] = value;
-                                      });
-                                    },
-                                  ),
-                                ],
-                              ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text("เสียงเกม"),
+                                Switch(
+                                  value: SoundManager.isSoundOn[0],
+                                  onChanged: (bool value) {
+                                    setState(() {
+                                      SoundManager.playClickSound();
+                                      SoundManager.isSoundOn[0] = value;
+                                    });
+                                  },
+                                ),
+                              ],
                             ),
-                            Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text("เสียงปุ่ม"),
-                                  Switch(
-                                    value: SoundManager.isSoundOn[1],
-                                    onChanged: (bool value) {
-                                      setState(() {
-                                        SoundManager.playClickSound();
-                                        SoundManager.isSoundOn[1] = value;
-                                      });
-                                    },
-                                  ),
-                                ],
-                              ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text("เสียงปุ่ม"),
+                                Switch(
+                                  value: SoundManager.isSoundOn[1],
+                                  onChanged: (bool value) {
+                                    setState(() {
+                                      SoundManager.playClickSound();
+                                      SoundManager.isSoundOn[1] = value;
+                                    });
+                                  },
+                                ),
+                              ],
                             ),
                           ],
                         ),
-                        actions: <Widget>[
-                          ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(16),
+                        actions: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.red[400],
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(16),
+                                  ),
+                                ),
+                                onPressed: () {
+                                  SoundManager.playClickSound();
+                                  showDialog(
+                                    context: context,
+                                    builder: (BuildContext context) {
+                                      return AlertDialog(
+                                        title: Text(
+                                          "คุณต้องการออกจากระบบหรือไม่?",
+                                        ),
+                                        actions: [
+                                          TextButton(
+                                            onPressed: () {
+                                              Navigator.of(context).pop();
+                                            },
+                                            child: Text("ยกเลิก"),
+                                          ),
+                                          ElevatedButton(
+                                            style: ElevatedButton.styleFrom(
+                                              backgroundColor: Colors.red[400],
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(16),
+                                              ),
+                                            ),
+                                            onPressed: () {
+                                              logout(context);
+                                            },
+                                            child: Text(
+                                              "ออกจากระบบ",
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      );
+                                    },
+                                  );
+                                },
+                                child: Icon(Icons.logout, color: Colors.white),
                               ),
-                            ),
-                            onPressed: () {
-                              SoundManager.playClickSound();
-                              Navigator.of(context).pop();
-                            },
-                            child: Text("เสร็จสิ้น"),
+                              ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(16),
+                                  ),
+                                ),
+                                onPressed: () {
+                                  SoundManager.playClickSound();
+                                  Navigator.of(context).pop();
+                                },
+                                child: Text("เสร็จสิ้น"),
+                              ),
+                            ],
                           ),
                         ],
                       );
@@ -375,16 +690,11 @@ class _ProfilescreenState extends State<Profilescreen> {
             },
           ),
         ],
-        backgroundColor: Colors.orange,
-        // backgroundColor: Color(0xFFFFD54F),
       ),
       backgroundColor: Colors.orangeAccent,
-      // backgroundColor: Color(0xFFFFE082),
       body: Stack(
         fit: StackFit.expand,
         children: [
-          // 🔹 พื้นหลัง
-          // Image.asset('assets/image/bg.png', fit: BoxFit.cover),
           SafeArea(
             child: Column(
               children: [
@@ -410,7 +720,6 @@ class _ProfilescreenState extends State<Profilescreen> {
                           isEditing
                               ? Row(
                                 children: [
-                                  // TextField มีขนาดจำกัด
                                   Expanded(
                                     child: TextField(
                                       controller: _controller,
@@ -462,72 +771,56 @@ class _ProfilescreenState extends State<Profilescreen> {
                     ),
                   ],
                 ),
-                Spacer(),
-                Padding(
-                  padding: const EdgeInsets.all(24.0),
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      fixedSize: Size(300, 50),
-                      backgroundColor: Colors.red[400],
-                      // shape: RoundedRectangleBorder(
-                      //   borderRadius: BorderRadius.circular(20),
-                      // ),
-                    ),
-                    onPressed: () {
-                      SoundManager.playClickSound();
-                      // แสดง AlertDialog เมื่อกดปุ่มปิด
-                      showDialog(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return AlertDialog(
-                            title: Row(
-                              children: [
-                                Flexible(
-                                  child: Text(
-                                    "คุณต้องการออกจากระบบหรือไม่?",
-                                    overflow: TextOverflow.ellipsis,
-                                    maxLines: 1,
-                                    style: TextStyle(fontSize: 20),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            actions: <Widget>[
-                              Padding(
-                                padding: const EdgeInsets.fromLTRB(0, 0, 8, 0),
-                                child: TextButton(
-                                  onPressed: () {
-                                    Navigator.of(context).pop();
-                                  },
-                                  child: Text("ยกเลิก"),
-                                ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.fromLTRB(8, 0, 0, 0),
+                SizedBox(height: 20),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      children: [
+                        const Text(
+                          "🏆 เลือกเกมที่ต้องการดูคะแนน",
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18,
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+                        Expanded(
+                          child: ListView.builder(
+                            itemCount: gameTitles.length,
+                            itemBuilder: (context, index) {
+                              final title = gameTitles[index];
+                              return Padding(
+                                padding: const EdgeInsets.only(bottom: 12),
                                 child: ElevatedButton(
+                                  onPressed: () => showGamePopup(title),
                                   style: ElevatedButton.styleFrom(
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(16),
+                                    backgroundColor: Colors.white,
+                                    foregroundColor: Colors.orange,
+                                    padding: const EdgeInsets.symmetric(
+                                      vertical: 16,
                                     ),
-                                    backgroundColor: Colors.red[400],
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
                                   ),
-                                  onPressed: () {
-                                    logout(context);
-                                  },
-                                  child: Text(
-                                    "ออกจากระบบ",
-                                    style: TextStyle(color: Colors.white),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      const Icon(Icons.videogame_asset),
+                                      const SizedBox(width: 8),
+                                      Text(
+                                        title,
+                                        style: const TextStyle(fontSize: 16),
+                                      ),
+                                    ],
                                   ),
                                 ),
-                              ),
-                            ],
-                          );
-                        },
-                      );
-                    },
-                    child: Text(
-                      "ลงชื่อออกจากระบบ",
-                      style: TextStyle(fontSize: 18, color: Colors.white),
+                              );
+                            },
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),

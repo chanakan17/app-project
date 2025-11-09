@@ -57,9 +57,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       final confirmPassword = _confirmPasswordController.text;
 
       // เรียก API
-      var url = Uri.parse(
-        'http://192.168.1.125/dataweb/flutter_insert_user.php',
-      );
+      var url = Uri.parse('http://10.33.87.68/dataweb/flutter_insert_user.php');
       var response = await http.post(
         url,
         body: {
