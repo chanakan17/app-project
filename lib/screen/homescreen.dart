@@ -42,7 +42,7 @@ class _HomeScreenState extends State<HomeScreen>
           children: const [
             Menuscreen(),
             Dicscreen(),
-            Scorescreen(),
+            // Scorescreen(),
             Profilescreen(),
           ],
         ),
@@ -71,7 +71,7 @@ class _HomeScreenState extends State<HomeScreen>
                   tabs: [
                     Tab(icon: Image.asset('assets/icons/game96.png')),
                     Tab(icon: Image.asset('assets/icons/bookdic100.png')),
-                    Tab(icon: Icon(Icons.score)),
+                    // Tab(icon: Icon(Icons.score)),
                     Tab(icon: Image.asset('assets/icons/profile80.png')),
                   ],
                 ),

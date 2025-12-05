@@ -20,14 +20,14 @@ class _MenuscreenState extends State<Menuscreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leading: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Image.asset(
-            'assets/icons/monkey64.png',
-            width: 40,
-            height: 40,
-          ),
-        ),
+        // leading: Padding(
+        //   padding: const EdgeInsets.all(8.0),
+        //   child: Image.asset(
+        //     'assets/icons/monkey64.png',
+        //     width: 40,
+        //     height: 40,
+        //   ),
+        // ),
         title: Text("Games", style: TextStyle(fontWeight: FontWeight.bold)),
         centerTitle: true,
         // bottom: PreferredSize(
@@ -60,85 +60,77 @@ class _MenuscreenState extends State<Menuscreen> {
         children: [
           // Image.asset('assets/image/bg.png', fit: BoxFit.cover),
           Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Center(
-              child: SingleChildScrollView(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    // ElevatedButton(
-                    //   onPressed: () {
-                    //     Navigator.pushReplacement(
-                    //       context,
-                    //       MaterialPageRoute(builder: (context) => Game()),
-                    //     );
-                    //   },
-                    //   child: Text("GameNa"),
-                    // ),
-                    buildGameButton(
-                      "เกมทายคำศัพท์",
-                      "Guessing Game",
-                      Image.asset(
-                        'assets/icons/guess.png',
-                        width: 90,
-                        height: 90,
-                      ),
-                      Colors.orange[100]!,
-                      (dictionary, title) =>
-                          Game1screen(dictionary: dictionary, title: title),
+            padding: const EdgeInsets.fromLTRB(8, 50, 8, 50),
+            // child: Center(
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  // ElevatedButton(
+                  //   onPressed: () {
+                  //     Navigator.pushReplacement(
+                  //       context,
+                  //       MaterialPageRoute(builder: (context) => Game()),
+                  //     );
+                  //   },
+                  //   child: Text("GameNa"),
+                  // ),
+                  buildGameButton(
+                    "เกมทายคำศัพท์",
+                    "Guessing Game",
+                    Image.asset(
+                      'assets/icons/guess.png',
+                      width: 90,
+                      height: 90,
                     ),
-                    buildGameButton(
-                      "เกมจับคู่คำศัพท์",
-                      "Matching Game",
-                      Image.asset(
-                        'assets/icons/match.png',
-                        width: 90,
-                        height: 90,
-                      ),
-                      Colors.blue[100]!,
-                      (dictionary, title) =>
-                          Game2screen(dictionary: dictionary, title: title),
+                    Colors.orange[100]!,
+                    (dictionary, title) =>
+                        Game1screen(dictionary: dictionary, title: title),
+                  ),
+                  buildGameButton(
+                    "เกมจับคู่คำศัพท์",
+                    "Matching Game",
+                    Image.asset(
+                      'assets/icons/match.png',
+                      width: 90,
+                      height: 90,
                     ),
-                    buildGameButton(
-                      "เกมเติมคำ",
-                      "Completion Game",
-                      Image.asset(
-                        'assets/icons/add.png',
-                        width: 90,
-                        height: 90,
-                      ),
-                      Colors.deepPurpleAccent[100]!,
-                      (dictionary, title) =>
-                          Game3screen(dictionary: dictionary, title: title),
-                    ),
-                    buildGameButton(
-                      "เกมพูดคำศัพท์",
-                      "Speaking Game",
-                      Image.asset(
-                        'assets/icons/speak.png',
-                        width: 90,
-                        height: 90,
-                      ),
-                      Colors.pink[100]!,
-                      (dictionary, title) =>
-                          Game4screen(dictionary: dictionary, title: title),
-                    ),
-                    buildGameButton(
-                      "เกมทายรูปภาพ",
-                      "Picture Game",
-                      Image.asset(
-                        'assets/icons/pic.png',
-                        width: 90,
-                        height: 90,
-                      ),
-                      Colors.green[100]!,
-                      (dictionary, title) =>
-                          Game5screen(dictionary: dictionary, title: title),
-                    ),
-                  ],
-                ),
+                    Colors.blue[100]!,
+                    (dictionary, title) =>
+                        Game2screen(dictionary: dictionary, title: title),
+                  ),
+                  buildGameButton(
+                    "เกมเติมคำ",
+                    "Completion Game",
+                    Image.asset('assets/icons/add.png', width: 90, height: 90),
+                    Colors.deepPurpleAccent[100]!,
+                    (dictionary, title) =>
+                        Game3screen(dictionary: dictionary, title: title),
+                  ),
+                  // buildGameButton(
+                  //   "เกมพูดคำศัพท์",
+                  //   "Speaking Game",
+                  //   Image.asset(
+                  //     'assets/icons/speak.png',
+                  //     width: 90,
+                  //     height: 90,
+                  //   ),
+                  //   Colors.pink[100]!,
+                  //   (dictionary, title) =>
+                  //       Game4screen(dictionary: dictionary, title: title),
+                  // ),
+                  buildGameButton(
+                    "เกมทายรูปภาพ",
+                    "Picture Game",
+                    Image.asset('assets/icons/pic.png', width: 90, height: 90),
+                    Colors.green[100]!,
+                    (dictionary, title) =>
+                        Game5screen(dictionary: dictionary, title: title),
+                  ),
+                ],
               ),
             ),
+            // ),
           ),
         ],
       ),
@@ -162,7 +154,7 @@ class _MenuscreenState extends State<Menuscreen> {
     Widget Function(Map<String, List<String>>, String) screenBuilder,
   ) {
     return Padding(
-      padding: const EdgeInsets.all(8.0),
+      padding: const EdgeInsets.fromLTRB(8, 12, 8, 12),
       child: SizedBox(
         child: ElevatedButton(
           onPressed: () {

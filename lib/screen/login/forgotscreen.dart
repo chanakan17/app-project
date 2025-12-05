@@ -24,7 +24,7 @@ class _ForgotscreenState extends State<Forgotscreen> {
     if (_formKey.currentState!.validate()) {
       try {
         final response = await http.post(
-          Uri.parse('http://10.33.87.68/dataweb/reset_forgot.php'),
+          Uri.parse('http://10.161.225.68/dataweb/reset_forgot.php'),
           body: {
             'username': _usernameController.text.trim(),
             'email': _emailController.text.trim(),

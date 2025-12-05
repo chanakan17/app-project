@@ -29,7 +29,7 @@ class _DicaniscreenState extends State<Dicaniscreen> {
   Future<void> _loadWords() async {
     try {
       var url = Uri.parse(
-        "http://10.33.87.68/dataweb/get_words.php?category_id=2", // 🐾 ใช้ category_id = 2
+        "http://10.161.225.68/dataweb/get_words.php?category_id=2", // 🐾 ใช้ category_id = 2
       );
       var response = await http.get(url);
       print('Status code: ${response.statusCode}');

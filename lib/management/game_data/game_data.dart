@@ -57,7 +57,7 @@ class GameData {
 
   // บันทึกคะแนนลงฐานข้อมูล
   static Future<void> saveScoreToDB() async {
-    final url = Uri.parse('http://10.33.87.68/dataweb/save_score.php');
+    final url = Uri.parse('http://10.161.225.68/dataweb/save_score.php');
     final response = await http.post(
       url,
       body: {
@@ -84,7 +84,7 @@ class GameData {
   // โหลด Top 3 คะแนนจากฐานข้อมูล
   static Future<void> loadTopScores() async {
     final url = Uri.parse(
-      'http://10.33.87.68/dataweb/get_top_scores.php?user_id=$userId',
+      'http://10.161.225.68/dataweb/get_top_scores.php?user_id=$userId',
     );
     final response = await http.get(url);
 
@@ -114,37 +114,45 @@ class GameData {
   static Map<String, List<Map<String, dynamic>>> topScoresByGame = {};
 
   static Future<void> loadTopScores1() async {
-    final url = Uri.parse('http://10.33.87.68/dataweb/get_topa_scores.php');
-    final response = await http.get(url);
+    // ตรวจสอบ URL ให้ถูกต้อง (แก้ IP ให้ตรงกับเครื่องคุณ)
+    final url = Uri.parse('http://10.161.225.68/dataweb/get_topa_scores.php');
 
-    if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
+    try {
+      final response = await http.get(url);
 
-      if (data is Map<String, dynamic>) {
-        topScoresByGame.clear();
+      if (response.statusCode == 200) {
+        // decode แบบ utf8 เพื่อรองรับภาษาไทย
+        final data = jsonDecode(utf8.decode(response.bodyBytes));
 
-        data.forEach((gameName, categoryMap) {
-          if (categoryMap is Map<String, dynamic>) {
-            // สร้าง list ถ้ายังไม่มี
-            topScoresByGame.putIfAbsent(gameName, () => []);
+        if (data is Map<String, dynamic>) {
+          topScoresByGame.clear();
 
-            categoryMap.forEach((category, topList) {
-              if (topList is List) {
-                for (var item in topList) {
-                  topScoresByGame[gameName]!.add({
-                    "category": category,
-                    "username": item['username'],
-                    "score": item['score'],
-                    "time": item['time'],
-                  });
+          data.forEach((gameName, categoryMap) {
+            if (categoryMap is Map<String, dynamic>) {
+              topScoresByGame.putIfAbsent(gameName, () => []);
+
+              categoryMap.forEach((category, topList) {
+                if (topList is List) {
+                  for (var item in topList) {
+                    topScoresByGame[gameName]!.add({
+                      "category": category,
+                      "username": item['username'],
+                      "score": item['score'],
+                      "time": item['time'],
+                      // ✅✅✅ เพิ่มบรรทัดนี้ครับ เพื่อรับค่ารูปภาพ ✅✅✅
+                      "image_id": item['image_id'],
+                    });
+                  }
                 }
-              }
-            });
-          }
-        });
+              });
+            }
+          });
+        }
+      } else {
+        print("HTTP Error: ${response.statusCode}");
       }
-    } else {
-      print("HTTP Error: ${response.statusCode}");
+    } catch (e) {
+      print("Error loading top scores: $e");
     }
   }
 }
