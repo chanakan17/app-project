@@ -33,7 +33,7 @@ class _DicscreenState extends State<Dicscreen> {
         // ),
         backgroundColor: Colors.orange,
       ),
-      backgroundColor: Colors.orangeAccent,
+      // backgroundColor: Colors.orangeAccent,
       body: Stack(
         fit: StackFit.expand,
         children: [
@@ -133,7 +133,7 @@ class _DicscreenState extends State<Dicscreen> {
             shape: RoundedRectangleBorder(
               side: BorderSide(
                 color: Colors.orange, // สีของขอบ
-                width: 2, // ความหนาของขอบ
+                width: 3, // ความหนาของขอบ
               ),
               borderRadius: BorderRadius.circular(25),
             ),

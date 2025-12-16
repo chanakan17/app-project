@@ -30,7 +30,7 @@ class _DicallscreenState extends State<Dicallscreen> {
   Future<void> _loadWords() async {
     try {
       var url = Uri.parse(
-        "http://10.161.225.68/dataweb/get_words.php?category_id=1",
+        "http://192.168.150.68/dataweb/get_words.php?category_id=1",
       );
 
       var response = await http.get(url);

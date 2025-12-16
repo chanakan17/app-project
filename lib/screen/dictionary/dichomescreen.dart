@@ -29,7 +29,7 @@ class _DichomescreenState extends State<Dichomescreen> {
   Future<void> _loadWords() async {
     try {
       var url = Uri.parse(
-        "http://10.161.225.68/dataweb/get_words.php?category_id=3", // 🏠 ใช้ category_id = 3
+        "http://192.168.150.68/dataweb/get_words.php?category_id=3", // 🏠 ใช้ category_id = 3
       );
       var response = await http.get(url);
       print('Status code: ${response.statusCode}');

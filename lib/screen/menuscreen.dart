@@ -30,13 +30,13 @@ class _MenuscreenState extends State<Menuscreen> {
         // ),
         title: Text("Games", style: TextStyle(fontWeight: FontWeight.bold)),
         centerTitle: true,
-        // bottom: PreferredSize(
-        //   preferredSize: Size.fromHeight(1.0), // ความสูงของเส้น
-        //   child: Container(
-        //     color: Colors.white, // สีของเส้น
-        //     height: 1.0,
-        //   ),
-        // ),
+        bottom: PreferredSize(
+          preferredSize: Size.fromHeight(1.0), // ความสูงของเส้น
+          child: Container(
+            color: Colors.black26, // สีของเส้น
+            height: 2.0,
+          ),
+        ),
         // bottom: PreferredSize(
         //   preferredSize: Size.fromHeight(1.0),
         //   child: Container(color: Colors.white, height: 1.0),
@@ -54,7 +54,7 @@ class _MenuscreenState extends State<Menuscreen> {
         ],
         backgroundColor: Colors.orange,
       ),
-      backgroundColor: Colors.orangeAccent,
+      // backgroundColor: Colors.orangeAccent,
       body: Stack(
         fit: StackFit.expand,
         children: [
@@ -162,15 +162,16 @@ class _MenuscreenState extends State<Menuscreen> {
             showCategoryDialog(screenBuilder);
           },
           style: ElevatedButton.styleFrom(
+            // backgroundColor: Colors.yellow,
             backgroundColor: Colors.white.withOpacity(0.8), //ความทึมแสง
             // backgroundColor: Colors.transparent,
-            // shadowColor: Colors.transparent,
+            shadowColor: Colors.transparent,
             fixedSize: Size(370, 120),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(25),
               side: BorderSide(
                 color: Colors.orange, // สีของขอบ
-                width: 2, // ความหนาของขอบ
+                width: 3, // ความหนาของขอบ
               ),
             ),
           ),
@@ -205,6 +206,7 @@ class _MenuscreenState extends State<Menuscreen> {
                                 subtitle,
                                 style: TextStyle(
                                   fontSize: 22,
+                                  fontWeight: FontWeight.bold,
                                   color: Colors.black87,
                                 ),
                               ),
@@ -239,7 +241,7 @@ class _MenuscreenState extends State<Menuscreen> {
       builder: (context) {
         return AlertDialog(
           title: Text("เลือกหมวดหมู่ที่ต้องการ"),
-          backgroundColor: Color.fromARGB(255, 236, 217, 159),
+          // backgroundColor: Color.fromARGB(255, 236, 217, 159),
           actions: [
             SizedBox(
               width: 300,

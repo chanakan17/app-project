@@ -63,7 +63,7 @@ class _ProfilescreenState extends State<Profilescreen> {
 
     try {
       final url = Uri.parse(
-        'http://10.161.225.68/dataweb/get_user.php?id=$userId',
+        'http://192.168.150.68/dataweb/get_user.php?id=$userId',
       );
       final response = await http.get(url);
       if (response.statusCode == 200) {
@@ -401,7 +401,7 @@ class _ProfilescreenState extends State<Profilescreen> {
 
     try {
       final url = Uri.parse(
-        'http://10.161.225.68/dataweb/get_user.php?id=$userId',
+        'http://192.168.150.68/dataweb/get_user.php?id=$userId',
       );
       final response = await http.get(url);
 
@@ -477,7 +477,9 @@ class _ProfilescreenState extends State<Profilescreen> {
       int? userId = prefs.getInt('id');
       if (userId != null) {
         try {
-          final url = Uri.parse('http://10.161.225.68/dataweb/update_user.php');
+          final url = Uri.parse(
+            'http://192.168.150.68/dataweb/update_user.php',
+          );
           final response = await http.post(
             url,
             body: {'id': userId.toString(), 'username': newName},
@@ -681,7 +683,7 @@ class _ProfilescreenState extends State<Profilescreen> {
       // 2. ตรวจสอบ URL และ IP Address ให้แน่ใจ
       // หมายเหตุ: ถ้าใช้ Emulator Android บางทีต้องใช้ 10.0.2.2 แทน IP เครื่อง
       final url = Uri.parse(
-        'http://10.161.225.68/dataweb/update_user_image.php',
+        'http://192.168.150.68/dataweb/update_user_image.php',
       );
 
       print("📡 กำลังส่งข้อมูล... User: $userId, Image: $imageNumber");
@@ -742,6 +744,10 @@ class _ProfilescreenState extends State<Profilescreen> {
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
+        bottom: PreferredSize(
+          preferredSize: Size.fromHeight(1.0),
+          child: Container(color: Colors.black26, height: 2.0),
+        ),
         backgroundColor: Colors.orange,
         actions: [
           IconButton(
@@ -865,7 +871,7 @@ class _ProfilescreenState extends State<Profilescreen> {
           ),
         ],
       ),
-      backgroundColor: Colors.orangeAccent,
+      // backgroundColor: Colors.orangeAccent,
       body: Stack(
         fit: StackFit.expand,
         children: [
@@ -873,79 +879,90 @@ class _ProfilescreenState extends State<Profilescreen> {
             child: Column(
               children: [
                 const SizedBox(height: 20),
-                Row(
-                  children: [
-                    const SizedBox(width: 20),
-                    // ---------------------------------------------------------
-                    // 6. แสดงรูปโปรไฟล์ในหน้าหลัก
-                    // ---------------------------------------------------------
-                    GestureDetector(
-                      onTap: _showAvatarPicker,
-                      child: CircleAvatar(
-                        radius: 30,
-                        backgroundColor: Colors.white,
-                        backgroundImage:
-                            displayImage.isNotEmpty
-                                ? AssetImage(displayImage)
-                                : null,
-                      ),
-                    ),
-                    const SizedBox(width: 10),
-                    Flexible(
-                      child:
-                          isEditing
-                              ? Row(
-                                children: [
-                                  Expanded(
-                                    child: TextField(
-                                      controller: _controller,
-                                      autofocus: true,
-                                      maxLength: 20,
-                                      decoration: const InputDecoration(
-                                        counterText: '',
-                                        hintText: 'กรอกชื่อไม่เกิน 20 ตัว',
-                                      ),
-                                    ),
-                                  ),
-                                  IconButton(
-                                    icon: const Icon(Icons.check),
-                                    onPressed: () async {
-                                      final success = await saveUsername();
-                                      if (success) {
-                                        FocusScope.of(context).unfocus();
-                                      }
-                                    },
-                                  ),
-                                ],
-                              )
-                              : Row(
-                                children: [
-                                  Expanded(
-                                    child: Row(
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Container(
+                    // color: Colors.black12,
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(0, 15, 0, 15),
+                      child: Row(
+                        children: [
+                          const SizedBox(width: 20),
+                          // ---------------------------------------------------------
+                          // 6. แสดงรูปโปรไฟล์ในหน้าหลัก
+                          // ---------------------------------------------------------
+                          GestureDetector(
+                            onTap: _showAvatarPicker,
+                            child: CircleAvatar(
+                              radius: 30,
+                              backgroundColor: Colors.white,
+                              backgroundImage:
+                                  displayImage.isNotEmpty
+                                      ? AssetImage(displayImage)
+                                      : null,
+                            ),
+                          ),
+                          const SizedBox(width: 10),
+                          Flexible(
+                            child:
+                                isEditing
+                                    ? Row(
                                       children: [
-                                        Text(
-                                          _controller.text,
-                                          style: const TextStyle(
-                                            fontSize: 18,
-                                            fontWeight: FontWeight.bold,
+                                        Expanded(
+                                          child: TextField(
+                                            controller: _controller,
+                                            autofocus: true,
+                                            maxLength: 20,
+                                            decoration: const InputDecoration(
+                                              counterText: '',
+                                              hintText:
+                                                  'กรอกชื่อไม่เกิน 20 ตัว',
+                                            ),
                                           ),
                                         ),
                                         IconButton(
-                                          icon: const Icon(Icons.edit),
-                                          onPressed:
-                                              () => setState(
-                                                () => isEditing = true,
+                                          icon: const Icon(Icons.check),
+                                          onPressed: () async {
+                                            final success =
+                                                await saveUsername();
+                                            if (success) {
+                                              FocusScope.of(context).unfocus();
+                                            }
+                                          },
+                                        ),
+                                      ],
+                                    )
+                                    : Row(
+                                      children: [
+                                        Expanded(
+                                          child: Row(
+                                            children: [
+                                              Text(
+                                                _controller.text,
+                                                style: const TextStyle(
+                                                  fontSize: 18,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
                                               ),
+                                              IconButton(
+                                                icon: const Icon(Icons.edit),
+                                                onPressed:
+                                                    () => setState(
+                                                      () => isEditing = true,
+                                                    ),
+                                              ),
+                                            ],
+                                          ),
                                         ),
                                       ],
                                     ),
-                                  ),
-                                ],
-                              ),
+                          ),
+                        ],
+                      ),
                     ),
-                  ],
+                  ),
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: 30),
                 Expanded(
                   child: Padding(
                     padding: const EdgeInsets.all(16),
@@ -965,7 +982,7 @@ class _ProfilescreenState extends State<Profilescreen> {
                             itemBuilder: (context, index) {
                               final title = gameTitles[index];
                               return Padding(
-                                padding: const EdgeInsets.only(bottom: 12),
+                                padding: const EdgeInsets.all(12.0),
                                 child: ElevatedButton(
                                   onPressed: () => showGamePopup(title),
                                   style: ElevatedButton.styleFrom(
@@ -974,6 +991,8 @@ class _ProfilescreenState extends State<Profilescreen> {
                                     padding: const EdgeInsets.symmetric(
                                       vertical: 16,
                                     ),
+                                    elevation: 5,
+                                    shadowColor: Colors.black.withOpacity(0.5),
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(12),
                                     ),
@@ -981,11 +1000,14 @@ class _ProfilescreenState extends State<Profilescreen> {
                                   child: Row(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
-                                      const Icon(Icons.videogame_asset),
                                       const SizedBox(width: 8),
                                       Text(
                                         title,
-                                        style: const TextStyle(fontSize: 16),
+                                        style: const TextStyle(
+                                          fontSize: 22,
+                                          color: Colors.grey,
+                                          fontWeight: FontWeight.bold,
+                                        ),
                                       ),
                                     ],
                                   ),
