@@ -1,3 +1,4 @@
+import 'package:app/api_config.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
@@ -57,7 +58,7 @@ class GameData {
 
   // บันทึกคะแนนลงฐานข้อมูล
   static Future<void> saveScoreToDB() async {
-    final url = Uri.parse('http://172.30.160.1/dataweb/save_score.php');
+    final url = Uri.parse('${ApiConfig.baseUrl}/save_score.php');
     final response = await http.post(
       url,
       body: {
@@ -84,7 +85,7 @@ class GameData {
   // โหลด Top 3 คะแนนจากฐานข้อมูล
   static Future<void> loadTopScores() async {
     final url = Uri.parse(
-      'http://172.30.160.1/dataweb/get_top_scores.php?user_id=$userId',
+      '${ApiConfig.baseUrl}/get_top_scores.php?user_id=$userId',
     );
     final response = await http.get(url);
 
@@ -115,7 +116,7 @@ class GameData {
 
   static Future<void> loadTopScores1() async {
     // ตรวจสอบ URL ให้ถูกต้อง (แก้ IP ให้ตรงกับเครื่องคุณ)
-    final url = Uri.parse('http://172.30.160.1/dataweb/get_topa_scores.php');
+    final url = Uri.parse('${ApiConfig.baseUrl}/get_topa_scores.php');
 
     try {
       final response = await http.get(url);

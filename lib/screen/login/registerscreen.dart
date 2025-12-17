@@ -1,3 +1,4 @@
+import 'package:app/api_config.dart';
 import 'package:app/screen/login/loginscreen.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -57,9 +58,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       final confirmPassword = _confirmPasswordController.text;
 
       // เรียก API
-      var url = Uri.parse(
-        'http://172.30.160.1/dataweb/flutter_insert_user.php',
-      );
+      var url = Uri.parse('${ApiConfig.baseUrl}/flutter_insert_user.php');
       var response = await http.post(
         url,
         body: {

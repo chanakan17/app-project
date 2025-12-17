@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:app/api_config.dart';
 import 'package:app/screen/login/forgotrscreen.dart';
 import 'package:app/screen/login/loginscreen.dart';
 import 'package:flutter/material.dart';
@@ -24,7 +25,7 @@ class _ForgotscreenState extends State<Forgotscreen> {
     if (_formKey.currentState!.validate()) {
       try {
         final response = await http.post(
-          Uri.parse('http://172.30.160.1/dataweb/reset_forgot.php'),
+          Uri.parse('${ApiConfig.baseUrl}/reset_forgot.php'),
           body: {
             'username': _usernameController.text.trim(),
             'email': _emailController.text.trim(),

@@ -1,3 +1,4 @@
+import 'package:app/api_config.dart';
 import 'package:app/management/game_data/game_data.dart';
 import 'package:app/screen/homescreen.dart';
 import 'package:app/screen/login/forgotscreen.dart';
@@ -58,7 +59,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
     final email = _emailController.text;
     final password = _passwordController.text;
-    final url = Uri.parse('http://172.30.160.1/dataweb/login_app.php');
+    final url = Uri.parse('${ApiConfig.baseUrl}/login_app.php');
 
     try {
       final response = await http.post(

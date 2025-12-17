@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:app/api_config.dart';
 import 'package:app/screen/login/loginscreen.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -23,7 +24,7 @@ class _ForgotrscreenState extends State<Forgotrscreen> {
     if (_formKey.currentState!.validate()) {
       try {
         final response = await http.post(
-          Uri.parse('http://172.30.160.1/dataweb/reset_password.php'),
+          Uri.parse('${ApiConfig.baseUrl}/reset_password.php'),
           body: {
             'email': widget.email,
             'new_password': _passwordController.text.trim(),

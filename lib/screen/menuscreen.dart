@@ -60,12 +60,13 @@ class _MenuscreenState extends State<Menuscreen> {
         children: [
           // Image.asset('assets/image/bg.png', fit: BoxFit.cover),
           Padding(
-            padding: const EdgeInsets.fromLTRB(8, 50, 8, 50),
+            padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
             // child: Center(
             child: SingleChildScrollView(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
+                  SizedBox(height: 50),
                   // ElevatedButton(
                   //   onPressed: () {
                   //     Navigator.pushReplacement(

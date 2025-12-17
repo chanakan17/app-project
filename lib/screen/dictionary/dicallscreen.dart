@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:app/api_config.dart';
 import 'package:app/management/dic.dart';
 import 'package:app/screen/homescreen.dart';
 import 'package:flutter/material.dart';
@@ -29,9 +30,7 @@ class _DicallscreenState extends State<Dicallscreen> {
 
   Future<void> _loadWords() async {
     try {
-      var url = Uri.parse(
-        "http://172.30.160.1/dataweb/get_words.php?category_id=1",
-      );
+      var url = Uri.parse("${ApiConfig.baseUrl}/get_words.php?category_id=1");
 
       var response = await http.get(url);
       print('Status code: ${response.statusCode}');

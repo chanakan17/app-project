@@ -1,11 +1,10 @@
 import 'dart:convert';
+import 'package:app/api_config.dart';
 import 'package:http/http.dart' as http;
 
 class DicService {
   static Future<List<DicEntry>> fetchWords({int categoryId = 1}) async {
-    var url = Uri.parse(
-      "http://172.30.160.1/dataweb/get_words.php?category_id=1",
-    );
+    var url = Uri.parse("${ApiConfig.baseUrl}/get_words.php?category_id=1");
     var response = await http.get(url);
 
     if (response.statusCode == 200) {

@@ -1,3 +1,4 @@
+import 'package:app/api_config.dart';
 import 'package:app/management/game_data/game_data.dart';
 import 'package:app/screen/login/loginscreen.dart';
 import 'package:flutter/material.dart';
@@ -62,9 +63,7 @@ class _ProfilescreenState extends State<Profilescreen> {
     if (userId == null) return "";
 
     try {
-      final url = Uri.parse(
-        'http://172.30.160.1/dataweb/get_user.php?id=$userId',
-      );
+      final url = Uri.parse('${ApiConfig.baseUrl}/get_user.php?id=$userId');
       final response = await http.get(url);
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
@@ -400,9 +399,7 @@ class _ProfilescreenState extends State<Profilescreen> {
     if (userId == null) return;
 
     try {
-      final url = Uri.parse(
-        'http://172.30.160.1/dataweb/get_user.php?id=$userId',
-      );
+      final url = Uri.parse('${ApiConfig.baseUrl}/get_user.php?id=$userId');
       final response = await http.get(url);
 
       if (response.statusCode == 200) {
@@ -477,7 +474,7 @@ class _ProfilescreenState extends State<Profilescreen> {
       int? userId = prefs.getInt('id');
       if (userId != null) {
         try {
-          final url = Uri.parse('http://172.30.160.1/dataweb/update_user.php');
+          final url = Uri.parse('${ApiConfig.baseUrl}/update_user.php');
           final response = await http.post(
             url,
             body: {'id': userId.toString(), 'username': newName},
@@ -680,9 +677,7 @@ class _ProfilescreenState extends State<Profilescreen> {
     try {
       // 2. ตรวจสอบ URL และ IP Address ให้แน่ใจ
       // หมายเหตุ: ถ้าใช้ Emulator Android บางทีต้องใช้ 10.0.2.2 แทน IP เครื่อง
-      final url = Uri.parse(
-        'http://172.30.160.1/dataweb/update_user_image.php',
-      );
+      final url = Uri.parse('${ApiConfig.baseUrl}/update_user_image.php');
 
       print("📡 กำลังส่งข้อมูล... User: $userId, Image: $imageNumber");
 

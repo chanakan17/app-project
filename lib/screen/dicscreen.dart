@@ -31,6 +31,13 @@ class _DicscreenState extends State<Dicscreen> {
         //   preferredSize: Size.fromHeight(1.0),
         //   child: Container(color: Colors.white, height: 1.0),
         // ),
+        bottom: PreferredSize(
+          preferredSize: Size.fromHeight(1.0), // ความสูงของเส้น
+          child: Container(
+            color: Colors.black26, // สีของเส้น
+            height: 2.0,
+          ),
+        ),
         backgroundColor: Colors.orange,
       ),
       // backgroundColor: Colors.orangeAccent,
@@ -39,11 +46,12 @@ class _DicscreenState extends State<Dicscreen> {
         children: [
           // Image.asset('assets/image/bg.png', fit: BoxFit.cover),
           Padding(
-            padding: const EdgeInsets.fromLTRB(8, 50, 8, 50),
+            padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
             child: SingleChildScrollView(
               child: Center(
                 child: Column(
                   children: [
+                    SizedBox(height: 50),
                     // buildDicButton(
                     //   "translate",
                     //   "แปลคำศัพท์และประโยค",

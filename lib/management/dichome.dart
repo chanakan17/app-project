@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:app/api_config.dart';
 import 'package:http/http.dart' as http;
 
 /// คลาสเก็บข้อมูลคำศัพท์แต่ละคำ
@@ -22,7 +23,7 @@ class DicEntry {
 class DicService {
   static Future<List<DicEntry>> fetchWords({required int categoryId}) async {
     final url = Uri.parse(
-      "http://172.30.160.1/dataweb/get_words.php?category_id=$categoryId",
+      "${ApiConfig.baseUrl}/get_words.php?category_id=$categoryId",
     );
 
     final response = await http.get(url);

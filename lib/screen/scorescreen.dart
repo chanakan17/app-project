@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:app/api_config.dart';
 import 'package:app/management/game_data/game_data.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -39,9 +40,7 @@ class _ScorescreenState extends State<Scorescreen> {
     if (userId == null) return "";
 
     try {
-      final url = Uri.parse(
-        'http://172.30.160.1/dataweb/get_user.php?id=$userId',
-      );
+      final url = Uri.parse('${ApiConfig.baseUrl}/get_user.php?id=$userId');
       final response = await http.get(url);
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
