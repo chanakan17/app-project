@@ -40,7 +40,7 @@ class _ScorescreenState extends State<Scorescreen> {
 
     try {
       final url = Uri.parse(
-        'http://192.168.150.68/dataweb/get_user.php?id=$userId',
+        'http://172.30.160.1/dataweb/get_user.php?id=$userId',
       );
       final response = await http.get(url);
       if (response.statusCode == 200) {

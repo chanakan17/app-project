@@ -4,7 +4,7 @@ import 'package:http/http.dart' as http;
 class DicService {
   static Future<List<DicEntry>> fetchWords({int categoryId = 1}) async {
     var url = Uri.parse(
-      "http://192.168.150.68/dataweb/get_words.php?category_id=1",
+      "http://172.30.160.1/dataweb/get_words.php?category_id=1",
     );
     var response = await http.get(url);
 

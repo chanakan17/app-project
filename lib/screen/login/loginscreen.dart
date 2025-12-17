@@ -58,7 +58,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
     final email = _emailController.text;
     final password = _passwordController.text;
-    final url = Uri.parse('http://192.168.150.68/dataweb/login_app.php');
+    final url = Uri.parse('http://172.30.160.1/dataweb/login_app.php');
 
     try {
       final response = await http.post(

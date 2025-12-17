@@ -58,7 +58,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
       // เรียก API
       var url = Uri.parse(
-        'http://192.168.150.68/dataweb/flutter_insert_user.php',
+        'http://172.30.160.1/dataweb/flutter_insert_user.php',
       );
       var response = await http.post(
         url,

@@ -23,7 +23,7 @@ class _ForgotrscreenState extends State<Forgotrscreen> {
     if (_formKey.currentState!.validate()) {
       try {
         final response = await http.post(
-          Uri.parse('http://192.168.150.68/dataweb/reset_password.php'),
+          Uri.parse('http://172.30.160.1/dataweb/reset_password.php'),
           body: {
             'email': widget.email,
             'new_password': _passwordController.text.trim(),
