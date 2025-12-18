@@ -179,7 +179,7 @@ class _GameState extends State<Game> {
         centerTitle: true,
         bottom: PreferredSize(
           preferredSize: Size.fromHeight(1.0),
-          child: Container(color: Colors.white, height: 1.0),
+          child: Container(color: Colors.black26, height: 2.0),
         ),
         actions: <Widget>[
           IconButton(
@@ -240,6 +240,7 @@ class _GameState extends State<Game> {
         ],
         backgroundColor: Color(0xFFFFF895),
       ),
+      backgroundColor: Colors.amber[50],
       body: Stack(
         fit: StackFit.expand,
         children: [

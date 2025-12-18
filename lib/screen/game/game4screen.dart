@@ -289,10 +289,10 @@ class _Game4screenState extends State<Game4screen> {
       appBar: AppBar(
         title: Text("เกมพูดคำศัพท์"),
         centerTitle: true,
-        // bottom: PreferredSize(
-        //   preferredSize: Size.fromHeight(1.0),
-        //   child: Container(color: Colors.white, height: 1.0),
-        // ),
+        bottom: PreferredSize(
+          preferredSize: Size.fromHeight(1.0),
+          child: Container(color: Colors.black26, height: 2.0),
+        ),
         actions: <Widget>[
           IconButton(
             icon: Icon(Icons.close),
@@ -354,7 +354,7 @@ class _Game4screenState extends State<Game4screen> {
         ],
         backgroundColor: Colors.orange,
       ),
-      backgroundColor: Colors.orangeAccent,
+      backgroundColor: Colors.amber[50],
       body: Stack(
         fit: StackFit.expand,
         children: [

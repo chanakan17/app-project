@@ -106,9 +106,13 @@ class _DichomescreenState extends State<Dichomescreen> {
           },
         ),
         title: Text("คำศัพท์บ้าน"),
+        bottom: PreferredSize(
+          preferredSize: Size.fromHeight(1.0),
+          child: Container(color: Colors.black26, height: 2.0),
+        ),
         backgroundColor: Colors.orange,
       ),
-      backgroundColor: Colors.orangeAccent,
+      backgroundColor: Colors.amber[50],
       body: Stack(
         fit: StackFit.expand,
         children: [

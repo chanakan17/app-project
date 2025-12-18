@@ -1,3 +1,3 @@
 class ApiConfig {
-  static const String baseUrl = "http://172.30.160.1/dataweb";
+  static const String baseUrl = "http://192.168.150.68/dataweb";
 }

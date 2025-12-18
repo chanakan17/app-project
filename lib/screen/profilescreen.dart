@@ -371,7 +371,8 @@ class _ProfilescreenState extends State<Profilescreen> {
     await prefs.remove('id');
     await prefs.remove('isGuest');
     await prefs.remove('guestUsername');
-    // await prefs.remove('selected_icon'); // ไม่ต้องลบก็ได้ หรือจะลบก็ได้
+    await prefs.remove('guest');
+    // await prefs.remove('selected_icon');
     Navigator.pushAndRemoveUntil(
       context,
       MaterialPageRoute(builder: (_) => const LoginScreen()),
@@ -391,7 +392,7 @@ class _ProfilescreenState extends State<Profilescreen> {
     if (isGuest) {
       setState(() {
         _controller.text = prefs.getString('guestUsername') ?? 'Guest';
-        currentAvatarId = 0; // Guest ใช้รูป Default
+        currentAvatarId = 0;
       });
       return;
     }
@@ -864,7 +865,7 @@ class _ProfilescreenState extends State<Profilescreen> {
           ),
         ],
       ),
-      // backgroundColor: Colors.orangeAccent,
+      backgroundColor: Colors.amber[50],
       body: Stack(
         fit: StackFit.expand,
         children: [
@@ -873,9 +874,12 @@ class _ProfilescreenState extends State<Profilescreen> {
               children: [
                 const SizedBox(height: 20),
                 Padding(
-                  padding: const EdgeInsets.all(8.0),
+                  padding: const EdgeInsets.fromLTRB(8, 8, 8, 8),
                   child: Container(
-                    // color: Colors.black12,
+                    // decoration: BoxDecoration(
+                    //   color: Colors.black12,
+                    //   borderRadius: BorderRadius.circular(12),
+                    // ),
                     child: Padding(
                       padding: const EdgeInsets.fromLTRB(0, 15, 0, 15),
                       child: Row(
@@ -979,7 +983,9 @@ class _ProfilescreenState extends State<Profilescreen> {
                                 child: ElevatedButton(
                                   onPressed: () => showGamePopup(title),
                                   style: ElevatedButton.styleFrom(
-                                    backgroundColor: Colors.white,
+                                    backgroundColor: Colors.white.withOpacity(
+                                      0.8,
+                                    ),
                                     foregroundColor: Colors.orange,
                                     padding: const EdgeInsets.symmetric(
                                       vertical: 16,
@@ -998,7 +1004,7 @@ class _ProfilescreenState extends State<Profilescreen> {
                                         title,
                                         style: const TextStyle(
                                           fontSize: 22,
-                                          color: Colors.grey,
+                                          color: Colors.black38,
                                           fontWeight: FontWeight.bold,
                                         ),
                                       ),

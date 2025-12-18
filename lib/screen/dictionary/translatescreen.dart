@@ -83,7 +83,7 @@ class _TranslateScreenState extends State<TranslateScreen> {
         title: Text("แปลภาษา $fromLabel → $toLabel"),
         bottom: PreferredSize(
           preferredSize: Size.fromHeight(1.0),
-          child: Container(color: Colors.grey[400], height: 1.0),
+          child: Container(color: Colors.black26, height: 2.0),
         ),
         actions: [
           IconButton(
@@ -105,6 +105,7 @@ class _TranslateScreenState extends State<TranslateScreen> {
         ],
         backgroundColor: Colors.blueAccent,
       ),
+      backgroundColor: Colors.amber[50],
       body: Stack(
         children: [
           ClipPath(

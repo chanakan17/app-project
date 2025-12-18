@@ -177,10 +177,10 @@ class _Game5screenState extends State<Game5screen> {
       appBar: AppBar(
         title: Text("เกมทายรูปภาพ"),
         centerTitle: true,
-        // bottom: PreferredSize(
-        //   preferredSize: Size.fromHeight(1.0),
-        //   child: Container(color: Colors.white, height: 1.0),
-        // ),
+        bottom: PreferredSize(
+          preferredSize: Size.fromHeight(1.0),
+          child: Container(color: Colors.black26, height: 2.0),
+        ),
         actions: <Widget>[
           IconButton(
             icon: Icon(Icons.close),
@@ -242,7 +242,7 @@ class _Game5screenState extends State<Game5screen> {
         ],
         backgroundColor: Colors.orange,
       ),
-      backgroundColor: Colors.orangeAccent,
+      backgroundColor: Colors.amber[50],
       body: Stack(
         fit: StackFit.expand,
         children: [

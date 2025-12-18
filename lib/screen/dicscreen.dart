@@ -40,7 +40,7 @@ class _DicscreenState extends State<Dicscreen> {
         ),
         backgroundColor: Colors.orange,
       ),
-      // backgroundColor: Colors.orangeAccent,
+      backgroundColor: Colors.amber[50],
       body: Stack(
         fit: StackFit.expand,
         children: [

@@ -39,7 +39,7 @@ class _HomeScreenState extends State<HomeScreen>
       // ป้องกัน Back Button
       onWillPop: () async => false,
       child: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: Colors.amber[50],
         // backgroundColor: Color(0xFFFFD96A),
         body: TabBarView(
           controller: _tabController,
@@ -98,7 +98,7 @@ class _HomeScreenState extends State<HomeScreen>
                           'assets/image/home1.png',
                           color:
                               _tabController.index == 0
-                                  ? const Color(0xFFFFD96A)
+                                  ? const Color(0xFFFFA500)
                                   : Colors.grey,
                         ),
                       ),
@@ -107,7 +107,7 @@ class _HomeScreenState extends State<HomeScreen>
                           'assets/image/home2.png',
                           color:
                               _tabController.index == 1
-                                  ? const Color(0xFFFFD96A)
+                                  ? const Color(0xFFFFA500)
                                   : Colors.grey,
                         ),
                       ),
@@ -116,7 +116,7 @@ class _HomeScreenState extends State<HomeScreen>
                           'assets/image/home3.png',
                           color:
                               _tabController.index == 2
-                                  ? const Color(0xFFFFD96A)
+                                  ? const Color(0xFFFFA500)
                                   : Colors.grey,
                         ),
                       ),

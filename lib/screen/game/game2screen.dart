@@ -169,10 +169,10 @@ class _Game2screenState extends State<Game2screen> {
       appBar: AppBar(
         title: Text("เกมจับคู่คำศัพท์"),
         centerTitle: true,
-        // bottom: PreferredSize(
-        //   preferredSize: Size.fromHeight(1.0),
-        //   child: Container(color: Colors.white, height: 1.0),
-        // ),
+        bottom: PreferredSize(
+          preferredSize: Size.fromHeight(1.0),
+          child: Container(color: Colors.black26, height: 2.0),
+        ),
         backgroundColor: Colors.orange,
         actions: [
           IconButton(
@@ -233,7 +233,7 @@ class _Game2screenState extends State<Game2screen> {
           ),
         ],
       ),
-      backgroundColor: Colors.orangeAccent,
+      backgroundColor: Colors.amber[50],
       body: Stack(
         fit: StackFit.expand,
         children: [
@@ -313,7 +313,7 @@ class _Game2screenState extends State<Game2screen> {
                               // ด้านซ้าย: คำศัพท์
                               Container(
                                 width: 150,
-                                height: 75,
+                                height: 60,
                                 alignment: Alignment.center,
                                 decoration: BoxDecoration(
                                   border: Border.all(color: Colors.black),
@@ -363,12 +363,12 @@ class _Game2screenState extends State<Game2screen> {
                                             color: Colors.black87,
                                           ),
                                         ),
-                                        backgroundColor: Colors.blue,
+                                        backgroundColor: Colors.orange,
                                       ),
                                     ),
                                     childWhenDragging: Container(
                                       width: 150,
-                                      height: 75,
+                                      height: 60,
                                       alignment: Alignment.center,
                                       decoration: BoxDecoration(
                                         border: Border.all(color: Colors.grey),
@@ -393,7 +393,7 @@ class _Game2screenState extends State<Game2screen> {
                                     },
                                     child: Container(
                                       width: 150,
-                                      height: 75,
+                                      height: 60,
                                       alignment: Alignment.center,
                                       decoration: BoxDecoration(
                                         border: Border.all(color: Colors.black),

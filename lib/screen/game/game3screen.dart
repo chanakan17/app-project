@@ -397,10 +397,10 @@ class _Game3screenState extends State<Game3screen> {
       appBar: AppBar(
         title: Text("เกมเติมคำ"),
         centerTitle: true,
-        // bottom: PreferredSize(
-        //   preferredSize: Size.fromHeight(1.0),
-        //   child: Container(color: Colors.white, height: 1.0),
-        // ),
+        bottom: PreferredSize(
+          preferredSize: Size.fromHeight(1.0),
+          child: Container(color: Colors.black26, height: 2.0),
+        ),
         backgroundColor: Colors.orange,
         actions: <Widget>[
           IconButton(
@@ -461,7 +461,7 @@ class _Game3screenState extends State<Game3screen> {
           ),
         ],
       ),
-      backgroundColor: Colors.orangeAccent,
+      backgroundColor: Colors.amber[50],
       resizeToAvoidBottomInset: true,
       body: Stack(
         children: [
@@ -520,7 +520,7 @@ class _Game3screenState extends State<Game3screen> {
                   Row(
                     children: [
                       Padding(
-                        padding: const EdgeInsets.fromLTRB(8, 8, 8, 100),
+                        padding: const EdgeInsets.all(8.0),
                         child: Text(
                           "เติมคำในช่องว่าให้ถูกต้อง",
                           style: TextStyle(fontSize: 23),
@@ -528,7 +528,7 @@ class _Game3screenState extends State<Game3screen> {
                       ),
                     ],
                   ),
-
+                  SizedBox(height: 20),
                   Expanded(
                     child: Center(
                       child: Column(
