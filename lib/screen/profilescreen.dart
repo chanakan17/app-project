@@ -386,7 +386,6 @@ class _ProfilescreenState extends State<Profilescreen> {
   Future<void> loadUsername() async {
     final prefs = await SharedPreferences.getInstance();
     int? userId = prefs.getInt('id');
-    if (userId != null) GameData.userId = userId;
     isGuest = prefs.getBool('isGuest') ?? false;
 
     if (isGuest) {
@@ -399,21 +398,51 @@ class _ProfilescreenState extends State<Profilescreen> {
 
     if (userId == null) return;
 
+    // -----------------------------------------------------
+    // 1. ✅ โชว์ข้อมูลเก่าในเครื่องก่อน (ไม่ต้องรอเน็ต)
+    // -----------------------------------------------------
+    String? cachedName = prefs.getString('cached_username');
+    int? cachedImageId = prefs.getInt('cached_image_id');
+
+    if (cachedName != null) {
+      setState(() {
+        _controller.text = cachedName;
+        currentAvatarId = cachedImageId ?? 0;
+      });
+    }
+
+    // -----------------------------------------------------
+    // 2. 📡 แล้วค่อยไปดึงข้อมูลล่าสุดจาก Server (อยู่เบื้องหลัง)
+    // -----------------------------------------------------
     try {
       final url = Uri.parse('${ApiConfig.baseUrl}/get_user.php?id=$userId');
       final response = await http.get(url);
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
-        setState(() {
-          _controller.text = data['username'] ?? 'Guest';
-          // ** ดึงค่า image_id จาก Database มาใส่ตัวแปร **
-          currentAvatarId =
-              int.tryParse(data['image_id']?.toString() ?? "0") ?? 0;
-        });
+
+        // เช็คว่าข้อมูลเปลี่ยนไหม? ถ้าเปลี่ยนค่อย setState
+        String newName = data['username'] ?? '';
+
+        // เช็ค Key ให้ชัวร์ว่า Server ส่งอะไรมา (image_id หรือ image_number)
+        var rawImg = data['image_id'] ?? data['image_number'];
+        int newImageId = int.tryParse(rawImg?.toString() ?? "0") ?? 0;
+
+        // บันทึกลงเครื่องไว้ใช้ครั้งหน้า (Cache Update)
+        await prefs.setString('cached_username', newName);
+        await prefs.setInt('cached_image_id', newImageId);
+
+        // อัปเดตหน้าจออีกครั้ง
+        if (mounted) {
+          setState(() {
+            _controller.text = newName;
+            currentAvatarId = newImageId;
+          });
+        }
       }
     } catch (e) {
       print('Error fetching username: $e');
+      // ถ้าเน็ตหลุด ก็ยังโชว์ข้อมูลเก่า (cached) ได้ User ไม่เห็นหน้าว่างๆ
     }
   }
 
