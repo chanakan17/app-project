@@ -9,44 +9,6 @@ class TranslateScreen extends StatefulWidget {
   State<TranslateScreen> createState() => _TranslateScreenState();
 }
 
-class DiagonalClipper extends CustomClipper<Path> {
-  @override
-  Path getClip(Size size) {
-    var path = Path();
-
-    path.lineTo(0, size.height - 20);
-
-    var firstControlPoint = Offset(size.width / 4, size.height);
-    var firstEndPoint = Offset(size.width / 2, size.height - 40);
-    path.quadraticBezierTo(
-      firstControlPoint.dx,
-      firstControlPoint.dy,
-      firstEndPoint.dx,
-      firstEndPoint.dy,
-    );
-
-    var secondControlPoint = Offset(3 * size.width / 4, size.height - 80);
-    var secondEndPoint = Offset(size.width, size.height - 40);
-    path.quadraticBezierTo(
-      secondControlPoint.dx,
-      secondControlPoint.dy,
-      secondEndPoint.dx,
-      secondEndPoint.dy,
-    );
-
-    path.lineTo(size.width, 0);
-    path.close();
-
-    return path;
-  }
-
-  @override
-  bool shouldReclip(covariant CustomClipper<Path> oldClipper) {
-    // ถ้า path ของคุณไม่เปลี่ยนแปลง ให้คืนค่า false
-    return false;
-  }
-}
-
 class _TranslateScreenState extends State<TranslateScreen> {
   final TextEditingController _controller = TextEditingController();
   final translator = GoogleTranslator();
@@ -103,24 +65,11 @@ class _TranslateScreenState extends State<TranslateScreen> {
             },
           ),
         ],
-        backgroundColor: Colors.blueAccent,
+        backgroundColor: Colors.orange,
       ),
       backgroundColor: Colors.amber[50],
       body: Stack(
         children: [
-          ClipPath(
-            clipper: DiagonalClipper(),
-            child: Container(
-              height: screenHeight * 0.4,
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [Colors.blueAccent, Colors.lightBlueAccent],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-              ),
-            ),
-          ),
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: Column(

@@ -3,6 +3,7 @@ import 'package:app/screen/dictionary/dicallscreen.dart';
 import 'package:app/screen/dictionary/dicaniscreen.dart';
 import 'package:app/screen/dictionary/dichomescreen.dart';
 import 'package:app/screen/dictionary/dicsportscreen.dart';
+import 'package:app/screen/dictionary/translatescreen.dart';
 import 'package:flutter/material.dart';
 // import 'package:app/screen/dictionary/translatescreen.dart';
 
@@ -52,13 +53,17 @@ class _DicscreenState extends State<Dicscreen> {
                 child: Column(
                   children: [
                     SizedBox(height: 50),
-                    // buildDicButton(
-                    //   "translate",
-                    //   "แปลคำศัพท์และประโยค",
-                    //   Icons.library_books,
-                    //   Colors.purple[100]!,
-                    //   (context) => TranslateScreen(),
-                    // ),
+                    buildDicButton(
+                      "translate",
+                      "แปลคำศัพท์และประโยค",
+                      Image.asset(
+                        'assets/image/translate.png',
+                        width: 60,
+                        height: 60,
+                      ),
+                      Colors.purple[100]!,
+                      (context) => TranslateScreen(),
+                    ),
                     buildDicButton(
                       "Vehicles",
                       "คำศัพท์เกี่ยวกับยานพาหนะ",

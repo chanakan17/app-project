@@ -168,9 +168,11 @@ class _Game4screenState extends State<Game4screen> {
       score++;
       GameData.score = score;
       SoundManager.playChecktrueSound();
+      _stopwatch.stop();
     } else {
       scoredis--;
       SoundManager.playCheckfalseSound();
+      _stopwatch.stop();
     }
 
     if (scoredis < 1) {
@@ -234,6 +236,7 @@ class _Game4screenState extends State<Game4screen> {
                   onPressed: () {
                     Navigator.pop(context);
                     _loadNextQuestion();
+                    _stopwatch.start();
                   },
                   child: Text("ไปข้อต่อไป"),
                 ),
