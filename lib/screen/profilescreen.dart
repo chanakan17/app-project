@@ -176,6 +176,9 @@ class _ProfilescreenState extends State<Profilescreen> {
   // ---------------------------------------------------------
   // 3. ปรับปรุง UI Popup คะแนนให้แสดงรูปตาม ID
   // ---------------------------------------------------------
+  // ---------------------------------------------------------
+  // 3. ปรับปรุง UI Popup คะแนน (แก้ไขเรื่อง Overflow)
+  // ---------------------------------------------------------
   void showGamePopup(String title) {
     final scores = topScores[title] ?? [];
     final grouped = _groupByCategory(scores);
@@ -201,9 +204,6 @@ class _ProfilescreenState extends State<Profilescreen> {
     showDialog(
       context: context,
       builder: (context) {
-        // แก้ (_) เป็น (context) เพื่อดึงขนาดหน้าจอ
-
-        // 1. ดึงขนาดหน้าจอ
         final size = MediaQuery.of(context).size;
 
         return Dialog(
@@ -211,26 +211,28 @@ class _ProfilescreenState extends State<Profilescreen> {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
           ),
-          // 2. กำหนดขนาด Popup ที่นี่ (SizedBox)
           child: SizedBox(
-            width: size.width * 0.9, // กว้าง 90% ของจอ
-            height: size.height * 0.6, // สูง 60% ของจอ (ปรับเลขได้ตามต้องการ)
-            // 3. ใช้ Stack เพื่อวางเนื้อหา และ ปุ่มปิด ซ้อนกัน
+            // ป้องกันความสูงเกินขอบเขตด้วย ConstrainedBox หรือกำหนด height ให้เหมาะสม
+            width:
+                size.width > 400
+                    ? 400
+                    : size.width *
+                        0.95, // ถ้าจอใหญ่ล็อคความกว้าง ถ้าจอเล็กเอา 95%
+            height: size.height * 0.7, // เพิ่มความสูงให้หน่อยเป็น 70%
             child: Stack(
               children: [
-                // ชั้นล่าง: เนื้อหา (Tabs และ List)
                 DefaultTabController(
                   length: grouped.keys.length,
                   child: Column(
                     children: [
-                      // ส่วน Header สีส้ม
+                      // --- Header ---
                       Container(
-                        padding: const EdgeInsets.only(
-                          top: 12,
-                          bottom: 12,
-                          left: 12,
-                          right: 40,
-                        ), // right 40 เผื่อที่ให้ปุ่มปิด
+                        padding: const EdgeInsets.fromLTRB(
+                          12,
+                          12,
+                          40,
+                          0,
+                        ), // เว้นขวาไว้ให้ปุ่มปิด
                         decoration: const BoxDecoration(
                           color: Colors.orange,
                           borderRadius: BorderRadius.vertical(
@@ -238,126 +240,144 @@ class _ProfilescreenState extends State<Profilescreen> {
                           ),
                         ),
                         child: Column(
+                          crossAxisAlignment:
+                              CrossAxisAlignment
+                                  .stretch, // ให้ TabBar เต็มความกว้าง
                           children: [
                             Text(
                               title,
+                              textAlign: TextAlign.center,
                               style: const TextStyle(
                                 color: Colors.white,
                                 fontWeight: FontWeight.bold,
                                 fontSize: 18,
                               ),
                             ),
+                            const SizedBox(height: 8),
+                            // --- แก้ไข TabBar ---
                             TabBar(
-                              isScrollable: false,
+                              isScrollable:
+                                  true, // ✅ แก้ไข 1: ให้เลื่อนได้ ป้องกันล้นแนวนอน
+                              tabAlignment:
+                                  TabAlignment
+                                      .start, // จัดชิดซ้ายเวลาเลื่อน (Flutter 3.13+)
                               indicatorColor: Colors.white,
                               labelColor: Colors.white,
-                              unselectedLabelColor: Colors.black87,
-                              labelPadding: EdgeInsets.zero,
+                              unselectedLabelColor: Colors.white70,
+                              labelStyle: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                              ),
                               tabs:
                                   grouped.keys.map((c) {
                                     return Tab(
-                                      child: SizedBox.expand(
-                                        child: Center(
-                                          child: Text(
-                                            c,
-                                            style: const TextStyle(
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
+                                      // ✅ แก้ไข 2: เอา SizedBox.expand ออก ใช้แค่ Text ธรรมดา
+                                      text: c,
                                     );
                                   }).toList(),
                             ),
+                            const SizedBox(
+                              height: 8,
+                            ), // เว้นระยะห่างด้านล่าง TabBar นิดหน่อย
                           ],
                         ),
                       ),
 
-                      // ส่วนเนื้อหา List รายชื่อ
+                      // --- Content List ---
                       Expanded(
                         child: TabBarView(
                           children:
                               grouped.entries.map((entry) {
                                 final items = entry.value;
-                                return ListView(
+                                return ListView.builder(
+                                  // ใช้ builder เพื่อ performance ที่ดีกว่า
                                   padding: const EdgeInsets.all(12),
-                                  children:
-                                      items.map((game) {
-                                        // Logic รูปภาพ (Code ที่เราแก้กันก่อนหน้านี้)
-                                        int pImgId = game["image_id"] ?? 0;
-                                        String imgPath =
-                                            (pImgId >= 0 &&
-                                                    pImgId < avatarList.length)
-                                                ? avatarList[pImgId]
-                                                : avatarList[0];
+                                  itemCount: items.length,
+                                  itemBuilder: (context, index) {
+                                    final game = items[index];
+                                    int pImgId = game["image_id"] ?? 0;
+                                    String imgPath =
+                                        (pImgId >= 0 &&
+                                                pImgId < avatarList.length)
+                                            ? avatarList[pImgId]
+                                            : avatarList[0];
 
-                                        return Card(
-                                          margin: const EdgeInsets.only(
-                                            bottom: 10,
+                                    return Card(
+                                      margin: const EdgeInsets.only(bottom: 10),
+                                      child: ListTile(
+                                        leading: CircleAvatar(
+                                          backgroundColor: game["color"],
+                                          child: Text(
+                                            game["rank"],
+                                            style: const TextStyle(
+                                              color: Colors.white,
+                                            ),
                                           ),
-                                          child: ListTile(
-                                            leading: CircleAvatar(
-                                              backgroundColor: game["color"],
+                                        ),
+                                        title: Row(
+                                          children: [
+                                            CircleAvatar(
+                                              radius: 16,
+                                              backgroundColor:
+                                                  Colors.transparent,
+                                              backgroundImage: AssetImage(
+                                                imgPath,
+                                              ),
+                                            ),
+                                            const SizedBox(width: 8),
+                                            // ✅ แก้ไข 3: ใส่ Expanded ให้ชื่อ เพื่อไม่ให้ดันจนล้นจอ
+                                            Expanded(
                                               child: Text(
-                                                game["rank"],
-                                                style: const TextStyle(
-                                                  color: Colors.white,
+                                                "${game["username"]}",
+                                                overflow:
+                                                    TextOverflow
+                                                        .ellipsis, // ตัดคำถ้ายาวเกิน
+                                                maxLines: 1,
+                                                style: TextStyle(
+                                                  color: game["usernameColor"],
+                                                  fontWeight: FontWeight.bold,
                                                 ),
                                               ),
                                             ),
-                                            title: Row(
-                                              children: [
-                                                CircleAvatar(
-                                                  radius: 16,
-                                                  backgroundColor:
-                                                      Colors.transparent,
-                                                  backgroundImage: AssetImage(
-                                                    imgPath,
-                                                  ),
-                                                ),
-                                                const SizedBox(width: 8),
-                                                Text(
-                                                  "${game["username"]}",
-                                                  style: TextStyle(
-                                                    color:
-                                                        game["usernameColor"],
-                                                    fontWeight: FontWeight.bold,
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                            subtitle: Text("⏱ ${game["time"]}"),
-                                            trailing: Text(
-                                              game["score"],
-                                              style: const TextStyle(
-                                                fontWeight: FontWeight.bold,
-                                              ),
-                                            ),
+                                          ],
+                                        ),
+                                        subtitle: Text("⏱ ${game["time"]}"),
+                                        trailing: Text(
+                                          game["score"],
+                                          style: const TextStyle(
+                                            fontWeight: FontWeight.bold,
                                           ),
-                                        );
-                                      }).toList(),
+                                        ),
+                                      ),
+                                    );
+                                  },
                                 );
                               }).toList(),
-                        ),
-                      ),
-                      Positioned(
-                        right: 8,
-                        top: 8,
-                        child: IconButton(
-                          icon: const Icon(Icons.close, color: Colors.white),
-                          style: ButtonStyle(
-                            backgroundColor: WidgetStateProperty.all(
-                              Colors.black26,
-                            ),
-                          ),
-                          onPressed: () => Navigator.pop(context),
-                          tooltip: "ปิด",
                         ),
                       ),
                     ],
                   ),
                 ),
-                // ชั้นบน: ปุ่มปิด (X) มุมขวาบน
+
+                // --- ปุ่มปิด ---
+                Positioned(
+                  right: 8,
+                  top: 8,
+                  child: CircleAvatar(
+                    // ใช้ CircleAvatar ซ้อน Icon จะสวยกว่าและกดง่าย
+                    radius: 16,
+                    backgroundColor: Colors.black26,
+                    child: IconButton(
+                      icon: const Icon(
+                        Icons.close,
+                        color: Colors.white,
+                        size: 20,
+                      ),
+                      padding: EdgeInsets.zero,
+                      onPressed: () => Navigator.pop(context),
+                      tooltip: "ปิด",
+                    ),
+                  ),
+                ),
               ],
             ),
           ),

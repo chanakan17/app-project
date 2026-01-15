@@ -343,9 +343,11 @@ class _Game5screenState extends State<Game5screen> {
                                           score++;
                                           GameData.score = score;
                                           SoundManager.playChecktrueSound();
+                                          _stopwatch.stop();
                                         } else {
                                           scoredis--;
                                           SoundManager.playCheckfalseSound();
+                                          _stopwatch.stop();
                                         }
 
                                         if (scoredis < 1) {
@@ -437,6 +439,8 @@ class _Game5screenState extends State<Game5screen> {
                                                               ).pop(); // ปิด dialog
                                                               setState(() {
                                                                 _getRandomEntries();
+                                                                _stopwatch
+                                                                    .start();
                                                               });
                                                             },
                                                             child: Stack(
@@ -572,6 +576,8 @@ class _Game5screenState extends State<Game5screen> {
                                                               );
                                                               setState(() {
                                                                 _getRandomEntries();
+                                                                _stopwatch
+                                                                    .start();
                                                               });
                                                             },
                                                             child: Stack(

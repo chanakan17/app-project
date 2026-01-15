@@ -183,8 +183,10 @@ class _Game3screenState extends State<Game3screen> {
       if (userInput.toLowerCase() == randomKeys[0].toLowerCase()) {
         score++;
         GameData.score = score;
+        _stopwatch.stop();
       } else {
         scoredis--;
+        _stopwatch.stop();
       }
 
       if (scoredis < 1) {
@@ -245,6 +247,7 @@ class _Game3screenState extends State<Game3screen> {
                             Navigator.of(context).pop(); // ปิด dialog
                             setState(() {
                               _getRandomEntries();
+                              _stopwatch.start();
                             });
                           },
                           child: Stack(
@@ -339,6 +342,7 @@ class _Game3screenState extends State<Game3screen> {
                             Navigator.pop(context);
                             setState(() {
                               _getRandomEntries();
+                              _stopwatch.start();
                             });
                           },
                           child: Stack(

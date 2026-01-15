@@ -360,9 +360,11 @@ class _Game1screenState extends State<Game1screen> {
                                           score++;
                                           GameData.score = score;
                                           SoundManager.playChecktrueSound();
+                                          _stopwatch.stop();
                                         } else {
                                           scoredis--;
                                           SoundManager.playCheckfalseSound();
+                                          _stopwatch.stop();
                                         }
 
                                         if (scoredis < 1) {
@@ -453,6 +455,8 @@ class _Game1screenState extends State<Game1screen> {
                                                                 context,
                                                               ).pop(); // ปิด dialog
                                                               setState(() {
+                                                                _stopwatch
+                                                                    .start();
                                                                 _getRandomEntries();
                                                               });
                                                             },
@@ -588,6 +592,8 @@ class _Game1screenState extends State<Game1screen> {
                                                                 context,
                                                               );
                                                               setState(() {
+                                                                _stopwatch
+                                                                    .start();
                                                                 _getRandomEntries();
                                                               });
                                                             },

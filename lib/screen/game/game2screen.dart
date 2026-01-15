@@ -501,9 +501,11 @@ class _Game2screenState extends State<Game2screen> {
                       score++;
                       GameData.score = score;
                       SoundManager.playChecktrueSound();
+                      _stopwatch.stop();
                     } else {
                       scoredis--;
                       SoundManager.playCheckfalseSound();
+                      _stopwatch.stop();
                     }
 
                     if (scoredis < 1) {
@@ -571,6 +573,7 @@ class _Game2screenState extends State<Game2screen> {
                                             context,
                                           ).pop(); // ปิด dialog
                                           setState(() {
+                                            _stopwatch.start();
                                             _getRandomEntries();
                                           });
                                         },
@@ -671,6 +674,7 @@ class _Game2screenState extends State<Game2screen> {
                                         onTap: () {
                                           Navigator.pop(context);
                                           setState(() {
+                                            _stopwatch.start();
                                             _getRandomEntries();
                                           });
                                         },
