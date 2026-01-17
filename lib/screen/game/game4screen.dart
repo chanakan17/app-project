@@ -368,7 +368,7 @@ class _Game4screenState extends State<Game4screen> {
             ElevatedButton(
               onPressed: () async {
                 _endGame();
-                GameData.updateTopScore();
+                // GameData.updateTopScore();
                 Navigator.of(context).pop();
                 Navigator.pushReplacement(
                   context,
@@ -376,7 +376,7 @@ class _Game4screenState extends State<Game4screen> {
                     builder: (_) => HomeScreen(initialTabIndex: 0),
                   ),
                 );
-                await GameData.saveScoreToDB();
+                // await GameData.saveScoreToDB();
               },
               child: Text("ย้อนกลับไปยังเมนู"),
             ),
