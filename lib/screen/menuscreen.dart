@@ -109,6 +109,14 @@ class _MenuscreenState extends State<Menuscreen> {
                         Game3screen(dictionary: dictionary, title: title),
                   ),
                   buildGameButton(
+                    "เกมทายรูปภาพ",
+                    "Picture Game",
+                    Image.asset('assets/icons/pic.png', width: 90, height: 90),
+                    Colors.green[100]!,
+                    (dictionary, title) =>
+                        Game5screen(dictionary: dictionary, title: title),
+                  ),
+                  buildGameButton(
                     "เกมพูดคำศัพท์",
                     "Speaking Game",
                     Image.asset(
@@ -119,14 +127,6 @@ class _MenuscreenState extends State<Menuscreen> {
                     Colors.pink[100]!,
                     (dictionary, title) =>
                         Game4screen(dictionary: dictionary, title: title),
-                  ),
-                  buildGameButton(
-                    "เกมทายรูปภาพ",
-                    "Picture Game",
-                    Image.asset('assets/icons/pic.png', width: 90, height: 90),
-                    Colors.green[100]!,
-                    (dictionary, title) =>
-                        Game5screen(dictionary: dictionary, title: title),
                   ),
                 ],
               ),
