@@ -225,55 +225,110 @@ class _Game4screenState extends State<Game4screen> {
   }
 
   void _showResultModal(bool isCorrect, List<TextSpan> textSpans) {
+    // กำหนดค่าสีและข้อความตามผลลัพธ์ (ถูก/ผิด)
+    final Color mainColor =
+        isCorrect
+            ? const Color(0xFF4CD200)
+            : const Color.fromARGB(255, 255, 81, 81);
+    final Color shadowColor =
+        isCorrect
+            ? const Color(0xFF3ABA00)
+            : const Color.fromARGB(255, 221, 15, 0);
+    final IconData icon = isCorrect ? Icons.check : Icons.close;
+    final String titleText = isCorrect ? "ถูกต้องแล้ว" : "ผิดจร้าาา";
+    final Color titleColor = isCorrect ? Colors.green : Colors.red;
+
     showModalBottomSheet(
       context: context,
-      isDismissible: false,
-      enableDrag: false,
-      isScrollControlled: true,
-      builder: (_) {
+      isDismissible: false, // ไม่ให้ปิดเมื่อแตะนอกพื้นที่
+      enableDrag: false, // ไม่ให้ลาก bottom sheet ออกได้
+      isScrollControlled: true, // ควบคุมการ scroll ของเนื้อหา
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.zero, // <-- ทำให้ไม่โค้งเลย
+      ),
+      builder: (BuildContext context) {
         return Container(
           height: 200,
-          padding: EdgeInsets.all(8),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Icon(
-                    isCorrect ? Icons.check : Icons.close,
-                    color: isCorrect ? Colors.green : Colors.red,
-                    size: 40,
+          width: double.infinity,
+          color: Colors.white, // กำหนดสีพื้นหลัง modal เป็นสีขาว
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                // ส่วนหัวข้อ: ไอคอน และ ข้อความแสดงผล
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Row(
+                    children: [
+                      Icon(icon, color: titleColor, size: 40),
+                      const SizedBox(width: 8),
+                      Text(
+                        titleText,
+                        style: TextStyle(
+                          fontSize: 25,
+                          fontWeight: FontWeight.bold,
+                          color: titleColor,
+                        ),
+                      ),
+                    ],
                   ),
-                  SizedBox(width: 8),
-                  Text(
-                    isCorrect ? "ถูกต้องแล้ว" : "ผิดจร้าาา",
-                    style: TextStyle(
-                      fontSize: 25,
-                      color: isCorrect ? Colors.green : Colors.red,
+                ),
+                // ส่วนแสดงคำศัพท์: คำศัพท์ --> คำแปล
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16.0,
+                  ), // ขยับ padding ให้สวยงาม
+                  child: Text(
+                    "$currentKey --> $correctValue", // ใช้ตัวแปรของเกมจริง
+                    style: TextStyle(fontSize: 20, color: titleColor),
+                  ),
+                ),
+                const Spacer(),
+                // ปุ่ม "ไปข้อต่อไป" (Custom Button)
+                Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.of(context).pop(); // ปิด dialog
+                        // โหลดคำถามถัดไปและเริ่มจับเวลาต่อ
+                        _loadNextQuestion();
+                        _stopwatch.start();
+                      },
+                      child: Stack(
+                        children: [
+                          Container(
+                            width: 320,
+                            height: 48,
+                            alignment: Alignment.center,
+                            decoration: BoxDecoration(
+                              color: mainColor, // สีหลักของปุ่ม
+                              borderRadius: BorderRadius.circular(25),
+                              border: Border(
+                                bottom: BorderSide(
+                                  color: shadowColor, // สีเงาขอบล่าง
+                                  width: 4,
+                                ),
+                              ),
+                            ),
+                            child: const Text(
+                              'ไปข้อต่อไป',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                ],
-              ),
-              SizedBox(height: 10),
-              Text.rich(
-                TextSpan(children: textSpans),
-                style: TextStyle(fontSize: 18),
-              ),
-              SizedBox(height: 8),
-              Text("คำแปล: $correctValue", style: TextStyle(fontSize: 18)),
-              Spacer(),
-              Center(
-                child: ElevatedButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                    _loadNextQuestion();
-                    _stopwatch.start();
-                  },
-                  child: Text("ไปข้อต่อไป"),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         );
       },
