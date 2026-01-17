@@ -1,6 +1,7 @@
 import 'package:app/api_config.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class GameData {
   static int userId = 0;
@@ -53,6 +54,24 @@ class GameData {
       showScore3 = score;
       showTitle3 = title;
       showName3 = gameName;
+    }
+  }
+
+  static Future<void> setUserId(int id) async {
+    userId = id;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt('id', id);
+    print("GameData: Saved UserID $id to local storage");
+  }
+
+  static Future<void> loadUserId() async {
+    final prefs = await SharedPreferences.getInstance();
+    int? savedId = prefs.getInt('id');
+    if (savedId != null) {
+      userId = savedId;
+      print("GameData: Loaded UserID $userId from local storage");
+    } else {
+      userId = 0;
     }
   }
 

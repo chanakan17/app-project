@@ -34,7 +34,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('isGuest', true);
-
+    GameData.userId = 0;
     await Future.delayed(const Duration(seconds: 2));
 
     if (context.mounted) {

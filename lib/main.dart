@@ -6,6 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'dart:async';
+import 'package:app/management/game_data/game_data.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -13,7 +14,12 @@ void main() async {
   final prefs = await SharedPreferences.getInstance();
   final userId = prefs.getInt('id');
   final isGuest = prefs.getBool('isGuest') ?? false;
-
+  if (userId != null) {
+    GameData.userId = userId;
+    print("Restore UserID: $userId");
+  } else {
+    GameData.userId = 0;
+  }
   runApp(MyApp(userId: userId, isGuest: isGuest));
 }
 
