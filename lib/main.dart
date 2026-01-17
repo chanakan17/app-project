@@ -66,7 +66,7 @@ class _MyAppState extends State<MyApp> {
       theme: ThemeData(
         fontFamily: 'Roboto',
         colorScheme: ColorScheme.fromSeed(
-          seedColor: Colors.deepPurple,
+          seedColor: Colors.orange,
           brightness: Brightness.light,
         ),
         useMaterial3: true,

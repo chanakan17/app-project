@@ -425,19 +425,7 @@ class _Game3screenState extends State<Game3screen> {
                     actions: <Widget>[
                       ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                        ),
-                        onPressed: () {
-                          _stopwatch.start();
-                          SoundManager.playClickSound();
-                          Navigator.of(context).pop();
-                        },
-                        child: Text("อยู่ต่อ"),
-                      ),
-                      ElevatedButton(
-                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.red,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(16),
                           ),
@@ -454,7 +442,23 @@ class _Game3screenState extends State<Game3screen> {
                             ),
                           );
                         },
-                        child: Text("ออกจากเกม"),
+                        child: Text(
+                          "ออกจากเกม",
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      ),
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                        ),
+                        onPressed: () {
+                          _stopwatch.start();
+                          SoundManager.playClickSound();
+                          Navigator.of(context).pop();
+                        },
+                        child: Text("อยู่ต่อ"),
                       ),
                     ],
                   );
