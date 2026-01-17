@@ -123,9 +123,12 @@ class _Game4screenState extends State<Game4screen> {
     }
 
     var rand = Random();
-    currentKey = availableKeys[rand.nextInt(availableKeys.length)];
+    int randomIndex = rand.nextInt(availableKeys.length);
+    currentKey = availableKeys[randomIndex];
+    availableKeys.removeAt(randomIndex);
+
     var values = typeDic[currentKey]!;
-    correctValue = values[rand.nextInt(values.length)];
+    correctValue = values[0];
     _spokenText = "";
     _feedback = "";
     setState(() {});
@@ -185,15 +188,34 @@ class _Game4screenState extends State<Game4screen> {
   }
 
   void _checkAnswer() {
-    // ลบช่องว่างและเปรียบเทียบตัวพิมพ์เล็ก
-    String userWord = _spokenText.replaceAll(' ', '').toLowerCase();
-    String correctWord = currentKey.replaceAll(' ', '').toLowerCase();
+    // แปลงเป็นตัวพิมพ์เล็กและ trim ช่องว่างหน้าหลัง (แต่ไม่ต้องลบช่องว่างตรงกลางทิ้งทั้งหมด)
+    String userWord = _spokenText.trim().toLowerCase();
+    String correctWord = currentKey.trim().toLowerCase();
 
-    bool isCorrect = userWord == correctWord;
+    bool isCorrect = false;
+
+    // กฎข้อที่ 1: เช็คว่าตรงกันเป๊ะ หรือ ในประโยคที่พูดมีคำศัพท์นี้ซ่อนอยู่ไหม
+    // เช่น คำศัพท์ "cat" ผู้เล่นพูด "a cat" -> ถือว่าถูก
+    if (userWord == correctWord || userWord.contains(correctWord)) {
+      isCorrect = true;
+    }
+    // กฎข้อที่ 2: ถ้ายังไม่ถูก ให้ลองเช็คว่าสะกดผิดนิดหน่อยได้ไหม (Fuzzy Match)
+    else {
+      // ยอมให้ผิดได้ 1-2 ตัวอักษร ขึ้นอยู่กับความยาวคำ
+      int threshold = correctWord.length > 4 ? 2 : 1;
+      int distance = _calculateLevenshtein(userWord, correctWord);
+
+      if (distance <= threshold) {
+        isCorrect = true;
+      }
+    }
 
     setState(() {
+      // ถ้าถูกแบบเพี้ยนๆ ให้โชว์คำที่ผู้เล่นพูดมาด้วย เขาจะได้รู้
       _feedback =
-          isCorrect ? "✅ ถูกต้อง! ได้คะแนน +1" : "❌ ผิด! คำตอบคือ: $currentKey";
+          isCorrect
+              ? "✅ ถูกต้อง! (ได้ยินว่า: $_spokenText)"
+              : "❌ ผิด! คำตอบคือ: $currentKey";
     });
 
     if (isCorrect) {
@@ -213,7 +235,6 @@ class _Game4screenState extends State<Game4screen> {
       return;
     }
 
-    // แสดงผลลัพธ์ใน modal
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _showResultModal(isCorrect, [
         TextSpan(
@@ -587,6 +608,36 @@ class _Game4screenState extends State<Game4screen> {
         ],
       ),
     );
+  }
+
+  // ฟังก์ชันคำนวณความต่างของคำ (Levenshtein distance)
+  // คืนค่าเป็นจำนวนตัวอักษรที่ต่างกัน
+  int _calculateLevenshtein(String s, String t) {
+    if (s == t) return 0;
+    if (s.isEmpty) return t.length;
+    if (t.isEmpty) return s.length;
+
+    List<int> v0 = List<int>.filled(t.length + 1, 0);
+    List<int> v1 = List<int>.filled(t.length + 1, 0);
+
+    for (int i = 0; i < t.length + 1; i++) {
+      v0[i] = i;
+    }
+
+    for (int i = 0; i < s.length; i++) {
+      v1[0] = i + 1;
+
+      for (int j = 0; j < t.length; j++) {
+        int cost = (s[i] == t[j]) ? 0 : 1;
+        v1[j + 1] = min(v1[j] + 1, min(v0[j + 1] + 1, v0[j] + cost));
+      }
+
+      for (int j = 0; j < t.length + 1; j++) {
+        v0[j] = v1[j];
+      }
+    }
+
+    return v1[t.length];
   }
 }
 
