@@ -123,14 +123,13 @@ class _DicscreenState extends State<Dicscreen> {
                       ),
                     ),
                     buildGameButton(
-                      "เกมพูดคำศัพท์",
-                      "Speaking Game",
+                      "ฝึกพูดคำศัพท์ภาษาอังกฤษ",
+                      "Speaking Test",
                       Image.asset(
                         'assets/icons/speak.png',
-                        width: 90,
-                        height: 90,
+                        width: 60,
+                        height: 60,
                       ),
-                      Colors.pink[100]!,
                       (dictionary, title) =>
                           Game4screen(dictionary: dictionary, title: title),
                     ),
@@ -280,6 +279,7 @@ class _DicscreenState extends State<Dicscreen> {
                     children: [
                       Text(
                         title,
+                        textAlign: TextAlign.center,
                         style: TextStyle(
                           fontSize: 22,
                           fontWeight: FontWeight.bold,
@@ -288,6 +288,7 @@ class _DicscreenState extends State<Dicscreen> {
                       ),
                       Text(
                         subtitle,
+                        textAlign: TextAlign.center,
                         style: TextStyle(fontSize: 14, color: Colors.black87),
                       ),
                     ],
@@ -305,11 +306,10 @@ class _DicscreenState extends State<Dicscreen> {
     String title,
     String subtitle,
     Widget iconWidget,
-    Color iconBackgroundColor,
     Widget Function(Map<String, List<String>>, String) screenBuilder,
   ) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(8, 12, 8, 12),
+      padding: const EdgeInsets.fromLTRB(8, 8, 8, 8),
       child: SizedBox(
         child: ElevatedButton(
           onPressed: () {
@@ -320,36 +320,23 @@ class _DicscreenState extends State<Dicscreen> {
             // backgroundColor: Colors.yellow,
             backgroundColor: Colors.white.withOpacity(0.8), //ความทึมแสง
             // backgroundColor: Colors.transparent,
-            shadowColor: Colors.transparent,
-            fixedSize: Size(370, 120),
+            elevation: 10,
+            shadowColor: Colors.black.withOpacity(0.5),
+            fixedSize: Size.fromHeight(100),
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(25),
-              side: BorderSide(
-                color: Colors.orange, // สีของขอบ
-                width: 3, // ความหนาของขอบ
-              ),
+              borderRadius: BorderRadius.circular(20),
             ),
           ),
           child: Center(
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(50),
-                  child: Container(
-                    color: iconBackgroundColor,
-                    width: 90,
-                    height: 90,
-                    padding: EdgeInsets.all(10),
-                    child: iconWidget,
-                  ),
-                ),
+                iconWidget,
                 SizedBox(width: 24),
                 Container(
                   width: 200,
                   height: 90,
                   child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -366,7 +353,7 @@ class _DicscreenState extends State<Dicscreen> {
                           Text(
                             title,
                             style: TextStyle(
-                              fontSize: 18,
+                              fontSize: 16,
                               color: Colors.black87,
                             ),
                           ),
@@ -489,20 +476,18 @@ class _DicscreenState extends State<Dicscreen> {
           }
         },
         style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.white.withOpacity(0.8),
+          backgroundColor: iconBackgroundColor,
           fixedSize: Size(280, 80),
+          elevation: 5,
+          shadowColor: Colors.black.withOpacity(0.5),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
-            side: BorderSide(color: Colors.orange, width: 2),
+            // side: BorderSide(color: Colors.orange, width: 2),
           ),
         ),
         child: Row(
           children: [
-            CircleAvatar(
-              backgroundColor: iconBackgroundColor,
-              radius: 30,
-              child: iconWidget,
-            ),
+            iconWidget,
             SizedBox(width: 12),
             Expanded(
               child: Column(
