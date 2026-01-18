@@ -335,20 +335,18 @@ class _MenuscreenState extends State<Menuscreen> {
           }
         },
         style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.white.withOpacity(0.8),
+          backgroundColor: iconBackgroundColor,
           fixedSize: Size(280, 80),
+          elevation: 5,
+          shadowColor: Colors.black.withOpacity(0.5),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
-            side: BorderSide(color: Colors.orange, width: 2),
+            // side: BorderSide(color: Colors.orange, width: 2),
           ),
         ),
         child: Row(
           children: [
-            CircleAvatar(
-              backgroundColor: iconBackgroundColor,
-              radius: 30,
-              child: iconWidget,
-            ),
+            iconWidget,
             SizedBox(width: 12),
             Expanded(
               child: Column(
