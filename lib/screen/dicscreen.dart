@@ -1,9 +1,11 @@
+import 'package:app/management/dic.dart';
 import 'package:app/management/sound/sound.dart';
 import 'package:app/screen/dictionary/dicallscreen.dart';
 import 'package:app/screen/dictionary/dicaniscreen.dart';
 import 'package:app/screen/dictionary/dichomescreen.dart';
 import 'package:app/screen/dictionary/dicsportscreen.dart';
 import 'package:app/screen/dictionary/translatescreen.dart';
+import 'package:app/screen/game/game4screen.dart';
 import 'package:flutter/material.dart';
 // import 'package:app/screen/dictionary/translatescreen.dart';
 
@@ -15,6 +17,14 @@ class Dicscreen extends StatefulWidget {
 }
 
 class _DicscreenState extends State<Dicscreen> {
+  Map<String, List<String>> convertEntriesToMap(List<DicEntry> entries) {
+    final map = <String, List<String>>{};
+    for (var entry in entries) {
+      map[entry.word] = [entry.meaning, entry.imageUrl];
+    }
+    return map;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -47,66 +57,160 @@ class _DicscreenState extends State<Dicscreen> {
         children: [
           // Image.asset('assets/image/bg.png', fit: BoxFit.cover),
           Padding(
-            padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
+            padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
             child: SingleChildScrollView(
               child: Center(
                 child: Column(
                   children: [
                     SizedBox(height: 50),
-                    buildDicButton(
-                      "translate",
-                      "แปลคำศัพท์และประโยค",
-                      Image.asset(
-                        'assets/image/translate.png',
-                        width: 60,
-                        height: 60,
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: SizedBox(
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.white.withOpacity(0.8),
+                            fixedSize: Size.fromHeight(100),
+                            elevation: 10,
+                            shadowColor: Colors.black.withOpacity(0.5),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                          ),
+                          onPressed: () {
+                            SoundManager.playClick8BitSound();
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => TranslateScreen(),
+                              ),
+                            );
+                          },
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Image.asset(
+                                'assets/image/translate.png',
+                                width: 60,
+                                height: 60,
+                              ),
+                              SizedBox(width: 16),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      "Smart Translate",
+                                      style: TextStyle(
+                                        fontSize: 22,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.orange,
+                                      ),
+                                    ),
+                                    Text(
+                                      "แปลคำศัพท์และประโยคทันที",
+                                      style: TextStyle(
+                                        fontSize: 18,
+                                        color: Colors.orange,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
                       ),
-                      Colors.purple[100]!,
-                      (context) => TranslateScreen(),
                     ),
-                    buildDicButton(
-                      "Vehicles",
-                      "คำศัพท์เกี่ยวกับยานพาหนะ",
+                    buildGameButton(
+                      "เกมพูดคำศัพท์",
+                      "Speaking Game",
                       Image.asset(
-                        'assets/image/vehicle.png',
-                        width: 60,
-                        height: 60,
+                        'assets/icons/speak.png',
+                        width: 90,
+                        height: 90,
                       ),
-                      Colors.yellow[100]!,
-                      (context) => Dicallscreen(),
+                      Colors.pink[100]!,
+                      (dictionary, title) =>
+                          Game4screen(dictionary: dictionary, title: title),
                     ),
-                    buildDicButton(
-                      "Animals",
-                      "คำศัพท์เกี่ยวกับสัตว์",
-                      Image.asset(
-                        'assets/image/animal.png',
-                        width: 70,
-                        height: 70,
+                    SizedBox(height: 20),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 10),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          Text(
+                            "Catehories",
+                            style: TextStyle(
+                              fontSize: 22,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black87,
+                            ),
+                          ),
+                        ],
                       ),
-                      Colors.orange[100]!,
-                      (context) => Dicaniscreen(),
                     ),
-                    buildDicButton(
-                      "House",
-                      "คำศัพท์สิ่งของในบ้าน",
-                      Image.asset(
-                        'assets/image/home.png',
-                        width: 76,
-                        height: 76,
-                      ),
-                      Colors.green[100]!,
-                      (context) => Dichomescreen(),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: buildDicButton(
+                            "Vehicles",
+                            "คำศัพท์เกี่ยวกับยานพาหนะ",
+                            Image.asset(
+                              'assets/image/vehicle.png',
+                              width: 90,
+                              height: 90,
+                            ),
+                            Colors.yellow[100]!,
+                            (context) => Dicallscreen(),
+                          ),
+                        ),
+                        Expanded(
+                          child: buildDicButton(
+                            "Animals",
+                            "คำศัพท์เกี่ยวกับสัตว์",
+                            Image.asset(
+                              'assets/image/animal.png',
+                              width: 90,
+                              height: 90,
+                            ),
+                            Colors.orange[100]!,
+                            (context) => Dicaniscreen(),
+                          ),
+                        ),
+                      ],
                     ),
-                    buildDicButton(
-                      "Sports",
-                      "คำศัพท์เกี่ยวกับกีฬา",
-                      Image.asset(
-                        'assets/image/sport.png',
-                        width: 76,
-                        height: 76,
-                      ),
-                      Colors.red[100]!,
-                      (context) => Dicsportscreen(),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: buildDicButton(
+                            "House",
+                            "คำศัพท์สิ่งของในบ้าน",
+                            Image.asset(
+                              'assets/image/home.png',
+                              width: 90,
+                              height: 90,
+                            ),
+                            Colors.green[100]!,
+                            (context) => Dichomescreen(),
+                          ),
+                        ),
+                        Expanded(
+                          child: buildDicButton(
+                            "Sports",
+                            "คำศัพท์เกี่ยวกับกีฬา",
+                            Image.asset(
+                              'assets/image/sport.png',
+                              width: 90,
+                              height: 90,
+                            ),
+                            Colors.red[100]!,
+                            (context) => Dicsportscreen(),
+                          ),
+                        ),
+                      ],
                     ),
                     // SizedBox(height: 20),
                     // const Row(
@@ -137,18 +241,20 @@ class _DicscreenState extends State<Dicscreen> {
     Widget Function(BuildContext) screenBuilder,
   ) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(8, 12, 8, 12),
+      padding: const EdgeInsets.fromLTRB(8, 8, 8, 8),
       child: SizedBox(
         child: ElevatedButton(
           style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.white.withOpacity(0.8),
-            fixedSize: Size(360, 115),
+            backgroundColor: iconBackgroundColor,
+            fixedSize: Size.fromHeight(200),
+            elevation: 10,
+            shadowColor: Colors.black.withOpacity(0.5),
             shape: RoundedRectangleBorder(
-              side: BorderSide(
-                color: Colors.orange, // สีของขอบ
-                width: 3, // ความหนาของขอบ
-              ),
-              borderRadius: BorderRadius.circular(25),
+              // side: BorderSide(
+              //   color: Colors.orange, // สีของขอบ
+              //   width: 3, // ความหนาของขอบ
+              // ),
+              borderRadius: BorderRadius.circular(20),
             ),
             // backgroundColor: Colors.grey[300],
           ),
@@ -159,37 +265,266 @@ class _DicscreenState extends State<Dicscreen> {
               MaterialPageRoute(builder: (context) => screenBuilder(context)),
             );
           },
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              CircleAvatar(
-                backgroundColor: iconBackgroundColor,
-                radius: 45,
-                child: iconWidget,
-              ),
-              SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      title,
-                      style: TextStyle(
-                        fontSize: 22,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black87,
+          child: Center(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  iconWidget,
+                  SizedBox(width: 16),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        title,
+                        style: TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black87,
+                        ),
                       ),
+                      Text(
+                        subtitle,
+                        style: TextStyle(fontSize: 14, color: Colors.black87),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget buildGameButton(
+    String title,
+    String subtitle,
+    Widget iconWidget,
+    Color iconBackgroundColor,
+    Widget Function(Map<String, List<String>>, String) screenBuilder,
+  ) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(8, 12, 8, 12),
+      child: SizedBox(
+        child: ElevatedButton(
+          onPressed: () {
+            SoundManager.playClick8BitSound();
+            showCategoryDialog(screenBuilder);
+          },
+          style: ElevatedButton.styleFrom(
+            // backgroundColor: Colors.yellow,
+            backgroundColor: Colors.white.withOpacity(0.8), //ความทึมแสง
+            // backgroundColor: Colors.transparent,
+            shadowColor: Colors.transparent,
+            fixedSize: Size(370, 120),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(25),
+              side: BorderSide(
+                color: Colors.orange, // สีของขอบ
+                width: 3, // ความหนาของขอบ
+              ),
+            ),
+          ),
+          child: Center(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(50),
+                  child: Container(
+                    color: iconBackgroundColor,
+                    width: 90,
+                    height: 90,
+                    padding: EdgeInsets.all(10),
+                    child: iconWidget,
+                  ),
+                ),
+                SizedBox(width: 24),
+                Container(
+                  width: 200,
+                  height: 90,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            subtitle,
+                            style: TextStyle(
+                              fontSize: 22,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black87,
+                            ),
+                          ),
+                          Text(
+                            title,
+                            style: TextStyle(
+                              fontSize: 18,
+                              color: Colors.black87,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  void showCategoryDialog(
+    Widget Function(Map<String, List<String>>, String) screenBuilder,
+  ) {
+    showDialog(
+      context: context,
+      // barrierDismissible: false,
+      builder: (context) {
+        return AlertDialog(
+          title: Text("เลือกหมวดหมู่ที่ต้องการ"),
+          // backgroundColor: Color.fromARGB(255, 236, 217, 159),
+          actions: [
+            SizedBox(
+              width: 300,
+              height: 400,
+              child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    categoryButton(
+                      "Vehicles",
+                      "คำศัพท์เกี่ยวกับยานพาหนะ",
+                      Image.asset(
+                        'assets/image/vehicle.png',
+                        width: 48,
+                        height: 48,
+                      ),
+                      Colors.yellow[100]!,
+                      1,
+                      screenBuilder,
                     ),
-                    Text(
-                      subtitle,
-                      style: TextStyle(fontSize: 18, color: Colors.black87),
+                    categoryButton(
+                      "Animals",
+                      "คำศัพท์เกี่ยวกับสัตว์",
+                      Image.asset(
+                        'assets/image/animal.png',
+                        width: 48,
+                        height: 48,
+                      ),
+                      Colors.orange[100]!,
+                      2,
+                      screenBuilder,
+                    ),
+                    categoryButton(
+                      "House",
+                      "คำศัพท์สิ่งของในบ้าน",
+                      Image.asset(
+                        'assets/image/home.png',
+                        width: 48,
+                        height: 48,
+                      ),
+                      Colors.green[100]!,
+                      3,
+                      screenBuilder,
+                    ),
+                    categoryButton(
+                      "Sports",
+                      "คำศัพท์เกี่ยวกับกีฬา",
+                      Image.asset(
+                        'assets/image/sport.png',
+                        width: 48,
+                        height: 48,
+                      ),
+                      Colors.red[100]!,
+                      4,
+                      screenBuilder,
                     ),
                   ],
                 ),
               ),
-            ],
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget categoryButton(
+    String title,
+    String subtitle,
+    Widget iconWidget,
+    Color iconBackgroundColor,
+    int categoryId,
+    Widget Function(Map<String, List<String>>, String) screenBuilder,
+  ) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: ElevatedButton(
+        onPressed: () async {
+          SoundManager.playClick8BitSound();
+          Navigator.of(context).pop();
+
+          try {
+            final words = await DicService.fetchWords(categoryId: categoryId);
+            final dictionaryMap = convertEntriesToMap(words);
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (context) => screenBuilder(dictionaryMap, title),
+              ),
+            );
+          } catch (e) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('เกิดข้อผิดพลาดในการโหลดคำศัพท์')),
+            );
+          }
+        },
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.white.withOpacity(0.8),
+          fixedSize: Size(280, 80),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+            side: BorderSide(color: Colors.orange, width: 2),
           ),
+        ),
+        child: Row(
+          children: [
+            CircleAvatar(
+              backgroundColor: iconBackgroundColor,
+              radius: 30,
+              child: iconWidget,
+            ),
+            SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    title,
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black87,
+                    ),
+                  ),
+                  Text(
+                    subtitle,
+                    style: TextStyle(fontSize: 14, color: Colors.black87),
+                  ),
+                ],
+              ),
+            ),
+          ],
         ),
       ),
     );

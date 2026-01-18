@@ -43,6 +43,7 @@ class _HomeScreenState extends State<HomeScreen>
         // backgroundColor: Color(0xFFFFD96A),
         body: TabBarView(
           controller: _tabController,
+          physics: const NeverScrollableScrollPhysics(),
           children: const [
             Menuscreen(),
             Dicscreen(),

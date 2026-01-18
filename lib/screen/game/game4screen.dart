@@ -50,10 +50,7 @@ class _Game4screenState extends State<Game4screen> {
     );
 
     _loadNextQuestion();
-    // _startGameTimer();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      readyGame();
-    });
+    _startGameTimer();
     GameData.reset();
     GameData.gameName = 'เกมพูดคำศัพท์';
     GameData.title = widget.title;
@@ -66,36 +63,6 @@ class _Game4screenState extends State<Game4screen> {
         _elapsedTime = _formatTime(_stopwatch.elapsed);
       });
     });
-  }
-
-  void readyGame() {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text("เกมพูดคำศัพท์"),
-          content: Text(
-            "เกมนี้จะไม่บันทึกคะแนน เนื่องจากเกมนี้การออกเสียงและมีบางอย่างผิดพลาด",
-          ),
-          actionsAlignment: MainAxisAlignment.center,
-          actions: <Widget>[
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
-                ),
-              ),
-              onPressed: () {
-                _startGameTimer();
-                Navigator.of(context).pop();
-              },
-              child: Text("เริ่ม"),
-            ),
-          ],
-        );
-      },
-    );
   }
 
   void _endGame() {
@@ -436,7 +403,7 @@ class _Game4screenState extends State<Game4screen> {
                             context,
                             MaterialPageRoute(
                               builder: (context) {
-                                return HomeScreen(initialTabIndex: 0);
+                                return HomeScreen(initialTabIndex: 1);
                               },
                             ),
                           );

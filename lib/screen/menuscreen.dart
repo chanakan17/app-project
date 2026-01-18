@@ -116,18 +116,18 @@ class _MenuscreenState extends State<Menuscreen> {
                     (dictionary, title) =>
                         Game5screen(dictionary: dictionary, title: title),
                   ),
-                  buildGameButton(
-                    "เกมพูดคำศัพท์",
-                    "Speaking Game",
-                    Image.asset(
-                      'assets/icons/speak.png',
-                      width: 90,
-                      height: 90,
-                    ),
-                    Colors.pink[100]!,
-                    (dictionary, title) =>
-                        Game4screen(dictionary: dictionary, title: title),
-                  ),
+                  // buildGameButton(
+                  //   "เกมพูดคำศัพท์",
+                  //   "Speaking Game",
+                  //   Image.asset(
+                  //     'assets/icons/speak.png',
+                  //     width: 90,
+                  //     height: 90,
+                  //   ),
+                  //   Colors.pink[100]!,
+                  //   (dictionary, title) =>
+                  //       Game4screen(dictionary: dictionary, title: title),
+                  // ),
                 ],
               ),
             ),
