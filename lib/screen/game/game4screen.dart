@@ -329,7 +329,7 @@ class _Game4screenState extends State<Game4screen> {
       barrierDismissible: false,
       builder: (_) {
         return AlertDialog(
-          title: Text("จบเกมแล้ว!"),
+          title: Text("จบแล้ว!"),
           content: Text("คุณทำคะแนนได้ทั้งหมด $score คะแนน"),
           actions: [
             ElevatedButton(
@@ -365,7 +365,10 @@ class _Game4screenState extends State<Game4screen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("เกมพูดคำศัพท์"),
+        title: Text(
+          "ฝึกพูดคำศัพท์",
+          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black87),
+        ),
         centerTitle: true,
         bottom: PreferredSize(
           preferredSize: Size.fromHeight(1.0),
@@ -384,10 +387,10 @@ class _Game4screenState extends State<Game4screen> {
                 builder: (BuildContext context) {
                   return AlertDialog(
                     title: Text(
-                      "คุณต้องการออกจากเกมหรือไม่?",
+                      "คุณต้องการออกหรือไม่?",
                       style: TextStyle(fontSize: 21),
                     ),
-                    content: Text("หากคุณออกจากเกม ข้อมูลจะไม่ได้รับการบันทึก"),
+                    // content: Text("หากคุณออกจากเกม ข้อมูลจะไม่ได้รับการบันทึก"),
                     actions: <Widget>[
                       ElevatedButton(
                         style: ElevatedButton.styleFrom(
@@ -409,7 +412,7 @@ class _Game4screenState extends State<Game4screen> {
                           );
                         },
                         child: Text(
-                          "ออกจากเกม",
+                          "ยืนยันการออก",
                           style: TextStyle(color: Colors.white),
                         ),
                       ),

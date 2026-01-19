@@ -37,14 +37,28 @@ class _ProfilescreenState extends State<Profilescreen> {
 
   Map<String, List<Map<String, dynamic>>> topScores = {};
   String currentUsername = "";
-  final List<String> gameTitles = [
-    "เกมทายคำศัพท์",
-    "เกมจับคู่คำศัพท์",
-    "เกมเติมคำ",
-    // "เกมพูดคำศัพท์",
-    "เกมทายรูปภาพ",
+  final List<Map<String, String>> gameList = [
+    {
+      "title_en": "Guessing Game",
+      "title_th": "เกมทายคำศัพท์",
+      "image": "assets/icons/guess.png",
+    },
+    {
+      "title_en": "Matching Game",
+      "title_th": "เกมจับคู่คำศัพท์",
+      "image": "assets/icons/match.png",
+    },
+    {
+      "title_en": "Completion Game",
+      "title_th": "เกมเติมคำ",
+      "image": "assets/icons/add.png",
+    },
+    {
+      "title_en": "Picture Game",
+      "title_th": "เกมทายรูปภาพ",
+      "image": "assets/icons/pic.png",
+    },
   ];
-
   @override
   void initState() {
     super.initState();
@@ -783,10 +797,10 @@ class _ProfilescreenState extends State<Profilescreen> {
       appBar: AppBar(
         title: const Text(
           "Profile",
-          style: TextStyle(fontWeight: FontWeight.bold),
+          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
         ),
         centerTitle: true,
-        elevation: 4,
+        elevation: 10,
         shadowColor: Colors.black45,
         backgroundColor: Colors.orange,
         actions: [
@@ -1015,38 +1029,101 @@ class _ProfilescreenState extends State<Profilescreen> {
                         const SizedBox(height: 20),
                         Expanded(
                           child: ListView.builder(
-                            itemCount: gameTitles.length,
+                            itemCount: gameList.length,
                             itemBuilder: (context, index) {
-                              final title = gameTitles[index];
+                              final game = gameList[index];
+                              String titleEn = game['title_en'] ?? "Game Name";
+                              String titleTh = game['title_th'] ?? "ชื่อเกม";
+                              String imagePath = game['image'] ?? "";
+
                               return Padding(
-                                padding: const EdgeInsets.all(12.0),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 12.0,
+                                  vertical: 8.0,
+                                ),
                                 child: ElevatedButton(
-                                  onPressed: () => showGamePopup(title),
+                                  onPressed: () => showGamePopup(titleTh),
+
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: Colors.white.withOpacity(
-                                      0.8,
+                                      0.9,
                                     ),
                                     foregroundColor: Colors.orange,
                                     padding: const EdgeInsets.symmetric(
-                                      vertical: 16,
+                                      vertical: 12,
+                                      horizontal: 16,
                                     ),
-                                    elevation: 5,
-                                    shadowColor: Colors.black.withOpacity(0.5),
+                                    elevation: 3,
+                                    shadowColor: Colors.black.withOpacity(0.3),
                                     shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(12),
+                                      borderRadius: BorderRadius.circular(16),
                                     ),
                                   ),
                                   child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
-                                      const SizedBox(width: 8),
-                                      Text(
-                                        title,
-                                        style: const TextStyle(
-                                          fontSize: 22,
-                                          color: Colors.black38,
-                                          fontWeight: FontWeight.bold,
+                                      Container(
+                                        width: 60,
+                                        height: 60,
+                                        padding: const EdgeInsets.all(8),
+                                        decoration: BoxDecoration(
+                                          color: Colors.orange[100],
+                                          borderRadius: BorderRadius.circular(
+                                            12,
+                                          ),
                                         ),
+                                        child:
+                                            imagePath.isNotEmpty
+                                                ? Image.asset(
+                                                  imagePath,
+                                                  fit: BoxFit.contain,
+                                                  errorBuilder:
+                                                      (
+                                                        context,
+                                                        error,
+                                                        stackTrace,
+                                                      ) => const Icon(
+                                                        Icons.games,
+                                                        color: Colors.orange,
+                                                      ),
+                                                )
+                                                : const Icon(
+                                                  Icons.games,
+                                                  color: Colors.orange,
+                                                ),
+                                      ),
+
+                                      const SizedBox(width: 20),
+                                      Expanded(
+                                        child: Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              titleEn,
+                                              style: const TextStyle(
+                                                fontSize: 20,
+                                                color: Colors.black87,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                            Text(
+                                              titleTh,
+                                              style: TextStyle(
+                                                fontSize: 14,
+                                                color: Colors.grey[700],
+                                                fontWeight: FontWeight.normal,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+
+                                      const Icon(
+                                        Icons.arrow_forward_ios,
+                                        color: Colors.orange,
+                                        size: 18,
                                       ),
                                     ],
                                   ),

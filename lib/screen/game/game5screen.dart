@@ -175,7 +175,10 @@ class _Game5screenState extends State<Game5screen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("เกมทายรูปภาพ"),
+        title: Text(
+          "เกมทายรูปภาพ",
+          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black87),
+        ),
         centerTitle: true,
         bottom: PreferredSize(
           preferredSize: Size.fromHeight(1.0),

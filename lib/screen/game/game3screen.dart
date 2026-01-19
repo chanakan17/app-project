@@ -399,7 +399,10 @@ class _Game3screenState extends State<Game3screen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("เกมเติมคำ"),
+        title: Text(
+          "เกมเติมคำ",
+          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black87),
+        ),
         centerTitle: true,
         bottom: PreferredSize(
           preferredSize: Size.fromHeight(1.0),

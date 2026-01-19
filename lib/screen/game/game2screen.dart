@@ -167,7 +167,10 @@ class _Game2screenState extends State<Game2screen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("เกมจับคู่คำศัพท์"),
+        title: Text(
+          "เกมจับคู่คำศัพท์",
+          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black87),
+        ),
         centerTitle: true,
         bottom: PreferredSize(
           preferredSize: Size.fromHeight(1.0),

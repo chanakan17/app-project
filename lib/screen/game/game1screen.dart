@@ -175,7 +175,10 @@ class _Game1screenState extends State<Game1screen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("เกมทายคำศัพท์"),
+        title: Text(
+          "เกมทายคำศัพท์",
+          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black87),
+        ),
         centerTitle: true,
         bottom: PreferredSize(
           preferredSize: Size.fromHeight(1.0),
