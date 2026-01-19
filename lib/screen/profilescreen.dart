@@ -772,7 +772,6 @@ class _ProfilescreenState extends State<Profilescreen> {
 
   @override
   Widget build(BuildContext context) {
-    // ป้องกัน index เกินขอบเขต
     String displayImage =
         avatarList.isNotEmpty
             ? avatarList[currentAvatarId < avatarList.length
@@ -787,10 +786,8 @@ class _ProfilescreenState extends State<Profilescreen> {
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
-        bottom: PreferredSize(
-          preferredSize: Size.fromHeight(1.0),
-          child: Container(color: Colors.black26, height: 2.0),
-        ),
+        elevation: 4,
+        shadowColor: Colors.black45,
         backgroundColor: Colors.orange,
         actions: [
           IconButton(
@@ -798,7 +795,6 @@ class _ProfilescreenState extends State<Profilescreen> {
             iconSize: 40,
             onPressed: () {
               SoundManager.playClickSound();
-              // --- Popup Setting (เหมือนเดิม) ---
               showDialog(
                 context: context,
                 builder: (BuildContext context) {
@@ -925,90 +921,85 @@ class _ProfilescreenState extends State<Profilescreen> {
                 Padding(
                   padding: const EdgeInsets.fromLTRB(8, 8, 8, 8),
                   child: Container(
-                    // decoration: BoxDecoration(
-                    //   color: Colors.black12,
-                    //   borderRadius: BorderRadius.circular(12),
-                    // ),
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(0, 15, 0, 15),
-                      child: Row(
-                        children: [
-                          const SizedBox(width: 20),
-                          // ---------------------------------------------------------
-                          // 6. แสดงรูปโปรไฟล์ในหน้าหลัก
-                          // ---------------------------------------------------------
-                          GestureDetector(
-                            onTap: _showAvatarPicker,
-                            child: CircleAvatar(
-                              radius: 30,
-                              backgroundColor: Colors.white,
-                              backgroundImage:
-                                  displayImage.isNotEmpty
-                                      ? AssetImage(displayImage)
-                                      : null,
-                            ),
+                    width: double.infinity,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        const SizedBox(width: 20),
+                        GestureDetector(
+                          onTap: _showAvatarPicker,
+                          child: CircleAvatar(
+                            radius: 46,
+                            backgroundColor: Colors.white,
+                            backgroundImage:
+                                displayImage.isNotEmpty
+                                    ? AssetImage(displayImage)
+                                    : null,
                           ),
-                          const SizedBox(width: 10),
-                          Flexible(
-                            child:
-                                isEditing
-                                    ? Row(
-                                      children: [
-                                        Expanded(
-                                          child: TextField(
-                                            controller: _controller,
-                                            autofocus: true,
-                                            maxLength: 20,
-                                            decoration: const InputDecoration(
-                                              counterText: '',
-                                              hintText:
-                                                  'กรอกชื่อไม่เกิน 20 ตัว',
+                        ),
+                        const SizedBox(width: 10),
+                        SizedBox(
+                          width: 200,
+                          child:
+                              isEditing
+                                  ? Row(
+                                    children: [
+                                      Expanded(
+                                        child: TextField(
+                                          controller: _controller,
+                                          textAlign: TextAlign.center,
+                                          autofocus: true,
+                                          maxLength: 12,
+                                          decoration: const InputDecoration(
+                                            counterText: '',
+                                            hintText: 'กรอกชื่อไม่เกิน 20 ตัว',
+                                            isDense: true,
+                                          ),
+                                        ),
+                                      ),
+                                      IconButton(
+                                        icon: const Icon(Icons.check),
+                                        onPressed: () async {
+                                          final success = await saveUsername();
+                                          if (success) {
+                                            FocusScope.of(context).unfocus();
+                                          }
+                                        },
+                                      ),
+                                    ],
+                                  )
+                                  : Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      SizedBox(width: 18),
+                                      Flexible(
+                                        child: Text(
+                                          _controller.text.isEmpty
+                                              ? "ตั้งชื่อของคุณ"
+                                              : _controller.text,
+                                          style: const TextStyle(
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      ),
+                                      IconButton(
+                                        icon: const Icon(Icons.edit, size: 20),
+                                        onPressed:
+                                            () => setState(
+                                              () => isEditing = true,
                                             ),
-                                          ),
-                                        ),
-                                        IconButton(
-                                          icon: const Icon(Icons.check),
-                                          onPressed: () async {
-                                            final success =
-                                                await saveUsername();
-                                            if (success) {
-                                              FocusScope.of(context).unfocus();
-                                            }
-                                          },
-                                        ),
-                                      ],
-                                    )
-                                    : Row(
-                                      children: [
-                                        Expanded(
-                                          child: Row(
-                                            children: [
-                                              Text(
-                                                _controller.text,
-                                                style: const TextStyle(
-                                                  fontSize: 18,
-                                                  fontWeight: FontWeight.bold,
-                                                ),
-                                              ),
-                                              IconButton(
-                                                icon: const Icon(Icons.edit),
-                                                onPressed:
-                                                    () => setState(
-                                                      () => isEditing = true,
-                                                    ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                          ),
-                        ],
-                      ),
+                                      ),
+                                    ],
+                                  ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
-                const SizedBox(height: 30),
+                const SizedBox(height: 10),
                 Expanded(
                   child: Padding(
                     padding: const EdgeInsets.all(16),
