@@ -19,63 +19,81 @@ class _MenuscreenState extends State<Menuscreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        // leading: Padding(
-        //   padding: const EdgeInsets.all(8.0),
-        //   child: Image.asset(
-        //     'assets/icons/monkey64.png',
-        //     width: 40,
-        //     height: 40,
-        //   ),
-        // ),
-        title: Text("Games", style: TextStyle(fontWeight: FontWeight.bold)),
-        centerTitle: true,
-        bottom: PreferredSize(
-          preferredSize: Size.fromHeight(1.0), // ความสูงของเส้น
-          child: Container(
-            color: Colors.black26, // สีของเส้น
-            height: 2.0,
-          ),
-        ),
-        // bottom: PreferredSize(
-        //   preferredSize: Size.fromHeight(1.0),
-        //   child: Container(color: Colors.white, height: 1.0),
-        // ),
-        actions: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Icon(Icons.star, size: 40, color: Colors.orange),
-            // Image.asset(
-            //   'assets/icons/star96.png',
-            //   width: 40,
-            //   height: 40,
-            // ),
-          ),
-        ],
-        backgroundColor: Colors.orange,
-      ),
       backgroundColor: Colors.amber[50],
-      body: Stack(
-        fit: StackFit.expand,
+      body: Column(
         children: [
-          // Image.asset('assets/image/bg.png', fit: BoxFit.cover),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
-            // child: Center(
+          Stack(
+            alignment: Alignment.bottomCenter,
+            clipBehavior: Clip.none,
+            children: [
+              ClipPath(
+                clipper: MyBottomCurveClipper(),
+                child: Container(
+                  width: double.infinity,
+                  height: 160,
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [Colors.orange.shade300, Colors.orange.shade800],
+                    ),
+                  ),
+                  child: SafeArea(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 20,
+                        vertical: 10,
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          // SizedBox(height: 10),
+                          Text(
+                            "Let's Play!",
+                            style: TextStyle(
+                              fontSize: 28,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              Positioned(
+                bottom: 0,
+                child: Container(
+                  padding: EdgeInsets.symmetric(horizontal: 24, vertical: 10),
+                  decoration: BoxDecoration(
+                    color: Color(0xFFFAEAD1),
+                    borderRadius: BorderRadius.circular(30),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black12,
+                        blurRadius: 4,
+                        offset: Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: Text(
+                    "Challenge Mode",
+                    style: TextStyle(
+                      color: Colors.brown[800],
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          SizedBox(height: 12),
+          Expanded(
             child: SingleChildScrollView(
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  SizedBox(height: 40),
-                  // ElevatedButton(
-                  //   onPressed: () {
-                  //     Navigator.pushReplacement(
-                  //       context,
-                  //       MaterialPageRoute(builder: (context) => Game()),
-                  //     );
-                  //   },
-                  //   child: Text("GameNa"),
-                  // ),
                   buildGameButton(
                     "เกมทายคำศัพท์",
                     "Guessing Game",
@@ -116,29 +134,15 @@ class _MenuscreenState extends State<Menuscreen> {
                     (dictionary, title) =>
                         Game5screen(dictionary: dictionary, title: title),
                   ),
-                  // buildGameButton(
-                  //   "เกมพูดคำศัพท์",
-                  //   "Speaking Game",
-                  //   Image.asset(
-                  //     'assets/icons/speak.png',
-                  //     width: 90,
-                  //     height: 90,
-                  //   ),
-                  //   Colors.pink[100]!,
-                  //   (dictionary, title) =>
-                  //       Game4screen(dictionary: dictionary, title: title),
-                  // ),
                 ],
               ),
             ),
-            // ),
           ),
         ],
       ),
     );
   }
 
-  // ฟังก์ชันแปลง List<DicEntry> เป็น Map<String, List<String>>
   Map<String, List<String>> convertEntriesToMap(List<DicEntry> entries) {
     final map = <String, List<String>>{};
     for (var entry in entries) {
@@ -155,7 +159,7 @@ class _MenuscreenState extends State<Menuscreen> {
     Widget Function(Map<String, List<String>>, String) screenBuilder,
   ) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(8, 12, 8, 12),
+      padding: const EdgeInsets.fromLTRB(20, 12, 20, 12),
       child: SizedBox(
         child: ElevatedButton(
           onPressed: () {
@@ -163,17 +167,12 @@ class _MenuscreenState extends State<Menuscreen> {
             showCategoryDialog(screenBuilder);
           },
           style: ElevatedButton.styleFrom(
-            // backgroundColor: Colors.yellow,
-            backgroundColor: Colors.white.withOpacity(0.8), //ความทึมแสง
-            // backgroundColor: Colors.transparent,
-            shadowColor: Colors.transparent,
-            fixedSize: Size(370, 120),
+            backgroundColor: Colors.white.withOpacity(0.8),
+            elevation: 6,
+            shadowColor: Colors.black45,
+            fixedSize: Size.fromHeight(120),
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(25),
-              side: BorderSide(
-                color: Colors.orange, // สีของขอบ
-                width: 3, // ความหนาของขอบ
-              ),
+              borderRadius: BorderRadius.circular(20),
             ),
           ),
           child: Center(
@@ -234,11 +233,9 @@ class _MenuscreenState extends State<Menuscreen> {
   ) {
     showDialog(
       context: context,
-      // barrierDismissible: false,
       builder: (context) {
         return AlertDialog(
           title: Text("เลือกหมวดหมู่ที่ต้องการ"),
-          // backgroundColor: Color.fromARGB(255, 236, 217, 159),
           actions: [
             SizedBox(
               width: 300,
@@ -373,4 +370,28 @@ class _MenuscreenState extends State<Menuscreen> {
       ),
     );
   }
+}
+
+class MyBottomCurveClipper extends CustomClipper<Path> {
+  @override
+  Path getClip(Size size) {
+    var path = Path();
+    path.lineTo(0, size.height - 40);
+    var controlPoint = Offset(size.width / 2, size.height + 20);
+    var endPoint = Offset(size.width, size.height - 40);
+
+    path.quadraticBezierTo(
+      controlPoint.dx,
+      controlPoint.dy,
+      endPoint.dx,
+      endPoint.dy,
+    );
+    path.lineTo(size.width, 0);
+    path.close();
+
+    return path;
+  }
+
+  @override
+  bool shouldReclip(CustomClipper<Path> oldClipper) => false;
 }

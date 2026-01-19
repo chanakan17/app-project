@@ -29,27 +29,17 @@ class _DicscreenState extends State<Dicscreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        // leading: Padding(
-        //   padding: const EdgeInsets.all(8.0),
-        //   child: Image.asset('assets/icons/booka96.png', width: 40, height: 40),
-        // ),
         title: Text(
           "Vocabulary",
-          style: TextStyle(fontWeight: FontWeight.bold),
+          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
         ),
         centerTitle: true,
-        // bottom: PreferredSize(
-        //   preferredSize: Size.fromHeight(1.0),
-        //   child: Container(color: Colors.white, height: 1.0),
-        // ),
-        bottom: PreferredSize(
-          preferredSize: Size.fromHeight(1.0), // ความสูงของเส้น
-          child: Container(
-            color: Colors.black26, // สีของเส้น
-            height: 2.0,
-          ),
-        ),
         backgroundColor: Colors.orange,
+        elevation: 6,
+        shadowColor: Colors.black45,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(bottom: Radius.circular(30)),
+        ),
       ),
       backgroundColor: Colors.amber[50],
       body: Stack(
@@ -70,7 +60,7 @@ class _DicscreenState extends State<Dicscreen> {
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.white.withOpacity(0.8),
                             fixedSize: Size.fromHeight(100),
-                            elevation: 10,
+                            elevation: 6,
                             shadowColor: Colors.black.withOpacity(0.5),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(20),
@@ -104,14 +94,14 @@ class _DicscreenState extends State<Dicscreen> {
                                       style: TextStyle(
                                         fontSize: 22,
                                         fontWeight: FontWeight.bold,
-                                        color: Colors.orange,
+                                        color: Colors.black87,
                                       ),
                                     ),
                                     Text(
                                       "แปลคำศัพท์และประโยคทันที",
                                       style: TextStyle(
                                         fontSize: 18,
-                                        color: Colors.orange,
+                                        color: Colors.black87,
                                       ),
                                     ),
                                   ],
@@ -320,7 +310,7 @@ class _DicscreenState extends State<Dicscreen> {
             // backgroundColor: Colors.yellow,
             backgroundColor: Colors.white.withOpacity(0.8), //ความทึมแสง
             // backgroundColor: Colors.transparent,
-            elevation: 10,
+            elevation: 6,
             shadowColor: Colors.black.withOpacity(0.5),
             fixedSize: Size.fromHeight(100),
             shape: RoundedRectangleBorder(
