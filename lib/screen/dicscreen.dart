@@ -79,7 +79,7 @@ class _DicscreenState extends State<Dicscreen> {
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
                               Image.asset(
-                                'assets/image/translate.png',
+                                'assets/icons/translatepic.png',
                                 width: 60,
                                 height: 60,
                               ),
@@ -114,7 +114,7 @@ class _DicscreenState extends State<Dicscreen> {
                     ),
                     buildGameButton(
                       "ฝึกพูดคำศัพท์ภาษาอังกฤษ",
-                      "Speaking Test",
+                      "Speaking",
                       Image.asset(
                         'assets/icons/speak.png',
                         width: 60,

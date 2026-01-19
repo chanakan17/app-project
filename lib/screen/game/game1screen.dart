@@ -419,18 +419,18 @@ class _Game1screenState extends State<Game1screen> {
                                                           children: [
                                                             Icon(
                                                               Icons.check,
-                                                              color:
-                                                                  Colors
-                                                                      .green, // สีเขียว
+                                                              color: Color(
+                                                                0xFFFFA000,
+                                                              ), // สีเขียว
                                                               size: 40, // ขนาด
                                                             ),
                                                             Text(
                                                               "ถูกต้องแล้ว",
                                                               style: TextStyle(
                                                                 fontSize: 25,
-                                                                color:
-                                                                    Colors
-                                                                        .green,
+                                                                color: Color(
+                                                                  0xFFFFA000,
+                                                                ),
                                                               ),
                                                             ),
                                                           ],
@@ -445,7 +445,9 @@ class _Game1screenState extends State<Game1screen> {
                                                           "${randomKeys[0]} --> ${correctValue}",
                                                           style: TextStyle(
                                                             fontSize: 20,
-                                                            color: Colors.green,
+                                                            color: Color(
+                                                              0xFFFFA000,
+                                                            ),
                                                           ),
                                                         ),
                                                       ),
@@ -474,8 +476,8 @@ class _Game1screenState extends State<Game1screen> {
                                                                   height: 48,
                                                                   decoration: BoxDecoration(
                                                                     color: Color(
-                                                                      0xFF4CD200,
-                                                                    ), // สีเขียวหลัก
+                                                                      0xFFFFCA28,
+                                                                    ),
                                                                     borderRadius:
                                                                         BorderRadius.circular(
                                                                           25,
@@ -483,7 +485,7 @@ class _Game1screenState extends State<Game1screen> {
                                                                     border: Border(
                                                                       bottom: BorderSide(
                                                                         color: Color(
-                                                                          0xFF3ABA00,
+                                                                          0xFFFFA000,
                                                                         ),
                                                                         width:
                                                                             4,
@@ -503,7 +505,7 @@ class _Game1screenState extends State<Game1screen> {
                                                                           FontWeight
                                                                               .bold,
                                                                       fontSize:
-                                                                          16,
+                                                                          18,
                                                                     ),
                                                                   ),
                                                                 ),
@@ -646,7 +648,7 @@ class _Game1screenState extends State<Game1screen> {
                                                                           FontWeight
                                                                               .bold,
                                                                       fontSize:
-                                                                          16,
+                                                                          18,
                                                                     ),
                                                                   ),
                                                                 ),

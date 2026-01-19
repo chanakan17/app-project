@@ -413,7 +413,7 @@ class _Game2screenState extends State<Game2screen> {
                                                 ? Colors.green[100]
                                                 : Colors.red[100];
                                           } else if (answer != null) {
-                                            return Colors.grey[300];
+                                            return Colors.orange[100];
                                           }
                                           return null;
                                         }(),
@@ -547,14 +547,14 @@ class _Game2screenState extends State<Game2screen> {
                                       children: [
                                         Icon(
                                           Icons.check,
-                                          color: Colors.green, // สีเขียว
+                                          color: Color(0xFFFFA000),
                                           size: 40, // ขนาด
                                         ),
                                         Text(
                                           "ถูกต้องทั้งหมด!",
                                           style: TextStyle(
                                             fontSize: 25,
-                                            color: Colors.green,
+                                            color: Color(0xFFFFA000),
                                           ),
                                         ),
                                       ],
@@ -566,7 +566,7 @@ class _Game2screenState extends State<Game2screen> {
                                       "คุณจับคู่ถูก $matched/${userAnswers.length} ข้อ",
                                       style: TextStyle(
                                         fontSize: 20,
-                                        color: Colors.green,
+                                        color: Color(0xFFFFA000),
                                       ),
                                     ),
                                   ),
@@ -590,14 +590,12 @@ class _Game2screenState extends State<Game2screen> {
                                               width: 320,
                                               height: 48,
                                               decoration: BoxDecoration(
-                                                color: Color(
-                                                  0xFF4CD200,
-                                                ), // สีเขียวหลัก
+                                                color: Color(0xFFFFCA28),
                                                 borderRadius:
                                                     BorderRadius.circular(25),
                                                 border: Border(
                                                   bottom: BorderSide(
-                                                    color: Color(0xFF3ABA00),
+                                                    color: Color(0xFFFFA000),
                                                     width: 4,
                                                   ),
                                                 ),
@@ -608,7 +606,7 @@ class _Game2screenState extends State<Game2screen> {
                                                 style: TextStyle(
                                                   color: Colors.white,
                                                   fontWeight: FontWeight.bold,
-                                                  fontSize: 16,
+                                                  fontSize: 18,
                                                 ),
                                               ),
                                             ),
@@ -717,7 +715,7 @@ class _Game2screenState extends State<Game2screen> {
                                                 style: TextStyle(
                                                   color: Colors.white,
                                                   fontWeight: FontWeight.bold,
-                                                  fontSize: 16,
+                                                  fontSize: 18,
                                                 ),
                                               ),
                                             ),
@@ -740,14 +738,12 @@ class _Game2screenState extends State<Game2screen> {
                         width: 320,
                         height: 48,
                         decoration: BoxDecoration(
-                          color: Color(0xFF4CD200), // สีเขียวหลัก
+                          color: Color(0xFFFFC107),
                           borderRadius: BorderRadius.circular(25),
                           border: Border(
                             bottom: BorderSide(
-                              color: Color(
-                                0xFF3ABA00,
-                              ), // สีเขียวเข้ม สำหรับขอบล่าง
-                              width: 4, // ความหนาของขอบล่าง
+                              color: Color(0xFFFFA000),
+                              width: 4,
                             ),
                           ),
                         ),

@@ -206,7 +206,7 @@ class _Game4screenState extends State<Game4screen> {
       _showResultModal(isCorrect, [
         TextSpan(
           text: currentKey,
-          style: TextStyle(color: isCorrect ? Colors.green : Colors.red),
+          style: TextStyle(color: isCorrect ? Color(0xFFFFA000) : Colors.red),
         ),
       ]);
     });
@@ -216,15 +216,15 @@ class _Game4screenState extends State<Game4screen> {
     // กำหนดค่าสีและข้อความตามผลลัพธ์ (ถูก/ผิด)
     final Color mainColor =
         isCorrect
-            ? const Color(0xFF4CD200)
+            ? const Color(0xFFFFCA28)
             : const Color.fromARGB(255, 255, 81, 81);
     final Color shadowColor =
         isCorrect
-            ? const Color(0xFF3ABA00)
+            ? const Color(0xFFFFA000)
             : const Color.fromARGB(255, 221, 15, 0);
     final IconData icon = isCorrect ? Icons.check : Icons.close;
     final String titleText = isCorrect ? "ถูกต้องแล้ว" : "ผิดจร้าาา";
-    final Color titleColor = isCorrect ? Colors.green : Colors.red;
+    final Color titleColor = isCorrect ? Color(0xFFFFA000) : Colors.red;
 
     showModalBottomSheet(
       context: context,

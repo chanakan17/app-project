@@ -221,12 +221,15 @@ class _Game3screenState extends State<Game3screen> {
                         children: [
                           Icon(
                             Icons.check,
-                            color: Colors.green, // สีเขียว
+                            color: Color(0xFFFFA000),
                             size: 40, // ขนาด
                           ),
                           Text(
                             "ถูกต้องแล้ว",
-                            style: TextStyle(fontSize: 25, color: Colors.green),
+                            style: TextStyle(
+                              fontSize: 25,
+                              color: Color(0xFFFFA000),
+                            ),
                           ),
                         ],
                       ),
@@ -235,7 +238,10 @@ class _Game3screenState extends State<Game3screen> {
                       padding: const EdgeInsets.all(8.0),
                       child: Text(
                         "${randomValues[0]} --> ${randomKeys[0]}",
-                        style: TextStyle(fontSize: 20, color: Colors.green),
+                        style: TextStyle(
+                          fontSize: 20,
+                          color: Color(0xFFFFA000),
+                        ),
                       ),
                     ),
                     Spacer(),
@@ -256,11 +262,11 @@ class _Game3screenState extends State<Game3screen> {
                                 width: 320,
                                 height: 48,
                                 decoration: BoxDecoration(
-                                  color: Color(0xFF4CD200), // สีเขียวหลัก
+                                  color: Color(0xFFFFCA28),
                                   borderRadius: BorderRadius.circular(25),
                                   border: Border(
                                     bottom: BorderSide(
-                                      color: Color(0xFF3ABA00),
+                                      color: Color(0xFFFFA000),
                                       width: 4,
                                     ),
                                   ),
@@ -271,7 +277,7 @@ class _Game3screenState extends State<Game3screen> {
                                   style: TextStyle(
                                     color: Colors.white,
                                     fontWeight: FontWeight.bold,
-                                    fontSize: 16,
+                                    fontSize: 18,
                                   ),
                                 ),
                               ),
@@ -376,7 +382,7 @@ class _Game3screenState extends State<Game3screen> {
                                   style: TextStyle(
                                     color: Colors.white,
                                     fontWeight: FontWeight.bold,
-                                    fontSize: 16,
+                                    fontSize: 18,
                                   ),
                                 ),
                               ),
@@ -541,7 +547,8 @@ class _Game3screenState extends State<Game3screen> {
                   ),
                   SizedBox(height: 20),
                   Expanded(
-                    child: Center(
+                    child: SingleChildScrollView(
+                      physics: BouncingScrollPhysics(),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
@@ -582,6 +589,7 @@ class _Game3screenState extends State<Game3screen> {
                           SizedBox(height: 20),
                           Wrap(
                             spacing: 8,
+                            runSpacing: 8,
                             children: List.generate(maskedCharacters.length, (
                               index,
                             ) {
@@ -676,11 +684,11 @@ class _Game3screenState extends State<Game3screen> {
                           width: 320,
                           height: 48,
                           decoration: BoxDecoration(
-                            color: Color(0xFF4CD200), // สีเขียวหลัก
+                            color: Color(0xFFFFC107),
                             borderRadius: BorderRadius.circular(25),
                             border: Border(
                               bottom: BorderSide(
-                                color: Color(0xFF3ABA00),
+                                color: Color(0xFFFFA000),
                                 width: 4,
                               ),
                             ),
@@ -691,7 +699,7 @@ class _Game3screenState extends State<Game3screen> {
                             style: TextStyle(
                               color: Colors.white,
                               fontWeight: FontWeight.bold,
-                              fontSize: 16,
+                              fontSize: 18,
                             ),
                           ),
                         ),
