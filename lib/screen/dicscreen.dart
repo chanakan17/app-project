@@ -52,7 +52,7 @@ class _DicscreenState extends State<Dicscreen> {
               child: Center(
                 child: Column(
                   children: [
-                    SizedBox(height: 50),
+                    SizedBox(height: 20),
                     Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: SizedBox(
@@ -131,7 +131,7 @@ class _DicscreenState extends State<Dicscreen> {
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
                           Text(
-                            "Catehories",
+                            "Categories",
                             style: TextStyle(
                               fontSize: 22,
                               fontWeight: FontWeight.bold,
