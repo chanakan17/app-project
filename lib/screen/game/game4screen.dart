@@ -340,7 +340,7 @@ class _Game4screenState extends State<Game4screen> {
                 Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(
-                    builder: (_) => HomeScreen(initialTabIndex: 0),
+                    builder: (_) => HomeScreen(initialTabIndex: 1),
                   ),
                 );
                 // await GameData.saveScoreToDB();
@@ -572,7 +572,47 @@ class _Game4screenState extends State<Game4screen> {
                   _feedback,
                   style: TextStyle(fontSize: 18, color: Colors.deepPurple),
                 ),
+                SizedBox(height: 80),
               ],
+            ),
+          ),
+          Positioned(
+            bottom: 30,
+            left: 0,
+            right: 0,
+            child: Center(
+              child: GestureDetector(
+                onTap: () {
+                  _loadNextQuestion();
+                },
+                child: Stack(
+                  children: [
+                    Container(
+                      width: 320,
+                      height: 48,
+                      decoration: BoxDecoration(
+                        color: Color(0xFFFFC107),
+                        borderRadius: BorderRadius.circular(25),
+                        border: Border(
+                          bottom: BorderSide(
+                            color: Color(0xFFFFA000),
+                            width: 4,
+                          ),
+                        ),
+                      ),
+                      alignment: Alignment.center,
+                      child: Text(
+                        'เปลี่ยนคำถัดไป',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
           ),
         ],

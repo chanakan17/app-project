@@ -1,4 +1,4 @@
-import 'package:app/management/dic.dart';
+import 'package:app/management/dic_service.dart';
 import 'package:app/management/sound/sound.dart';
 import 'package:app/screen/dictionary/dicallscreen.dart';
 import 'package:app/screen/dictionary/dicaniscreen.dart';
@@ -7,7 +7,6 @@ import 'package:app/screen/dictionary/dicsportscreen.dart';
 import 'package:app/screen/dictionary/translatescreen.dart';
 import 'package:app/screen/game/game4screen.dart';
 import 'package:flutter/material.dart';
-// import 'package:app/screen/dictionary/translatescreen.dart';
 
 class Dicscreen extends StatefulWidget {
   const Dicscreen({super.key});

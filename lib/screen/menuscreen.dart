@@ -6,7 +6,7 @@ import 'package:app/management/sound/sound.dart';
 import 'package:app/screen/game/game1screen.dart';
 import 'package:app/screen/game/game2screen.dart';
 import 'package:app/screen/game/game3screen.dart';
-import 'package:app/management/dic_service.dart'; // ✅ ใช้ DicService
+import 'package:app/management/dic_service.dart';
 
 class Menuscreen extends StatefulWidget {
   const Menuscreen({super.key});
