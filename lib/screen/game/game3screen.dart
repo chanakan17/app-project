@@ -196,6 +196,16 @@ class _Game3screenState extends State<Game3screen> {
       }
 
       if (userInput.toLowerCase() == randomKeys[0].toLowerCase()) {
+        List<String> successMessages = [
+          "ถูกต้องแล้ว",
+          "เยี่ยมมาก!",
+          "เก่งสุดๆ",
+          "เฉียบคม!",
+          "แม่นยำมาก",
+          "ถูกต้องนะค้าบ",
+        ];
+        String randomMessage =
+            successMessages[Random().nextInt(successMessages.length)];
         SoundManager.playChecktrueSound();
         showModalBottomSheet(
           context: context,
@@ -225,7 +235,7 @@ class _Game3screenState extends State<Game3screen> {
                             size: 40, // ขนาด
                           ),
                           Text(
-                            "ถูกต้องแล้ว",
+                            randomMessage,
                             style: TextStyle(
                               fontSize: 25,
                               color: Color(0xFFFFA000),
@@ -293,6 +303,17 @@ class _Game3screenState extends State<Game3screen> {
           },
         );
       } else {
+        List<String> wrongMessages = [
+          "ผิดจร้าาา",
+          "ว้า... ผิดนะ",
+          "ยังไม่ใช่นะครับ",
+          "ลองใหม่อีกทีนะ",
+          "เกือบถูกแล้วเชียว",
+          "โอ๊ะโอ... ไม่ใช่นะ",
+        ];
+
+        String randomWrongMessage =
+            wrongMessages[Random().nextInt(wrongMessages.length)];
         SoundManager.playCheckfalseSound();
         showModalBottomSheet(
           context: context,
@@ -322,7 +343,7 @@ class _Game3screenState extends State<Game3screen> {
                             size: 40, // ขนาดใหญ่
                           ),
                           Text(
-                            "ผิดจร้าาา",
+                            randomWrongMessage,
                             style: TextStyle(
                               fontSize: 25,
                               fontWeight: FontWeight.bold,

@@ -522,6 +522,18 @@ class _Game2screenState extends State<Game2screen> {
                     }
 
                     if (matched == userAnswers.length) {
+                      List<String> successMessages = [
+                        "ถูกต้องแล้ว",
+                        "เยี่ยมมาก!",
+                        "เก่งสุดๆ",
+                        "เฉียบคม!",
+                        "แม่นยำมาก",
+                        "ถูกต้องนะค้าบ",
+                      ];
+                      String randomMessage =
+                          successMessages[Random().nextInt(
+                            successMessages.length,
+                          )];
                       showModalBottomSheet(
                         context: context,
                         isDismissible: false, // ไม่ให้ปิดเมื่อแตะนอกพื้นที่
@@ -551,7 +563,7 @@ class _Game2screenState extends State<Game2screen> {
                                           size: 40, // ขนาด
                                         ),
                                         Text(
-                                          "ถูกต้องทั้งหมด!",
+                                          randomMessage,
                                           style: TextStyle(
                                             fontSize: 25,
                                             color: Color(0xFFFFA000),
@@ -622,6 +634,18 @@ class _Game2screenState extends State<Game2screen> {
                         },
                       );
                     } else {
+                      List<String> wrongMessages = [
+                        "ผิดจร้าาา",
+                        "ว้า... ผิดนะ",
+                        "ยังไม่ใช่นะครับ",
+                        "ลองใหม่อีกทีนะ",
+                        "เกือบถูกแล้วเชียว",
+                        "โอ๊ะโอ... ไม่ใช่นะ",
+                      ];
+
+                      String randomWrongMessage =
+                          wrongMessages[Random().nextInt(wrongMessages.length)];
+
                       showModalBottomSheet(
                         context: context,
                         isDismissible: false,
@@ -651,7 +675,7 @@ class _Game2screenState extends State<Game2screen> {
                                           size: 40, // ขนาดใหญ่
                                         ),
                                         Text(
-                                          "ยังไม่ถูกทั้งหมด",
+                                          randomWrongMessage,
                                           style: TextStyle(
                                             fontSize: 25,
                                             fontWeight: FontWeight.bold,

@@ -408,8 +408,20 @@ class _Game1screenState extends State<Game1screen> {
                                           return;
                                         }
 
-                                        // เช็คว่า คำแปลที่เลือกตรงกับคำแปลที่ถูกต้องหรือไม่
                                         if (shuffledValues[i] == correctValue) {
+                                          List<String> successMessages = [
+                                            "ถูกต้องแล้ว",
+                                            "เยี่ยมมาก!",
+                                            "เก่งสุดๆ",
+                                            "เฉียบคม!",
+                                            "แม่นยำมาก",
+                                            "ถูกต้องนะค้าบ",
+                                          ];
+                                          String randomMessage =
+                                              successMessages[Random().nextInt(
+                                                successMessages.length,
+                                              )];
+
                                           showModalBottomSheet(
                                             context: context,
                                             isDismissible:
@@ -453,7 +465,7 @@ class _Game1screenState extends State<Game1screen> {
                                                               size: 40, // ขนาด
                                                             ),
                                                             Text(
-                                                              "ถูกต้องแล้ว",
+                                                              randomMessage,
                                                               style: TextStyle(
                                                                 fontSize: 25,
                                                                 color: Color(
@@ -549,6 +561,19 @@ class _Game1screenState extends State<Game1screen> {
                                             },
                                           );
                                         } else {
+                                          List<String> wrongMessages = [
+                                            "ผิดจร้าาา",
+                                            "ว้า... ผิดนะ",
+                                            "ยังไม่ใช่นะครับ",
+                                            "ลองใหม่อีกทีนะ",
+                                            "เกือบถูกแล้วเชียว",
+                                            "โอ๊ะโอ... ไม่ใช่นะ",
+                                          ];
+
+                                          String randomWrongMessage =
+                                              wrongMessages[Random().nextInt(
+                                                wrongMessages.length,
+                                              )];
                                           showModalBottomSheet(
                                             context: context,
                                             isDismissible: false,
@@ -590,7 +615,7 @@ class _Game1screenState extends State<Game1screen> {
                                                                   40, // ขนาดใหญ่
                                                             ),
                                                             Text(
-                                                              "ผิดจร้าาา",
+                                                              randomWrongMessage,
                                                               style: TextStyle(
                                                                 fontSize: 25,
                                                                 fontWeight:
