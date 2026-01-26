@@ -200,7 +200,7 @@ class _Game5screenState extends State<Game5screen> {
                       "คุณต้องการออกจากเกมหรือไม่?",
                       style: TextStyle(fontSize: 21),
                     ),
-                    content: Text("หากคุณออกจากเกม ข้อมูลจะไม่ได้รับการบันทึก"),
+                    content: Text("คุณต้องการออกจากเกมหรือไม่😭"),
                     actions: <Widget>[
                       ElevatedButton(
                         style: ElevatedButton.styleFrom(
@@ -209,7 +209,9 @@ class _Game5screenState extends State<Game5screen> {
                             borderRadius: BorderRadius.circular(16),
                           ),
                         ),
-                        onPressed: () {
+                        onPressed: () async {
+                          _endGame();
+                          GameData.updateTopScore();
                           SoundManager.playClickSound();
                           Navigator.of(context).pop();
                           Navigator.pushReplacement(
@@ -220,6 +222,7 @@ class _Game5screenState extends State<Game5screen> {
                               },
                             ),
                           );
+                          await GameData.saveScoreToDB();
                         },
                         child: Text(
                           "ออกจากเกม",

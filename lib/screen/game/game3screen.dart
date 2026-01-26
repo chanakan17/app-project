@@ -20,7 +20,9 @@ late Map<String, List<String>> typeDic;
 
 class _Game3screenState extends State<Game3screen> {
   List<String> randomKeys = [];
-  List<String> randomValues = [];
+  List<String> randomValues = []; // เก็บ URL รูปภาพ
+  String currentMeaning =
+      ""; // ตัวแปรใหม่: เก็บคำแปลภาษาไทย (สำหรับแสดงใน Dialog)
   List<String> maskedCharacters = [];
   List<TextEditingController> controllers = [];
   int score = 0;
@@ -60,13 +62,6 @@ class _Game3screenState extends State<Game3screen> {
 
     GameData.playTimeMs = _stopwatch.elapsedMilliseconds;
     GameData.playTimeStr = _formatTime(_stopwatch.elapsed);
-
-    final finalTime = _stopwatch.elapsedMilliseconds; // เวลาแบบ ms
-    print("⏱ เวลาเล่นทั้งหมด: $finalTime ms");
-
-    // ✅ เก็บเวลาในตัวแปร / DB / SharedPreferences / API
-    // เช่น ส่งไปที่ GameData หรือ API
-    // GameData.playTime = finalTime;
   }
 
   String _formatTime(Duration duration) {
@@ -135,7 +130,19 @@ class _Game3screenState extends State<Game3screen> {
 
     String randomKey = getRandomKey();
     randomKeys.add(randomKey);
-    randomValues.add(getRandomValue(typeDic[randomKey]!));
+
+    // ดึงข้อมูล Value ทั้งหมด
+    List<String> values = typeDic[randomKey]!;
+
+    // index 0 คือคำแปล/คำใบ้, index 1 คือ URL รูปภาพ
+    currentMeaning =
+        values.isNotEmpty ? values[0] : ""; // เก็บคำแปลไว้ใช้ใน Dialog
+    String imageUrl =
+        values.length > 1
+            ? values[1]
+            : (values.isNotEmpty ? values[0] : ""); // เก็บ URL
+
+    randomValues.add(imageUrl);
 
     availableKeys.remove(randomKey);
 
@@ -146,10 +153,6 @@ class _Game3screenState extends State<Game3screen> {
   String getRandomKey() {
     var random = Random();
     return availableKeys[random.nextInt(availableKeys.length)];
-  }
-
-  String getRandomValue(List<String> values) {
-    return values.isNotEmpty ? values[0] : '';
   }
 
   void _maskWord(String word) {
@@ -209,12 +212,10 @@ class _Game3screenState extends State<Game3screen> {
         SoundManager.playChecktrueSound();
         showModalBottomSheet(
           context: context,
-          isDismissible: false, // ไม่ให้ปิดเมื่อแตะนอกพื้นที่
-          enableDrag: false, // ไม่ให้ลาก bottom sheet ออกได้
-          isScrollControlled: true, // ควบคุมการ scroll ของเนื้อหา
-          shape: const RoundedRectangleBorder(
-            borderRadius: BorderRadius.zero, // <-- ทำให้ไม่โค้งเลย
-          ),
+          isDismissible: false,
+          enableDrag: false,
+          isScrollControlled: true,
+          shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
           builder: (BuildContext context) {
             return Container(
               height: 200,
@@ -229,11 +230,7 @@ class _Game3screenState extends State<Game3screen> {
                       padding: const EdgeInsets.all(8.0),
                       child: Row(
                         children: [
-                          Icon(
-                            Icons.check,
-                            color: Color(0xFFFFA000),
-                            size: 40, // ขนาด
-                          ),
+                          Icon(Icons.check, color: Color(0xFFFFA000), size: 40),
                           Text(
                             randomMessage,
                             style: TextStyle(
@@ -247,7 +244,8 @@ class _Game3screenState extends State<Game3screen> {
                     Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Text(
-                        "${randomValues[0]} --> ${randomKeys[0]}",
+                        // ใช้ currentMeaning แทน randomValues[0] เพื่อแสดงคำแปลภาษาไทยแทน URL
+                        "$currentMeaning --> ${randomKeys[0]}",
                         style: TextStyle(
                           fontSize: 20,
                           color: Color(0xFFFFA000),
@@ -260,7 +258,7 @@ class _Game3screenState extends State<Game3screen> {
                         padding: const EdgeInsets.all(8.0),
                         child: GestureDetector(
                           onTap: () {
-                            Navigator.of(context).pop(); // ปิด dialog
+                            Navigator.of(context).pop();
                             setState(() {
                               _getRandomEntries();
                               _stopwatch.start();
@@ -320,9 +318,7 @@ class _Game3screenState extends State<Game3screen> {
           isDismissible: false,
           enableDrag: false,
           isScrollControlled: true,
-          shape: const RoundedRectangleBorder(
-            borderRadius: BorderRadius.zero, // <-- ทำให้ไม่โค้งเลย
-          ),
+          shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
           builder: (BuildContext context) {
             return Container(
               height: 200,
@@ -337,11 +333,7 @@ class _Game3screenState extends State<Game3screen> {
                       padding: const EdgeInsets.all(8.0),
                       child: Row(
                         children: [
-                          Icon(
-                            Icons.close,
-                            color: Colors.red, // สีแดง
-                            size: 40, // ขนาดใหญ่
-                          ),
+                          Icon(Icons.close, color: Colors.red, size: 40),
                           Text(
                             randomWrongMessage,
                             style: TextStyle(
@@ -356,7 +348,8 @@ class _Game3screenState extends State<Game3screen> {
                     Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Text(
-                        "${randomValues[0]} --> ${randomKeys[0]}",
+                        // ใช้ currentMeaning แทน เพื่อแสดงคำแปลภาษาไทย
+                        "$currentMeaning --> ${randomKeys[0]}",
                         style: TextStyle(fontSize: 20, color: Colors.red),
                       ),
                     ),
@@ -378,12 +371,7 @@ class _Game3screenState extends State<Game3screen> {
                                 width: 320,
                                 height: 48,
                                 decoration: BoxDecoration(
-                                  color: Color.fromARGB(
-                                    255,
-                                    255,
-                                    81,
-                                    81,
-                                  ), // สีเขียวหลัก
+                                  color: Color.fromARGB(255, 255, 81, 81),
                                   borderRadius: BorderRadius.circular(25),
                                   border: Border(
                                     bottom: BorderSide(
@@ -451,7 +439,7 @@ class _Game3screenState extends State<Game3screen> {
                       "คุณต้องการออกจากเกมหรือไม่?",
                       style: TextStyle(fontSize: 21),
                     ),
-                    content: Text("หากคุณออกจากเกม ข้อมูลจะไม่ได้รับการบันทึก"),
+                    content: Text("คุณต้องการออกจากเกมหรือไม่😭"),
                     actions: <Widget>[
                       ElevatedButton(
                         style: ElevatedButton.styleFrom(
@@ -460,7 +448,9 @@ class _Game3screenState extends State<Game3screen> {
                             borderRadius: BorderRadius.circular(16),
                           ),
                         ),
-                        onPressed: () {
+                        onPressed: () async {
+                          _endGame();
+                          GameData.updateTopScore();
                           SoundManager.playClickSound();
                           Navigator.of(context).pop();
                           Navigator.pushReplacement(
@@ -471,6 +461,7 @@ class _Game3screenState extends State<Game3screen> {
                               },
                             ),
                           );
+                          await GameData.saveScoreToDB();
                         },
                         child: Text(
                           "ออกจากเกม",
@@ -503,7 +494,6 @@ class _Game3screenState extends State<Game3screen> {
       resizeToAvoidBottomInset: true,
       body: Stack(
         children: [
-          // Image.asset('assets/image/bg.png', fit: BoxFit.cover),
           Padding(
             padding: const EdgeInsets.fromLTRB(8, 8, 8, 40),
             child: Center(
@@ -517,7 +507,7 @@ class _Game3screenState extends State<Game3screen> {
                         child: Row(
                           children: [
                             Icon(Icons.access_time, size: 24),
-                            SizedBox(width: 4), // ระยะห่างระหว่างไอคอนกับเวลา
+                            SizedBox(width: 4),
                             Text(
                               "$_elapsedTime",
                               style: TextStyle(fontSize: 20),
@@ -526,7 +516,6 @@ class _Game3screenState extends State<Game3screen> {
                         ),
                       ),
                       Row(
-                        // mainAxisAlignment: MainAxisAlignment.end,
                         children: [
                           Padding(
                             padding: const EdgeInsets.all(8.0),
@@ -560,7 +549,7 @@ class _Game3screenState extends State<Game3screen> {
                       Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Text(
-                          "เติมคำในช่องว่าให้ถูกต้อง",
+                          "เติมคำในช่องว่างให้ถูกต้อง",
                           style: TextStyle(fontSize: 23),
                         ),
                       ),
@@ -575,39 +564,38 @@ class _Game3screenState extends State<Game3screen> {
                         children: [
                           Padding(
                             padding: const EdgeInsets.fromLTRB(8, 8, 8, 40),
-                            child: Row(
+                            child: Column(
+                              // เปลี่ยน Row เป็น Column เพื่อจัดเรียงแนวตั้ง
+                              mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Image.asset(
-                                  'assets/image/monkey.png',
-                                  width: 180,
-                                  height: 180,
-                                ),
                                 Container(
-                                  width: 180,
-                                  height: 180,
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Padding(
-                                        padding: const EdgeInsets.fromLTRB(
-                                          5,
-                                          15,
-                                          0,
-                                          0,
-                                        ),
-                                        child: Text(
-                                          '${randomValues[0]}',
-                                          style: TextStyle(fontSize: 25),
-                                        ),
-                                      ),
-                                    ],
+                                  width: 200,
+                                  height: 200,
+                                  child: Image.network(
+                                    randomValues[0], // URL รูปภาพ
+                                    fit: BoxFit.contain,
+                                    errorBuilder: (context, error, stackTrace) {
+                                      return Center(child: Icon(Icons.error));
+                                    },
                                   ),
                                 ),
+                                SizedBox(height: 15), // ระยะห่าง
+                                // --- ส่วนที่เพิ่ม: แสดงคำศัพท์ภาษาอังกฤษ ---
+                                Text(
+                                  currentMeaning, // แสดงคำศัพท์ภาษาอังกฤษ
+                                  style: TextStyle(
+                                    fontSize: 32,
+                                    // fontWeight: FontWeight.bold,
+                                    color: Colors.black87,
+                                    letterSpacing:
+                                        2.0, // เพิ่มระยะห่างตัวอักษรให้อ่านง่าย
+                                  ),
+                                ),
+                                // ---------------------------------------
                               ],
                             ),
                           ),
-                          SizedBox(height: 20),
+                          SizedBox(height: 10),
                           Wrap(
                             spacing: 8,
                             runSpacing: 8,

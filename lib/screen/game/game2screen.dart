@@ -103,7 +103,6 @@ class _Game2screenState extends State<Game2screen> {
               onPressed: () async {
                 _endGame();
                 GameData.updateTopScore();
-                await GameData.saveScoreToDB();
                 Navigator.of(context).pop();
                 Navigator.pushReplacement(
                   context,
@@ -113,6 +112,7 @@ class _Game2screenState extends State<Game2screen> {
                     },
                   ),
                 );
+                await GameData.saveScoreToDB();
               },
               child: Text("ย้อนกลับไปยังเมนู"),
             ),
@@ -122,9 +122,11 @@ class _Game2screenState extends State<Game2screen> {
     );
   }
 
-  void _getRandomEntries() {
+  void _getRandomEntries() async {
     if (availableKeys.length < 4) {
       _endGame();
+      GameData.updateTopScore();
+      await GameData.saveScoreToDB();
       _showFinishDialog();
       return;
     }
@@ -192,7 +194,7 @@ class _Game2screenState extends State<Game2screen> {
                       "คุณต้องการออกจากเกมหรือไม่?",
                       style: TextStyle(fontSize: 21),
                     ),
-                    content: Text("หากคุณออกจากเกม ข้อมูลจะไม่ได้รับการบันทึก"),
+                    content: Text("คุณต้องการออกจากเกมหรือไม่😭"),
                     actions: [
                       ElevatedButton(
                         style: ElevatedButton.styleFrom(
@@ -201,7 +203,9 @@ class _Game2screenState extends State<Game2screen> {
                             borderRadius: BorderRadius.circular(16),
                           ),
                         ),
-                        onPressed: () {
+                        onPressed: () async {
+                          _endGame();
+                          GameData.updateTopScore();
                           SoundManager.playClickSound();
                           Navigator.of(context).pop();
                           Navigator.pushReplacement(
@@ -212,6 +216,7 @@ class _Game2screenState extends State<Game2screen> {
                               },
                             ),
                           );
+                          await GameData.saveScoreToDB();
                         },
                         child: Text(
                           "ออกจากเกม",
@@ -300,7 +305,11 @@ class _Game2screenState extends State<Game2screen> {
                       padding: const EdgeInsets.fromLTRB(8, 8, 8, 40),
                       child: Text(
                         "จับคู่คำศัพท์ต่อไปนี้",
-                        style: TextStyle(fontSize: 23),
+                        style: TextStyle(
+                          fontSize: 23,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.grey[800],
+                        ),
                       ),
                     ),
                   ],
@@ -327,11 +336,14 @@ class _Game2screenState extends State<Game2screen> {
                                   borderRadius: BorderRadius.circular(8),
                                   color: Colors.grey[200],
                                 ),
-                                child: Text(
-                                  key,
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    color: Colors.black87,
+                                child: FittedBox(
+                                  fit: BoxFit.scaleDown,
+                                  child: Text(
+                                    key,
+                                    style: TextStyle(
+                                      fontSize: 20,
+                                      color: Colors.black87,
+                                    ),
                                   ),
                                 ),
                               ),
@@ -418,11 +430,14 @@ class _Game2screenState extends State<Game2screen> {
                                           return null;
                                         }(),
                                       ),
-                                      child: Text(
-                                        answer ?? '',
-                                        style: TextStyle(
-                                          fontSize: 16,
-                                          color: Colors.black,
+                                      child: FittedBox(
+                                        fit: BoxFit.scaleDown,
+                                        child: Text(
+                                          answer ?? '',
+                                          style: TextStyle(
+                                            fontSize: 20,
+                                            color: Colors.black,
+                                          ),
                                         ),
                                       ),
                                     ),
@@ -505,7 +520,7 @@ class _Game2screenState extends State<Game2screen> {
                     });
 
                     if (matched == userAnswers.length) {
-                      score++;
+                      // score++;
                       GameData.score = score;
                       SoundManager.playChecktrueSound();
                       _stopwatch.stop();
@@ -592,6 +607,7 @@ class _Game2screenState extends State<Game2screen> {
                                             context,
                                           ).pop(); // ปิด dialog
                                           setState(() {
+                                            score += matched;
                                             _stopwatch.start();
                                             _getRandomEntries();
                                           });
@@ -703,6 +719,7 @@ class _Game2screenState extends State<Game2screen> {
                                         onTap: () {
                                           Navigator.pop(context);
                                           setState(() {
+                                            score += matched;
                                             _stopwatch.start();
                                             _getRandomEntries();
                                           });

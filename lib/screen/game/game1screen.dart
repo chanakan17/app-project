@@ -210,7 +210,7 @@ class _Game1screenState extends State<Game1screen> {
                       "คุณต้องการออกจากเกมหรือไม่?",
                       style: TextStyle(fontSize: 21),
                     ),
-                    content: Text("หากคุณออกจากเกม ข้อมูลจะไม่ได้รับการบันทึก"),
+                    content: Text("คุณต้องการออกจากเกมหรือไม่😭"),
                     actions: <Widget>[
                       ElevatedButton(
                         style: ElevatedButton.styleFrom(
@@ -219,7 +219,9 @@ class _Game1screenState extends State<Game1screen> {
                             borderRadius: BorderRadius.circular(16),
                           ),
                         ),
-                        onPressed: () {
+                        onPressed: () async {
+                          _endGame();
+                          GameData.updateTopScore();
                           SoundManager.playClickSound();
                           Navigator.of(context).pop();
                           Navigator.pushReplacement(
@@ -230,6 +232,7 @@ class _Game1screenState extends State<Game1screen> {
                               },
                             ),
                           );
+                          await GameData.saveScoreToDB();
                         },
                         child: Text(
                           "ออกจากเกม",
@@ -308,6 +311,7 @@ class _Game1screenState extends State<Game1screen> {
                     ),
                   ],
                 ),
+                SizedBox(height: 20),
                 Expanded(
                   child: Center(
                     child: Column(
@@ -317,15 +321,18 @@ class _Game1screenState extends State<Game1screen> {
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
                             Padding(
-                              padding: const EdgeInsets.fromLTRB(8, 8, 8, 8),
+                              padding: const EdgeInsets.fromLTRB(15, 8, 8, 8),
                               child: Text(
-                                "เลือกคำให้ถูกต้อง ?",
-                                style: TextStyle(fontSize: 23),
+                                "เลือกคำให้ถูกต้อง",
+                                style: TextStyle(
+                                  fontSize: 30,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.grey[800],
+                                ),
                               ),
                             ),
                           ],
                         ),
-                        SizedBox(height: 20),
                         Padding(
                           padding: const EdgeInsets.fromLTRB(8, 8, 8, 8),
                           child: Row(
@@ -364,7 +371,11 @@ class _Game1screenState extends State<Game1screen> {
                                               alignment: Alignment.centerLeft,
                                               child: Text(
                                                 '${randomKeys[0]}',
-                                                style: TextStyle(fontSize: 25),
+                                                style: TextStyle(
+                                                  fontSize: 30,
+                                                  fontWeight: FontWeight.bold,
+                                                  color: Colors.grey[800],
+                                                ),
                                               ),
                                             ),
                                           ),
@@ -574,6 +585,7 @@ class _Game1screenState extends State<Game1screen> {
                                               wrongMessages[Random().nextInt(
                                                 wrongMessages.length,
                                               )];
+
                                           showModalBottomSheet(
                                             context: context,
                                             isDismissible: false,
