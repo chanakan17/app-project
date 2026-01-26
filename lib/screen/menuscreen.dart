@@ -6,7 +6,7 @@ import 'package:app/management/sound/sound.dart';
 import 'package:app/screen/game/game1screen.dart';
 import 'package:app/screen/game/game2screen.dart';
 import 'package:app/screen/game/game3screen.dart';
-import 'package:app/management/dic_service.dart';
+import 'package:app/management/dic_service30.dart';
 
 class Menuscreen extends StatefulWidget {
   const Menuscreen({super.key});
@@ -317,7 +317,10 @@ class _MenuscreenState extends State<Menuscreen> {
           Navigator.of(context).pop();
 
           try {
-            final words = await DicService.fetchWords(categoryId: categoryId);
+            final words = await DicService.fetchRandomWords(
+              categoryId: categoryId,
+              count: 30,
+            );
             final dictionaryMap = convertEntriesToMap(words);
             Navigator.pushReplacement(
               context,
