@@ -5,6 +5,8 @@ import 'package:app/screen/homescreen.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
 
+import 'package:flutter_tts/flutter_tts.dart';
+
 class Game1screen extends StatefulWidget {
   final Map<String, List<String>> dictionary;
   final String title;
@@ -22,6 +24,7 @@ class _Game1screenState extends State<Game1screen> {
   String? correctValue;
   int score = 0;
   int scoredis = 5;
+  final FlutterTts _flutterTts = FlutterTts();
   late List<String> availableKeys; // ลิสต์ของ key ที่สามารถสุ่มได้
   late String title;
   Stopwatch _stopwatch = Stopwatch();
@@ -160,6 +163,13 @@ class _Game1screenState extends State<Game1screen> {
   String getRandomKey() {
     var random = Random();
     return availableKeys[random.nextInt(availableKeys.length)];
+  }
+
+  Future<void> _speakWord(String word) async {
+    await _flutterTts.setLanguage("en-US");
+    await _flutterTts.setPitch(1.0);
+    await _flutterTts.setSpeechRate(0.5);
+    await _flutterTts.speak(word);
   }
 
   // ฟังก์ชันสุ่ม value จาก List<String> ที่ตรงกับ key
@@ -322,8 +332,8 @@ class _Game1screenState extends State<Game1screen> {
                             children: [
                               Image.asset(
                                 'assets/image/monkey.png',
-                                width: 180,
-                                height: 180,
+                                width: 150,
+                                height: 150,
                               ),
                               Container(
                                 width: 180,
@@ -333,14 +343,32 @@ class _Game1screenState extends State<Game1screen> {
                                   children: [
                                     Padding(
                                       padding: const EdgeInsets.fromLTRB(
-                                        5,
+                                        2,
                                         15,
-                                        0,
+                                        8,
                                         0,
                                       ),
-                                      child: Text(
-                                        '${randomKeys[0]}',
-                                        style: TextStyle(fontSize: 25),
+                                      child: Row(
+                                        children: [
+                                          IconButton(
+                                            onPressed:
+                                                () => _speakWord(randomKeys[0]),
+                                            icon: Icon(
+                                              Icons.volume_up,
+                                              size: 30,
+                                            ),
+                                          ),
+                                          Expanded(
+                                            child: FittedBox(
+                                              fit: BoxFit.scaleDown,
+                                              alignment: Alignment.centerLeft,
+                                              child: Text(
+                                                '${randomKeys[0]}',
+                                                style: TextStyle(fontSize: 25),
+                                              ),
+                                            ),
+                                          ),
+                                        ],
                                       ),
                                     ),
                                   ],

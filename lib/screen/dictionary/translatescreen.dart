@@ -42,7 +42,10 @@ class _TranslateScreenState extends State<TranslateScreen> {
             );
           },
         ),
-        title: Text("แปลภาษา $fromLabel → $toLabel"),
+        title: Text(
+          "แปลภาษา $fromLabel → $toLabel",
+          style: TextStyle(fontSize: 20),
+        ),
         bottom: PreferredSize(
           preferredSize: Size.fromHeight(1.0),
           child: Container(color: Colors.black26, height: 2.0),
