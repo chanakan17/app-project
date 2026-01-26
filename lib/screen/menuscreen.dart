@@ -155,72 +155,97 @@ class _MenuscreenState extends State<Menuscreen> {
     String title,
     String subtitle,
     Widget iconWidget,
-    Color iconBackgroundColor,
+    Color
+    baseColor, // เปลี่ยนชื่อจาก iconBackgroundColor เป็น baseColor เพื่อสื่อความหมาย
     Widget Function(Map<String, List<String>>, String) screenBuilder,
   ) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 12, 20, 12),
-      child: SizedBox(
-        child: ElevatedButton(
-          onPressed: () {
-            SoundManager.playClick8BitSound();
-            showCategoryDialog(screenBuilder);
-          },
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.white.withOpacity(0.8),
-            elevation: 6,
-            shadowColor: Colors.black45,
-            fixedSize: Size.fromHeight(120),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(20),
-            ),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+      child: Container(
+        height: 110,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(24),
+          gradient: LinearGradient(
+            colors: [Colors.white, baseColor.withOpacity(0.8)],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
           ),
-          child: Center(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(50),
-                  child: Container(
-                    color: iconBackgroundColor,
-                    width: 90,
-                    height: 90,
-                    padding: EdgeInsets.all(10),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.2),
+              blurRadius: 10,
+              offset: Offset(0, 6),
+            ),
+          ],
+        ),
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            borderRadius: BorderRadius.circular(24),
+            onTap: () {
+              SoundManager.playClick8BitSound();
+              showCategoryDialog(screenBuilder);
+            },
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Row(
+                children: [
+                  // ส่วน Icon ที่มีพื้นหลังซ้อน
+                  Container(
+                    width: 80,
+                    height: 80,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black12,
+                          blurRadius: 5,
+                          offset: Offset(0, 3),
+                        ),
+                      ],
+                    ),
+                    padding: EdgeInsets.all(12),
                     child: iconWidget,
                   ),
-                ),
-                SizedBox(width: 24),
-                Container(
-                  width: 200,
-                  height: 90,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            subtitle,
-                            style: TextStyle(
-                              fontSize: 22,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black87,
-                            ),
+                  SizedBox(width: 20),
+                  // ส่วนข้อความ
+                  Expanded(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          subtitle,
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.w800,
+                            color:
+                                Colors
+                                    .brown[800], // ใช้สีเข้มเพื่อให้ตัดกับพื้นหลัง
+                            letterSpacing: 0.5,
                           ),
-                          Text(
-                            title,
-                            style: TextStyle(
-                              fontSize: 18,
-                              color: Colors.black87,
-                            ),
+                        ),
+                        SizedBox(height: 4),
+                        Text(
+                          title,
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500,
+                            color: Colors.brown[600],
                           ),
-                        ],
-                      ),
-                    ],
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-              ],
+                  // ลูกศรบอกทาง
+                  Icon(
+                    Icons.arrow_forward_ios_rounded,
+                    color: Colors.brown[300],
+                    size: 20,
+                  ),
+                ],
+              ),
             ),
           ),
         ),

@@ -53,6 +53,30 @@ class _DicscreenState extends State<Dicscreen> {
                   children: [
                     SizedBox(height: 20),
                     Padding(
+                      padding: const EdgeInsets.only(left: 6),
+                      child: Row(
+                        children: [
+                          Container(
+                            height: 30,
+                            width: 5,
+                            decoration: BoxDecoration(
+                              color: Colors.orange,
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                          ),
+                          const SizedBox(width: 10),
+                          const Text(
+                            "Tools",
+                            style: TextStyle(
+                              fontSize: 22,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black87,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: SizedBox(
                         child: ElevatedButton(
