@@ -319,7 +319,7 @@ class _MenuscreenState extends State<Menuscreen> {
           try {
             final words = await DicService.fetchRandomWords(
               categoryId: categoryId,
-              count: 30,
+              count: 20,
             );
             final dictionaryMap = convertEntriesToMap(words);
             Navigator.pushReplacement(

@@ -695,8 +695,7 @@ class _ProfilescreenState extends State<Profilescreen> {
                                                 ? avatarList[pImgId]
                                                 : avatarList[0];
                                       }
-                                      final top20Items =
-                                          items.take(20).toList();
+                                      final top20Items = items.take(5).toList();
 
                                       return Column(
                                         children: [

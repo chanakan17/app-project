@@ -10,7 +10,7 @@ class DicService {
   }
 
   static Future<List<DicEntry>> fetchRandomWords({
-    int count = 30,
+    int count = 20,
     int categoryId = 1,
   }) async {
     List<DicEntry> allWords = await _fetchWordsByCategory(categoryId);

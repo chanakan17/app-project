@@ -16,10 +16,10 @@ class _ForgotscreenState extends State<Forgotscreen> {
   final _formKey = GlobalKey<FormState>();
 
   final _emailController = TextEditingController();
-  final _usernameController = TextEditingController();
-  final _dateController = TextEditingController();
+  // ลบ _usernameController ออก
+  final _dateController = TextEditingController(); // นำกลับมาใช้
 
-  DateTime? _selectedDate;
+  DateTime? _selectedDate; // ตัวแปรเก็บวันที่ที่เลือก
 
   Future<void> _submitForm() async {
     if (_formKey.currentState!.validate()) {
@@ -27,8 +27,9 @@ class _ForgotscreenState extends State<Forgotscreen> {
         final response = await http.post(
           Uri.parse('${ApiConfig.baseUrl}/reset_forgot.php'),
           body: {
-            'username': _usernameController.text.trim(),
+            // ลบ username ออก
             'email': _emailController.text.trim(),
+            // ส่ง birthdate ไปตรวจสอบแทน
             'birthdate': _selectedDate!.toIso8601String().substring(0, 10),
           },
         );
@@ -64,19 +65,8 @@ class _ForgotscreenState extends State<Forgotscreen> {
   @override
   void dispose() {
     _emailController.dispose();
-    _usernameController.dispose();
-    _dateController.dispose();
+    _dateController.dispose(); // คืนทรัพยากรตัวแปร date
     super.dispose();
-  }
-
-  int calculateAge(DateTime birthDate) {
-    final today = DateTime.now();
-    int age = today.year - birthDate.year;
-    if (today.month < birthDate.month ||
-        (today.month == birthDate.month && today.day < birthDate.day)) {
-      age--;
-    }
-    return age;
   }
 
   @override
@@ -126,6 +116,8 @@ class _ForgotscreenState extends State<Forgotscreen> {
                       ),
                     ),
                     const SizedBox(height: 40),
+
+                    // --- ช่องกรอก Email ---
                     TextFormField(
                       controller: _emailController,
                       decoration: const InputDecoration(
@@ -143,23 +135,11 @@ class _ForgotscreenState extends State<Forgotscreen> {
                       },
                     ),
                     const SizedBox(height: 18),
-                    TextFormField(
-                      controller: _usernameController,
-                      maxLength: 20,
-                      decoration: const InputDecoration(
-                        labelText: 'ชื่อผู้ใช้งาน',
-                        border: OutlineInputBorder(),
-                      ),
-                      validator:
-                          (value) =>
-                              value == null || value.isEmpty
-                                  ? 'กรุณากรอกชื่อผู้ใช้งาน'
-                                  : null,
-                    ),
-                    const SizedBox(height: 12),
+
+                    // --- ช่องเลือกวันเกิด (นำกลับมาแทน Username) ---
                     TextFormField(
                       controller: _dateController,
-                      readOnly: true,
+                      readOnly: true, // ห้ามพิมพ์เอง ต้องกดเลือกจากปฏิทิน
                       decoration: const InputDecoration(
                         labelText: 'วันเกิด',
                         border: OutlineInputBorder(),
@@ -176,6 +156,7 @@ class _ForgotscreenState extends State<Forgotscreen> {
                         if (pickedDate != null) {
                           setState(() {
                             _selectedDate = pickedDate;
+                            // แสดงผลวันที่ใน format วัน/เดือน/ปี
                             _dateController.text =
                                 '${pickedDate.day}/${pickedDate.month}/${pickedDate.year}';
                           });
@@ -188,6 +169,7 @@ class _ForgotscreenState extends State<Forgotscreen> {
                         return null;
                       },
                     ),
+
                     const SizedBox(height: 40),
                     Center(
                       child: Row(
