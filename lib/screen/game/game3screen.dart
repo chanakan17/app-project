@@ -78,6 +78,12 @@ class _Game3screenState extends State<Game3screen> {
   void dispose() {
     _timer?.cancel();
     _stopwatch.stop();
+    for (var controller in controllers) {
+      controller.dispose();
+    }
+    for (var node in focusNodes) {
+      node.dispose();
+    }
     super.dispose();
   }
 
@@ -258,6 +264,7 @@ class _Game3screenState extends State<Game3screen> {
                         padding: const EdgeInsets.all(8.0),
                         child: GestureDetector(
                           onTap: () {
+                            FocusScope.of(context).unfocus();
                             Navigator.of(context).pop();
                             setState(() {
                               _getRandomEntries();
@@ -359,6 +366,7 @@ class _Game3screenState extends State<Game3screen> {
                         padding: const EdgeInsets.all(8.0),
                         child: GestureDetector(
                           onTap: () {
+                            FocusScope.of(context).unfocus();
                             Navigator.pop(context);
                             setState(() {
                               _getRandomEntries();

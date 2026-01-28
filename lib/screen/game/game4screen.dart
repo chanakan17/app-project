@@ -481,12 +481,12 @@ class _Game4screenState extends State<Game4screen> {
                   label: Text(_isListening ? "กำลังฟัง..." : "พูดคำศัพท์"),
                 ),
                 SizedBox(height: 20),
-                Text("คุณพูดว่า: $_spokenText", style: TextStyle(fontSize: 16)),
+                // Text("คุณพูดว่า: $_spokenText", style: TextStyle(fontSize: 16)),
                 SizedBox(height: 10),
-                Text(
-                  _feedback,
-                  style: TextStyle(fontSize: 18, color: Colors.deepPurple),
-                ),
+                // Text(
+                //   _feedback,
+                //   style: TextStyle(fontSize: 18, color: Colors.deepPurple),
+                // ),
                 SizedBox(height: 80),
               ],
             ),
